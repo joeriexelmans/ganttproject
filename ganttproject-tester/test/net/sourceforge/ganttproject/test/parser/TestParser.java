@@ -1,5 +1,6 @@
 package net.sourceforge.ganttproject.test.parser;
 
+import biz.ganttproject.core.calendar.WeekendCalendarImpl;
 import biz.ganttproject.core.option.ListOption;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import junit.framework.TestCase;
@@ -114,6 +115,7 @@ public class TestParser extends TestCase {
 
     public void testTagHandler() {
         // All the stuff that supposedly makes up "a project"
+        WeekendCalendarImpl calendar = new WeekendCalendarImpl();
         GPTimeUnitStack timeUnitStack = new GPTimeUnitStack();
         RoleManagerImpl roleManager = new RoleManagerImpl();
         CustomColumnsManager hrCustomPropertyManager = new CustomColumnsManager();
@@ -133,8 +135,8 @@ public class TestParser extends TestCase {
         VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
         PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(baseLines);
         RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
-        TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext(), myUIFacade.getTaskTree());
-        DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(getActiveCalendar());
+        TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext());
+        DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
         ProxyDocument.OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new ProxyDocument.OnlyShowWeekendsTagHandler(getActiveCalendar());
 
         TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(myProject.getTaskCustomColumnManager());

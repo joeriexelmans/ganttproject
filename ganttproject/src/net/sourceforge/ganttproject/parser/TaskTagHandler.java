@@ -38,17 +38,14 @@ import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
-public class TaskTagHandler extends AbstractTagHandler implements ParsingListener {
+public class TaskTagHandler extends AbstractTagHandler {
   private final ParsingContext myContext;
   private final TaskManager myManager;
-  private final TaskTreeUIFacade myTreeFacade;
-  private final Map<Integer, Boolean> myTaskIdToExpansionState = Maps.newHashMap();
 
-  public TaskTagHandler(TaskManager mgr, ParsingContext context, TaskTreeUIFacade treeFacade) {
+  public TaskTagHandler(TaskManager mgr, ParsingContext context) {
     super("task");
     myManager = mgr;
     myContext = context;
-    myTreeFacade = treeFacade;
   }
 
   @Override
@@ -113,7 +110,6 @@ public class TaskTagHandler extends AbstractTagHandler implements ParsingListene
     }
     Task task = builder.build();
 
-    myTaskIdToExpansionState.put(task.getTaskID(), task.getExpand());
     String project = attrs.getValue("project");
     if (project != null) {
       task.setProjectTask(true);
@@ -199,18 +195,5 @@ public class TaskTagHandler extends AbstractTagHandler implements ParsingListene
 
   private TaskManager getManager() {
     return myManager;
-  }
-
-  @Override
-  public void parsingStarted() {
-  }
-
-  @Override
-  public void parsingFinished() {
-    List<Task> tasksBottomUp = Lists.reverse(myManager.getTaskHierarchy().breadthFirstSearch(null, false));
-
-    for (Task t : tasksBottomUp) {
-      myTreeFacade.setExpanded(t, MoreObjects.firstNonNull(myTaskIdToExpansionState.get(t.getTaskID()), Boolean.TRUE));
-    }
   }
 }

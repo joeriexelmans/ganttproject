@@ -28,25 +28,7 @@ import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.io.GPSaver;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.parser.AbstractTagHandler;
-import net.sourceforge.ganttproject.parser.AllocationTagHandler;
-import net.sourceforge.ganttproject.parser.CustomPropertiesTagHandler;
-import net.sourceforge.ganttproject.parser.DefaultWeekTagHandler;
-import net.sourceforge.ganttproject.parser.DependencyTagHandler;
-import net.sourceforge.ganttproject.parser.FileFormatException;
-import net.sourceforge.ganttproject.parser.GPParser;
-import net.sourceforge.ganttproject.parser.HolidayTagHandler;
-import net.sourceforge.ganttproject.parser.OptionTagHandler;
-import net.sourceforge.ganttproject.parser.ParserFactory;
-import net.sourceforge.ganttproject.parser.ParsingListener;
-import net.sourceforge.ganttproject.parser.PreviousStateTasksTagHandler;
-import net.sourceforge.ganttproject.parser.ResourceTagHandler;
-import net.sourceforge.ganttproject.parser.RoleTagHandler;
-import net.sourceforge.ganttproject.parser.TaskDisplayColumnsTagHandler;
-import net.sourceforge.ganttproject.parser.TaskPropertiesTagHandler;
-import net.sourceforge.ganttproject.parser.TaskTagHandler;
-import net.sourceforge.ganttproject.parser.VacationTagHandler;
-import net.sourceforge.ganttproject.parser.ViewTagHandler;
+import net.sourceforge.ganttproject.parser.*;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -299,7 +281,8 @@ public class ProxyDocument implements Document {
       VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
       PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(myProject.getBaselines());
       RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
-      TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext(), myUIFacade.getTaskTree());
+      TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext());
+      TaskParsingListener taskParsingListener = new TaskParsingListener(taskManager, myUIFacade.getTaskTree());
       DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(getActiveCalendar());
       OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(getActiveCalendar());
 
@@ -326,7 +309,7 @@ public class ProxyDocument implements Document {
       opener.addTagHandler(new ViewTagHandler("resource-table", getUIFacade(), resourceFieldsHandler));
 
       opener.addTagHandler(taskHandler);
-      opener.addParsingListener(taskHandler);
+      opener.addParsingListener(taskParsingListener);
 
       opener.addParsingListener(customPropHandler);
 

@@ -9,11 +9,7 @@ import net.sourceforge.ganttproject.task.TaskManager;
 import java.util.List;
 
 /**
- * @author joeriexelmans
- *
  * Expands tasks in view when parsing is finished.
- *
- * Split off from TaskTagHandler to make TaskTagHandler independent of the UI.
  */
 public class TaskParsingListener implements ParsingListener {
     private final TaskManager myManager;

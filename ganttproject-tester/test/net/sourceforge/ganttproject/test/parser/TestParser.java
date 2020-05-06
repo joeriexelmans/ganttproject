@@ -145,7 +145,7 @@ public class TestParser extends TestCase {
         UIFacade uiFacade = null;
 
         // Parse...
-        GPParser opener = new GanttXMLOpen(prjinfos, uiConfig, taskManager, uiFacade);
+        GPParser opener = new GanttXMLOpen(taskManager);
         ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
                 hrCustomPropertyManager);
         DependencyTagHandler dependencyHandler = new DependencyTagHandler(opener.getContext(), taskManager, uiFacade);
@@ -181,7 +181,10 @@ public class TestParser extends TestCase {
 
         opener.addTagHandler(taskHandler);
         opener.addParsingListener(customPropHandler);
-        opener.addTagHandler(opener.getDefaultTagHandler());
+        opener.addTagHandler(new DescriptionTagHandler(prjinfos));
+        opener.addTagHandler(new NotesTagHandler(opener.getContext()));
+        opener.addTagHandler(new ProjectTagHandler(prjinfos));
+        opener.addTagHandler(new TasksTagHandler(taskManager));
         opener.addTagHandler(opener.getTimelineTagHandler());
         opener.addParsingListener((ParsingListener)opener.getTimelineTagHandler());
         opener.addTagHandler(resourceHandler);
@@ -209,6 +212,11 @@ public class TestParser extends TestCase {
         opener.addTagHandler(holidayHandler);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
         opener.load(is);
+
+        int count = taskManager.getTaskCount();
+        if (true) {
+
+        }
     }
 
 

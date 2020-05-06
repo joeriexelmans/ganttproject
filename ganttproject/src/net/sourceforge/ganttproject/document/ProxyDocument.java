@@ -23,7 +23,9 @@ import biz.ganttproject.core.option.ListOption;
 import biz.ganttproject.core.table.ColumnList;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.IGanttProject;
+import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.io.GPSaver;
@@ -52,6 +54,8 @@ public class ProxyDocument implements Document {
 
   private IGanttProject myProject;
 
+  private PrjInfos myPrjInfos;
+
   private UIFacade myUIFacade;
 
   private final ParserFactory myParserFactory;
@@ -64,10 +68,10 @@ public class ProxyDocument implements Document {
 
   private final ColumnList myResourceVisibleFields;
 
-  ProxyDocument(DocumentCreator creator, Document physicalDocument, IGanttProject project, UIFacade uiFacade,
-      ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
+  ProxyDocument(DocumentCreator creator, Document physicalDocument, IGanttProject project, PrjInfos prji, UIFacade uiFacade, ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
     myPhysicalDocument = physicalDocument;
     myProject = project;
+    myPrjInfos = prji;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myCreator = creator;
@@ -313,7 +317,13 @@ public class ProxyDocument implements Document {
 
       opener.addParsingListener(customPropHandler);
 
-      opener.addTagHandler(opener.getDefaultTagHandler());
+//      opener.addTagHandler(opener.getDefaultTagHandler());
+      opener.addTagHandler(new DescriptionTagHandler(myPrjInfos));
+      opener.addTagHandler(new NotesTagHandler(opener.getContext()));
+      opener.addTagHandler(new ProjectTagHandler(myPrjInfos));
+      opener.addTagHandler(new ProjectViewAttrsTagHandler(myUIFacade));
+      opener.addTagHandler(new TasksTagHandler(taskManager));
+
       opener.addTagHandler(opener.getTimelineTagHandler());
       opener.addParsingListener((ParsingListener)opener.getTimelineTagHandler());
       opener.addTagHandler(resourceHandler);

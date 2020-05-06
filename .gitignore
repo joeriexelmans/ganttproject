@@ -4,3 +4,4 @@ dist-bin
 .eclipse
 .gradle
 **/*.class
+test_coverage/

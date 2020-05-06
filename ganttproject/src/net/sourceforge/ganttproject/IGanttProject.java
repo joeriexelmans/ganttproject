@@ -56,45 +56,33 @@ public interface IGanttProject {
 
   void setWebLink(String webLink);
 
-  UIConfiguration getUIConfiguration();
-
+  // current project - entities
   HumanResourceManager getHumanResourceManager();
-
   RoleManager getRoleManager();
-
   TaskManager getTaskManager();
-
   TaskContainmentHierarchyFacade getTaskContainment();
-
   GPCalendarCalc getActiveCalendar();
-
   TimeUnitStack getTimeUnitStack();
+  CustomPropertyManager getResourceCustomPropertyManager();
+  CustomPropertyManager getTaskCustomColumnManager();
+  // CustomColumnsStorage getCustomColumnsStorage();
+  List<GanttPreviousState> getBaselines();
 
-  void setModified();
-
-  void setModified(boolean modified);
-
+  // main app logic
+  void open(Document document) throws IOException, DocumentException;
   void close();
+  void setModified();
+  void setModified(boolean modified);
+  boolean isModified();
 
+  // low level hacks?
   Document getDocument();
-
-  void setDocument(Document document);
-
+  void setDocument(Document document); // used by UndoableEditImpl
   DocumentManager getDocumentManager();
 
   void addProjectEventListener(ProjectEventListener listener);
-
   void removeProjectEventListener(ProjectEventListener listener);
 
-  boolean isModified();
-
-  void open(Document document) throws IOException, DocumentException;
-
-  CustomPropertyManager getResourceCustomPropertyManager();
-
-  CustomPropertyManager getTaskCustomColumnManager();
-
-  // CustomColumnsStorage getCustomColumnsStorage();
-
-  List<GanttPreviousState> getBaselines();
+  // UI
+  UIConfiguration getUIConfiguration();
 }

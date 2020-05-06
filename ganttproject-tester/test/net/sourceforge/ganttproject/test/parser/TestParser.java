@@ -2,6 +2,7 @@ package net.sourceforge.ganttproject.test.parser;
 
 import biz.ganttproject.core.calendar.WeekendCalendarImpl;
 import biz.ganttproject.core.option.ListOption;
+import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import junit.framework.TestCase;
 import net.sourceforge.ganttproject.GanttPreviousState;
@@ -28,15 +29,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
- * @author joeriexelmans
- *
  * This test was written to understand the minimum dependencies of parsing an XML file,
  * specifically, if we can parse an XML file apart from any UI stuff.
- *
  * For the usage of the tag handlers, we base ourselves on ProxyDocument.ParsingState.enter()
+ *
+ * @author joeriexelmans
   */
 public class TestParser extends TestCase {
     private static final String projectFile =
@@ -113,7 +115,23 @@ public class TestParser extends TestCase {
             "    <roles roleset-name=\"Default\"/>\n" +
             "</project>";
 
-    public void testTagHandler() {
+    // Apparently this is how one "sets up" the locale for the calendar...
+    static {
+        new CalendarFactory() {
+            {
+                setLocaleApi(new LocaleApi() {
+                    public Locale getLocale() {
+                        return Locale.US;
+                    }
+                    public DateFormat getShortDateFormat() {
+                        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+                    }
+                });
+            }
+        };
+    }
+
+    public void testParser() throws IOException {
         // All the stuff that supposedly makes up "a project"
         WeekendCalendarImpl calendar = new WeekendCalendarImpl();
         GPTimeUnitStack timeUnitStack = new GPTimeUnitStack();
@@ -137,12 +155,11 @@ public class TestParser extends TestCase {
         RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
         TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext());
         DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
-        ProxyDocument.OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new ProxyDocument.OnlyShowWeekendsTagHandler(getActiveCalendar());
+        OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(calendar);
 
-        TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(myProject.getTaskCustomColumnManager());
+        TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager());
         opener.addTagHandler(taskPropHandler);
-        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(opener.getContext(),
-                getTaskManager());
+        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(opener.getContext(), taskManager);
         opener.addTagHandler(customPropHandler);
 
 
@@ -151,21 +168,19 @@ public class TestParser extends TestCase {
 
         opener.addTagHandler(pilsenTaskDisplayHandler);
         opener.addTagHandler(legacyTaskDisplayHandler);
-        opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myTaskVisibleFields, pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
-        opener.addTagHandler(new ViewTagHandler("gantt-chart", getUIFacade(), pilsenTaskDisplayHandler));
+
+//        opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myTaskVisibleFields, pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
+//        opener.addTagHandler(new ViewTagHandler("gantt-chart", getUIFacade(), pilsenTaskDisplayHandler));
 
 
         TaskDisplayColumnsTagHandler resourceFieldsHandler = new TaskDisplayColumnsTagHandler(
                 "field", "id", "order", "width", "visible");
         opener.addTagHandler(resourceFieldsHandler);
-        opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myResourceVisibleFields, resourceFieldsHandler));
-        opener.addTagHandler(new ViewTagHandler("resource-table", getUIFacade(), resourceFieldsHandler));
+//        opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myResourceVisibleFields, resourceFieldsHandler));
+//        opener.addTagHandler(new ViewTagHandler("resource-table", getUIFacade(), resourceFieldsHandler));
 
         opener.addTagHandler(taskHandler);
-        opener.addParsingListener(taskHandler);
-
         opener.addParsingListener(customPropHandler);
-
         opener.addTagHandler(opener.getDefaultTagHandler());
         opener.addTagHandler(opener.getTimelineTagHandler());
         opener.addParsingListener((ParsingListener)opener.getTimelineTagHandler());
@@ -183,19 +198,15 @@ public class TestParser extends TestCase {
         opener.addParsingListener(resourceHandler);
 
 
-        HolidayTagHandler holidayHandler = new HolidayTagHandler(myProject.getActiveCalendar());
+        HolidayTagHandler holidayHandler = new HolidayTagHandler(calendar);
         opener.addTagHandler(new AbstractTagHandler("calendars") {
             @Override
             protected boolean onStartElement(Attributes attrs) {
-                myProject.getActiveCalendar().setBaseCalendarID(attrs.getValue("base-id"));
+                calendar.setBaseCalendarID(attrs.getValue("base-id"));
                 return true;
             }
         });
         opener.addTagHandler(holidayHandler);
-
-        ProxyDocument.PortfolioTagHandler portfolioHandler = new ProxyDocument.PortfolioTagHandler();
-        opener.addTagHandler(portfolioHandler);
-
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
         opener.load(is);
     }

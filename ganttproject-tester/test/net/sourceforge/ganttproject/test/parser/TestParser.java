@@ -135,32 +135,25 @@ public class TestParser extends TestCase {
 
     public void testParser() throws IOException {
         // All the stuff that supposedly makes up "a project"
-        WeekendCalendarImpl calendar = new WeekendCalendarImpl();
-        GPTimeUnitStack timeUnitStack = new GPTimeUnitStack();
-        RoleManagerImpl roleManager = new RoleManagerImpl();
-        CustomColumnsManager hrCustomPropertyManager = new CustomColumnsManager();
-        HumanResourceManager hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
-        TaskManager taskManager = TaskManager.Access.newInstance(null, hrManager, calendar, timeUnitStack, new TestSetupHelper.TaskManagerTestConfig());
-        PrjInfos prjinfos = new PrjInfos();
-        ArrayList<GanttPreviousState> baseLines = new ArrayList<GanttPreviousState>();
+        Project project = new Project(null, new TestSetupHelper.TaskManagerTestConfig());
 
         // Parse...
         GPParser opener = new GanttXMLOpen();
         ParsingContext ctx = new ParsingContext();
-        ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
-                hrCustomPropertyManager);
-        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager);
-        AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, taskManager, roleManager);
-        VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
-        PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(baseLines);
-        RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
-        TaskTagHandler taskHandler = new TaskTagHandler(taskManager, ctx);
-        DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
-        OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(calendar);
+        ResourceTagHandler resourceHandler = new ResourceTagHandler(project.hrManager, project.roleManager,
+                project.hrCustomPropertyManager);
+        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, project.taskManager);
+        AllocationTagHandler allocationHandler = new AllocationTagHandler(project.hrManager, project.taskManager, project.roleManager);
+        VacationTagHandler vacationHandler = new VacationTagHandler(project.hrManager);
+        PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(project.baseLines);
+        RoleTagHandler rolesHandler = new RoleTagHandler(project.roleManager);
+        TaskTagHandler taskHandler = new TaskTagHandler(project.taskManager, ctx);
+        DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(project.calendar);
+        OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(project.calendar);
 
-        TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager());
+        TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(project.taskManager.getCustomPropertyManager());
         opener.addTagHandler(taskPropHandler);
-        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, taskManager);
+        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, project.taskManager);
         opener.addTagHandler(customPropHandler);
 
         TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
@@ -175,10 +168,10 @@ public class TestParser extends TestCase {
 
         opener.addTagHandler(taskHandler);
         opener.addParsingListener(customPropHandler);
-        opener.addTagHandler(new DescriptionTagHandler(prjinfos));
+        opener.addTagHandler(new DescriptionTagHandler(project.prjinfos));
         opener.addTagHandler(new NotesTagHandler(ctx));
-        opener.addTagHandler(new ProjectTagHandler(prjinfos));
-        opener.addTagHandler(new TasksTagHandler(taskManager));
+        opener.addTagHandler(new ProjectTagHandler(project.prjinfos));
+        opener.addTagHandler(new TasksTagHandler(project.taskManager));
 
         opener.addTagHandler(resourceHandler);
         opener.addTagHandler(dependencyHandler);
@@ -193,16 +186,16 @@ public class TestParser extends TestCase {
         opener.addParsingListener(dependencyHandler);
         opener.addParsingListener(resourceHandler);
 
-        HolidayTagHandler holidayHandler = new HolidayTagHandler(calendar);
-        opener.addTagHandler(new CalendarsTagHandler(calendar));
+        HolidayTagHandler holidayHandler = new HolidayTagHandler(project.calendar);
+        opener.addTagHandler(new CalendarsTagHandler(project.calendar));
         opener.addTagHandler(holidayHandler);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
         opener.load(is);
 
-        assertEquals(4, taskManager.getTaskCount());
-        assertEquals(2, hrManager.getResources().size());
-        assertEquals(1, taskManager.getTask(1).getAssignments().length);
-        assertEquals(0, taskManager.getTask(1).getAssignments()[0].getResource().getId());
+        assertEquals(4, project.taskManager.getTaskCount());
+        assertEquals(2, project.hrManager.getResources().size());
+        assertEquals(1, project.taskManager.getTask(1).getAssignments().length);
+        assertEquals(0, project.taskManager.getTask(1).getAssignments()[0].getResource().getId());
     }
 
 

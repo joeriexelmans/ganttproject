@@ -144,6 +144,8 @@ public class TestParser extends TestCase {
         ArrayList<GanttPreviousState> baseLines = new ArrayList<GanttPreviousState>();
         UIFacade uiFacade = null;
 
+
+
         // Parse...
         GPParser opener = new GanttXMLOpen();
         ParsingContext ctx = new ParsingContext();
@@ -195,13 +197,7 @@ public class TestParser extends TestCase {
 
 
         HolidayTagHandler holidayHandler = new HolidayTagHandler(calendar);
-        opener.addTagHandler(new AbstractTagHandler("calendars") {
-            @Override
-            protected boolean onStartElement(Attributes attrs) {
-                calendar.setBaseCalendarID(attrs.getValue("base-id"));
-                return true;
-            }
-        });
+        opener.addTagHandler(new CalendarsTagHandler(calendar));
         opener.addTagHandler(holidayHandler);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
         opener.load(is);

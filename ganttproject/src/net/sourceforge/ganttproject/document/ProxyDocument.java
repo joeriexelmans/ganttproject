@@ -343,13 +343,7 @@ public class ProxyDocument implements Document {
 
 
       HolidayTagHandler holidayHandler = new HolidayTagHandler(myProject.getActiveCalendar());
-      opener.addTagHandler(new AbstractTagHandler("calendars") {
-        @Override
-        protected boolean onStartElement(Attributes attrs) {
-          myProject.getActiveCalendar().setBaseCalendarID(attrs.getValue("base-id"));
-          return true;
-        }
-      });
+      opener.addTagHandler(new CalendarsTagHandler(myProject.getActiveCalendar()));
       opener.addTagHandler(holidayHandler);
 
       PortfolioTagHandler portfolioHandler = new PortfolioTagHandler();

@@ -98,6 +98,11 @@ abstract class GanttProjectBase extends JFrame implements IGanttProject, UIFacad
   private final ContentPaneBuilder myContentPaneBuilder;
   private Updater myUpdater;
 
+  /**
+   * Informations for the current project.
+   */
+  public PrjInfos prjInfos = new PrjInfos();
+
   protected GanttProjectBase() {
     super("GanttProject");
 
@@ -109,7 +114,7 @@ abstract class GanttProjectBase extends JFrame implements IGanttProject, UIFacad
     NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
     myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, getProject(), this);
     GPLogger.setUIFacade(myUIFacade);
-    myDocumentManager = new DocumentCreator(this, getUIFacade(), null) {
+    myDocumentManager = new DocumentCreator(this, prjInfos, getUIFacade(), null) {
       @Override
       protected ParserFactory getParserFactory() {
         return GanttProjectBase.this.getParserFactory();

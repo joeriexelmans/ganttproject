@@ -132,10 +132,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   private final ProjectMenu myProjectMenu;
 
   private SimpleObjectProperty<Document> myObservableDocument = new SimpleObjectProperty<>();
-  /**
-   * Informations for the current project.
-   */
-  public PrjInfos prjInfos = new PrjInfos();
 
   /**
    * Boolean to know if the file has been modify

@@ -275,24 +275,25 @@ public class ProxyDocument implements Document {
 
     void enter() throws IOException, DocumentException {
       GPParser opener = myParserFactory.newParser();
+      ParsingContext ctx = new ParsingContext();
       HumanResourceManager hrManager = getHumanResourceManager();
       RoleManager roleManager = getRoleManager();
       TaskManager taskManager = getTaskManager();
       ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
           myProject.getResourceCustomPropertyManager());
-      DependencyTagHandler dependencyHandler = new DependencyTagHandler(opener.getContext(), taskManager, getUIFacade());
+      DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager, getUIFacade());
       AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, getTaskManager(), getRoleManager());
       VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
       PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(myProject.getBaselines());
       RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
-      TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext());
+      TaskTagHandler taskHandler = new TaskTagHandler(taskManager, ctx);
       TaskParsingListener taskParsingListener = new TaskParsingListener(taskManager, myUIFacade.getTaskTree());
       DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(getActiveCalendar());
       OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(getActiveCalendar());
 
       TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(myProject.getTaskCustomColumnManager());
       opener.addTagHandler(taskPropHandler);
-      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(opener.getContext(),
+      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx,
           getTaskManager());
       opener.addTagHandler(customPropHandler);
 
@@ -318,7 +319,7 @@ public class ProxyDocument implements Document {
       opener.addParsingListener(customPropHandler);
 
       opener.addTagHandler(new DescriptionTagHandler(myPrjInfos));
-      opener.addTagHandler(new NotesTagHandler(opener.getContext()));
+      opener.addTagHandler(new NotesTagHandler(ctx));
       opener.addTagHandler(new ProjectTagHandler(myPrjInfos));
       opener.addTagHandler(new ProjectViewAttrsTagHandler(myUIFacade));
       opener.addTagHandler(new TasksTagHandler(taskManager));

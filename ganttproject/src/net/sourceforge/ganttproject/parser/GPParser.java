@@ -15,6 +15,4 @@ public interface GPParser {
   void addTagHandler(TagHandler handler);
 
   void addParsingListener(ParsingListener listener);
-
-  ParsingContext getContext();
 }

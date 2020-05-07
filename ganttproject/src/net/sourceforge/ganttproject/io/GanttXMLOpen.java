@@ -40,8 +40,6 @@ public class GanttXMLOpen implements GPParser {
 
   private final ArrayList<ParsingListener> myListeners = new ArrayList<ParsingListener>();
 
-  private final ParsingContext myContext = new ParsingContext();
-
   public GanttXMLOpen() {}
 
   @Override
@@ -60,10 +58,5 @@ public class GanttXMLOpen implements GPParser {
   @Override
   public void addParsingListener(ParsingListener listener) {
     myListeners.add(listener);
-  }
-
-  @Override
-  public ParsingContext getContext() {
-    return myContext;
   }
 }

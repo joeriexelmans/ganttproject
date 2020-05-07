@@ -146,20 +146,21 @@ public class TestParser extends TestCase {
 
         // Parse...
         GPParser opener = new GanttXMLOpen();
+        ParsingContext ctx = new ParsingContext();
         ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
                 hrCustomPropertyManager);
-        DependencyTagHandler dependencyHandler = new DependencyTagHandler(opener.getContext(), taskManager, uiFacade);
+        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager, uiFacade);
         AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, taskManager, roleManager);
         VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
         PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(baseLines);
         RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
-        TaskTagHandler taskHandler = new TaskTagHandler(taskManager, opener.getContext());
+        TaskTagHandler taskHandler = new TaskTagHandler(taskManager, ctx);
         DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
         OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(calendar);
 
         TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager());
         opener.addTagHandler(taskPropHandler);
-        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(opener.getContext(), taskManager);
+        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, taskManager);
         opener.addTagHandler(customPropHandler);
 
         TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
@@ -175,7 +176,7 @@ public class TestParser extends TestCase {
         opener.addTagHandler(taskHandler);
         opener.addParsingListener(customPropHandler);
         opener.addTagHandler(new DescriptionTagHandler(prjinfos));
-        opener.addTagHandler(new NotesTagHandler(opener.getContext()));
+        opener.addTagHandler(new NotesTagHandler(ctx));
         opener.addTagHandler(new ProjectTagHandler(prjinfos));
         opener.addTagHandler(new TasksTagHandler(taskManager));
 

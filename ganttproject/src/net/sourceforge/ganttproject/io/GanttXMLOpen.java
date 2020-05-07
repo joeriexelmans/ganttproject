@@ -33,8 +33,6 @@ import java.util.ArrayList;
  * Allows to load a gantt file from xml format, using SAX parser
  */
 public class GanttXMLOpen implements GPParser {
-  /** 0-->description of project, 1->note for task */
-  int typeChar = -1;
 
   private final ArrayList<TagHandler> myTagHandlers = new ArrayList<TagHandler>();
 

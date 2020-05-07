@@ -16,8 +16,5 @@ public interface GPParser {
 
   void addParsingListener(ParsingListener listener);
 
-  TagHandler getTimelineTagHandler();
-
   ParsingContext getContext();
-
 }

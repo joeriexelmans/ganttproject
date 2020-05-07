@@ -18,21 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.io;
 
-import biz.ganttproject.core.time.GanttCalendar;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import net.sourceforge.ganttproject.GPLogger;
-import net.sourceforge.ganttproject.PrjInfos;
-import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.parser.AbstractTagHandler;
-import net.sourceforge.ganttproject.parser.GPParser;
-import net.sourceforge.ganttproject.parser.ParsingContext;
-import net.sourceforge.ganttproject.parser.ParsingListener;
-import net.sourceforge.ganttproject.parser.TagHandler;
-import net.sourceforge.ganttproject.task.Task;
+import net.sourceforge.ganttproject.parser.*;
 import net.sourceforge.ganttproject.task.TaskManager;
-import org.xml.sax.Attributes;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -40,8 +28,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Allows to load a gantt file from xml format, using SAX parser
@@ -54,22 +40,12 @@ public class GanttXMLOpen implements GPParser {
 
   private final ArrayList<ParsingListener> myListeners = new ArrayList<ParsingListener>();
 
-  private final ParsingContext myContext;
-
-  private final TaskManager myTaskManager;
+  private final ParsingContext myContext = new ParsingContext();
 
   private UIFacade myUIFacade = null;
 
-  private TagHandler myTimelineTagHandler = new TimelineTagHandler();
-
-  public GanttXMLOpen(TaskManager taskManager, UIFacade uiFacade) {
-    this(taskManager);
+  public GanttXMLOpen(UIFacade uiFacade) {
     myUIFacade = uiFacade;
-  }
-
-  public GanttXMLOpen(TaskManager taskManager) {
-    myContext = new ParsingContext();
-    myTaskManager = taskManager;
   }
 
   @Override
@@ -104,52 +80,5 @@ public class GanttXMLOpen implements GPParser {
   @Override
   public ParsingContext getContext() {
     return myContext;
-  }
-
-  @Override
-  public TagHandler getTimelineTagHandler() {
-    return myTimelineTagHandler;
-  }
-
-  class TimelineTagHandler extends AbstractTagHandler implements ParsingListener {
-    private final List<Integer> myIds = Lists.newArrayList();
-
-    public TimelineTagHandler() {
-      super("timeline", true);
-    }
-
-    @Override
-    public void parsingStarted() {
-    }
-
-    @Override
-    public void parsingFinished() {
-      myUIFacade.getCurrentTaskView().getTimelineTasks().clear();
-      for (Integer id : myIds) {
-        Task t = myTaskManager.getTask(id);
-        if (t != null) {
-          myUIFacade.getCurrentTaskView().getTimelineTasks().add(t);
-        }
-      }
-    }
-
-    @Override
-    protected boolean onStartElement(Attributes attrs) {
-      clearCdata();
-      return super.onStartElement(attrs);
-    }
-
-    @Override
-    protected void onEndElement() {
-      String[] ids = getCdata().split(",");
-      for (String id : ids) {
-        try {
-          myIds.add(Integer.valueOf(id.trim()));
-        } catch (NumberFormatException e) {
-          GPLogger.logToLogger(e);
-        }
-      }
-      clearCdata();
-    }
   }
 }

@@ -317,15 +317,16 @@ public class ProxyDocument implements Document {
 
       opener.addParsingListener(customPropHandler);
 
-//      opener.addTagHandler(opener.getDefaultTagHandler());
       opener.addTagHandler(new DescriptionTagHandler(myPrjInfos));
       opener.addTagHandler(new NotesTagHandler(opener.getContext()));
       opener.addTagHandler(new ProjectTagHandler(myPrjInfos));
       opener.addTagHandler(new ProjectViewAttrsTagHandler(myUIFacade));
       opener.addTagHandler(new TasksTagHandler(taskManager));
 
-      opener.addTagHandler(opener.getTimelineTagHandler());
-      opener.addParsingListener((ParsingListener)opener.getTimelineTagHandler());
+      TimelineTagHandler timelineTagHandler = new TimelineTagHandler(myUIFacade, taskManager);
+      opener.addTagHandler(timelineTagHandler);
+      opener.addParsingListener(timelineTagHandler);
+
       opener.addTagHandler(resourceHandler);
       opener.addTagHandler(dependencyHandler);
       opener.addTagHandler(allocationHandler);

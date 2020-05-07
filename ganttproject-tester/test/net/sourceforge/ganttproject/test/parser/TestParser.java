@@ -161,23 +161,16 @@ public class TestParser extends TestCase {
         opener.addTagHandler(taskPropHandler);
         CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(opener.getContext(), taskManager);
         opener.addTagHandler(customPropHandler);
-
-
+        
         TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
         TaskDisplayColumnsTagHandler legacyTaskDisplayHandler = TaskDisplayColumnsTagHandler.createLegacyHandler();
 
         opener.addTagHandler(pilsenTaskDisplayHandler);
         opener.addTagHandler(legacyTaskDisplayHandler);
 
-//        opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myTaskVisibleFields, pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
-//        opener.addTagHandler(new ViewTagHandler("gantt-chart", getUIFacade(), pilsenTaskDisplayHandler));
-
-
         TaskDisplayColumnsTagHandler resourceFieldsHandler = new TaskDisplayColumnsTagHandler(
                 "field", "id", "order", "width", "visible");
         opener.addTagHandler(resourceFieldsHandler);
-//        opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myResourceVisibleFields, resourceFieldsHandler));
-//        opener.addTagHandler(new ViewTagHandler("resource-table", getUIFacade(), resourceFieldsHandler));
 
         opener.addTagHandler(taskHandler);
         opener.addParsingListener(customPropHandler);
@@ -185,8 +178,7 @@ public class TestParser extends TestCase {
         opener.addTagHandler(new NotesTagHandler(opener.getContext()));
         opener.addTagHandler(new ProjectTagHandler(prjinfos));
         opener.addTagHandler(new TasksTagHandler(taskManager));
-        opener.addTagHandler(opener.getTimelineTagHandler());
-        opener.addParsingListener((ParsingListener)opener.getTimelineTagHandler());
+
         opener.addTagHandler(resourceHandler);
         opener.addTagHandler(dependencyHandler);
         opener.addTagHandler(allocationHandler);

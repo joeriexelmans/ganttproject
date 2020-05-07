@@ -9,6 +9,7 @@ import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeUnitStack;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import net.sourceforge.ganttproject.gui.NotificationManager;
+import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RoleManagerImpl;
@@ -20,46 +21,17 @@ import java.awt.*;
 import java.net.URL;
 
 public class TestSetupHelper {
-    public static class TaskManagerBuilder implements TaskManagerConfig {
-        private GPCalendarCalc myGPCalendar = new AlwaysWorkingTimeCalendarImpl();
-
-        private TimeUnitStack myTimeUnitStack;
-
-        private HumanResourceManager myResourceManager;
-
-        private RoleManager myRoleManager;
-
-        private DefaultColorOption myDefaultColorOption = new DefaultColorOption("taskcolor", Color.CYAN);
-
-        public TaskManagerBuilder() {
-            myTimeUnitStack = new GPTimeUnitStack();
-            myRoleManager = new RoleManagerImpl();
-            myResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(), new CustomColumnsManager(), myRoleManager);
-        }
+    public static class TaskManagerTestConfig implements TaskManagerConfig {
+        static private final DefaultColorOption DEFAULT_COLOR_OPTION = new DefaultColorOption("taskcolor", Color.CYAN);
 
         @Override
         public Color getDefaultColor() {
-            return myDefaultColorOption.getValue();
+            return DEFAULT_COLOR_OPTION.getValue();
         }
 
         @Override
         public ColorOption getDefaultColorOption() {
-        return myDefaultColorOption;
-      }
-
-        @Override
-        public GPCalendarCalc getCalendar() {
-            return myGPCalendar;
-        }
-
-        @Override
-        public TimeUnitStack getTimeUnitStack() {
-            return myTimeUnitStack;
-        }
-
-        @Override
-        public HumanResourceManager getResourceManager() {
-            return myResourceManager;
+            return DEFAULT_COLOR_OPTION;
         }
 
         @Override
@@ -67,18 +39,38 @@ public class TestSetupHelper {
             return null;
         }
 
+        @Override
+        public NotificationManager getNotificationManager() {
+            return null;
+        }
+    }
+
+    public static class TaskManagerBuilder {
+        private TaskManagerTestConfig myConfig = new TaskManagerTestConfig();
+        private GPCalendarCalc myGPCalendar = new AlwaysWorkingTimeCalendarImpl();
+        private TimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
+        private RoleManager myRoleManager = new RoleManagerImpl();
+        private HumanResourceManager myResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(), new CustomColumnsManager(), myRoleManager);
+
         public TaskManagerBuilder withCalendar(GPCalendarCalc calendar) {
             myGPCalendar = calendar;
             return this;
         }
 
-        public TaskManager build() {
-            return TaskManager.Access.newInstance(null, this);
+        public HumanResourceManager getResourceManager() {
+            return myResourceManager;
         }
 
-        @Override
-        public NotificationManager getNotificationManager() {
-          return null;
+        public TimeUnitStack getTimeUnitStack() {
+            return myTimeUnitStack;
+        }
+
+        public TaskManagerTestConfig getConfig() {
+            return myConfig;
+        }
+
+        public TaskManager build() {
+            return TaskManager.Access.newInstance(null, myResourceManager, myGPCalendar, myTimeUnitStack, myConfig);
         }
     }
 
@@ -113,6 +105,4 @@ public class TestSetupHelper {
     public static GanttCalendar newThursday() {
         return CalendarFactory.createGanttCalendar(2004, 9, 21);
     }
-
-
 }

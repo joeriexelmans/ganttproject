@@ -25,6 +25,7 @@ import biz.ganttproject.core.option.EnumerationOption;
 import biz.ganttproject.core.option.StringOption;
 import biz.ganttproject.core.time.TimeDuration;
 import biz.ganttproject.core.time.TimeUnit;
+import biz.ganttproject.core.time.TimeUnitStack;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
@@ -188,9 +189,8 @@ public interface TaskManager {
   void addTaskListener(TaskListener listener);
 
   public class Access {
-    public static TaskManager newInstance(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory,
-        TaskManagerConfig config) {
-      return new TaskManagerImpl(containmentFacadeFactory, config);
+    public static TaskManager newInstance(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, HumanResourceManager hr, GPCalendarCalc cal, TimeUnitStack t, TaskManagerConfig config) {
+      return new TaskManagerImpl(containmentFacadeFactory, hr, cal, t, config);
     }
   }
 

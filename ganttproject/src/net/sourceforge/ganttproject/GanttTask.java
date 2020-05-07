@@ -60,7 +60,7 @@ public class GanttTask extends TaskImpl implements Serializable {
    *          task to copy
    */
   public GanttTask(TaskManagerImpl manager, TaskImpl copy) {
-    super(manager, copy, false);
+    super(copy, false);
     enableEvents(true);
   }
 

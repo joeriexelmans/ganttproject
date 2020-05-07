@@ -61,12 +61,13 @@ public class GanttProjectImpl implements IGanttProject {
   private final CustomColumnsManager myTaskCustomColumnManager;
   private final List<GanttPreviousState> myBaselines = new ArrayList<GanttPreviousState>();
   private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
+  private final GPTimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
 
   public GanttProjectImpl() {
     myResourceManager = new HumanResourceManager(RoleManager.Access.getInstance().getDefaultRole(),
         new CustomColumnsManager());
-    myTaskManagerConfig = new TaskManagerConfigImpl(myResourceManager, myCalendar, GanttLanguage.getInstance());
-    myTaskManager = TaskManager.Access.newInstance(null, myTaskManagerConfig);
+    myTaskManagerConfig = new TaskManagerConfigImpl();
+    myTaskManager = TaskManager.Access.newInstance(null, myResourceManager, myCalendar, myTimeUnitStack, myTaskManagerConfig);
     myUIConfiguration = new UIConfiguration(Color.BLUE, true);
     myTaskCustomColumnManager = new CustomColumnsManager();
     myCalendar.addListener(new GPCalendarListener() {
@@ -154,12 +155,12 @@ public class GanttProjectImpl implements IGanttProject {
 
   @Override
   public GPCalendarCalc getActiveCalendar() {
-    return myTaskManagerConfig.getCalendar();
+    return myCalendar;
   }
 
   @Override
   public TimeUnitStack getTimeUnitStack() {
-    return myTaskManagerConfig.getTimeUnitStack();
+    return myTimeUnitStack;
   }
 
   @Override
@@ -224,15 +225,9 @@ public class GanttProjectImpl implements IGanttProject {
   private static Color DEFAULT_TASK_COLOR = new Color(140, 182, 206);
 
   private static class TaskManagerConfigImpl implements TaskManagerConfig {
-    private final HumanResourceManager myResourceManager;
-    private final GPTimeUnitStack myTimeUnitStack;
-    private final GPCalendarCalc myCalendar;
     private final ColorOption myDefaultTaskColorOption;
 
-    private TaskManagerConfigImpl(HumanResourceManager resourceManager, GPCalendarCalc calendar, GanttLanguage i18n) {
-      myResourceManager = resourceManager;
-      myTimeUnitStack = new GPTimeUnitStack();
-      myCalendar = calendar;
+    private TaskManagerConfigImpl() {
       myDefaultTaskColorOption = new DefaultTaskColorOption(DEFAULT_TASK_COLOR);
     }
 
@@ -244,21 +239,6 @@ public class GanttProjectImpl implements IGanttProject {
     @Override
     public ColorOption getDefaultColorOption() {
       return myDefaultTaskColorOption;
-    }
-
-    @Override
-    public GPCalendarCalc getCalendar() {
-      return myCalendar;
-    }
-
-    @Override
-    public TimeUnitStack getTimeUnitStack() {
-      return myTimeUnitStack;
-    }
-
-    @Override
-    public HumanResourceManager getResourceManager() {
-      return myResourceManager;
     }
 
     @Override

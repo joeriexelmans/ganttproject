@@ -155,7 +155,12 @@ public class TestResourceAssignments extends TestCase {
     }
 
     private TaskManager newTaskManager() {
-        return TaskManager.Access.newInstance(null, new TaskManagerConfig() {
+        return TaskManager.Access.newInstance(
+                null,
+                myHumanResourceManager,
+                new AlwaysWorkingTimeCalendarImpl(),
+                new GPTimeUnitStack(),
+                new TaskManagerConfig() {
 
             @Override
             public Color getDefaultColor() {
@@ -166,21 +171,6 @@ public class TestResourceAssignments extends TestCase {
           public ColorOption getDefaultColorOption() {
             return null;
           }
-
-          @Override
-            public GPCalendarCalc getCalendar() {
-                return new AlwaysWorkingTimeCalendarImpl();
-            }
-
-            @Override
-            public TimeUnitStack getTimeUnitStack() {
-                return new GPTimeUnitStack();
-            }
-
-            @Override
-            public HumanResourceManager getResourceManager() {
-                return null;
-            }
 
             @Override
             public URL getProjectDocumentURL() {

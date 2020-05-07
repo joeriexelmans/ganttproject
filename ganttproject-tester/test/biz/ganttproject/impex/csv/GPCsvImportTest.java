@@ -394,8 +394,8 @@ public class GPCsvImportTest extends TestCase {
     assertEquals(Color.RED, taskMap.get("t1").getColor());
     assertEquals(Color.GREEN, taskMap.get("t2").getColor());
     assertEquals(new Color(42, 42, 42), taskMap.get("t3").getColor());
-    assertEquals(builder.getDefaultColor(), taskMap.get("t4").getColor());
-    assertEquals(builder.getDefaultColor(), taskMap.get("t5").getColor());
+    assertEquals(builder.getConfig().getDefaultColor(), taskMap.get("t4").getColor());
+    assertEquals(builder.getConfig().getDefaultColor(), taskMap.get("t5").getColor());
   }
 
   private List<Pair<SpreadsheetFormat, Supplier<InputStream>>> createPairs(String... data) throws Exception {

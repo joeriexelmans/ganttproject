@@ -71,6 +71,7 @@ import net.sourceforge.ganttproject.task.event.TaskScheduleEvent;
 import net.sourceforge.ganttproject.task.hierarchy.TaskHierarchyManagerImpl;
 import net.sourceforge.ganttproject.util.collect.Pair;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -104,6 +105,10 @@ public class TaskManagerImpl implements TaskManager {
   private final Task myRoot;
 
   private final TaskManagerConfig myConfig;
+
+  private final HumanResourceManager myHumanResourceManager;
+  private final GPCalendarCalc myCalendar;
+  private final TimeUnitStack myTimeUnitStack;
 
   private final TaskNamePrefixOption myTaskNamePrefixOption = new TaskNamePrefixOption();
 
@@ -197,19 +202,19 @@ public class TaskManagerImpl implements TaskManager {
   }
 
   private final TaskMap myTaskMap = new TaskMap(this);
-
   private final CustomPropertyListenerImpl myCustomPropertyListener;
-
   private final CustomColumnsManager myCustomColumnsManager;
-
   private Boolean isZeroMilestones = true;
 
-  TaskManagerImpl(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, TaskManagerConfig config) {
+  TaskManagerImpl(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, HumanResourceManager hr, GPCalendarCalc cal, TimeUnitStack t, TaskManagerConfig config) {
     myCustomPropertyListener = new CustomPropertyListenerImpl(this);
     myCustomColumnsManager = new CustomColumnsManager();
     myCustomColumnsManager.addListener(getCustomPropertyListener());
 
     myConfig = config;
+    myHumanResourceManager = hr;
+    myCalendar = cal;
+    myTimeUnitStack = t;
     myHierarchyManager = new TaskHierarchyManagerImpl();
     EventDispatcher dispatcher = new EventDispatcher() {
       @Override
@@ -268,7 +273,7 @@ public class TaskManagerImpl implements TaskManager {
       }
     };
     ChartBoundsAlgorithm alg5 = new ChartBoundsAlgorithm();
-    CriticalPathAlgorithm alg6 = new CriticalPathAlgorithmImpl(this, getCalendar());
+    CriticalPathAlgorithm alg6 = new CriticalPathAlgorithmImpl(this, myCalendar);
     myAlgorithmCollection = new AlgorithmCollection(this, alg1, alg2, alg3, alg4, alg5, alg6, myScheduler);
     addTaskListener(myScheduler.getTaskModelListener());
   }
@@ -297,7 +302,7 @@ public class TaskManagerImpl implements TaskManager {
     Date today = c.getTime();
     Task root = new GanttTask(null, CalendarFactory.createGanttCalendar(today), 1, this, -1);
     root.setStart(CalendarFactory.createGanttCalendar(today));
-    root.setDuration(createLength(getConfig().getTimeUnitStack().getDefaultTimeUnit(), 1));
+    root.setDuration(createLength(myTimeUnitStack.getDefaultTimeUnit(), 1));
     root.setExpand(true);
     root.setName("root");
     return root;
@@ -420,7 +425,7 @@ public class TaskManagerImpl implements TaskManager {
   }
 
   protected TimeUnitStack getTimeUnitStack() {
-    return getConfig().getTimeUnitStack();
+    return myTimeUnitStack;
   }
 
   int getAndIncrementId() {
@@ -474,10 +479,10 @@ public class TaskManagerImpl implements TaskManager {
   @Override
   public TimeDuration getProjectLength() {
     if (myTaskMap.isEmpty()) {
-      return createLength(getConfig().getTimeUnitStack().getDefaultTimeUnit(), 0);
+      return createLength(myTimeUnitStack.getDefaultTimeUnit(), 0);
     }
     Result result = getAlgorithmCollection().getProjectBoundsAlgorithm().getBounds(tasksToActivities(myTaskMap.getTasks()));
-    return createLength(getConfig().getTimeUnitStack().getDefaultTimeUnit(), result.lowerBound, result.upperBound);
+    return createLength(myTimeUnitStack.getDefaultTimeUnit(), result.lowerBound, result.upperBound);
   }
 
   @Override
@@ -506,7 +511,7 @@ public class TaskManagerImpl implements TaskManager {
   @Override
   public String encode(TimeDuration taskLength) {
     StringBuffer result = new StringBuffer(String.valueOf(taskLength.getLength()));
-    result.append(myConfig.getTimeUnitStack().encode(taskLength.getTimeUnit()));
+    result.append(myTimeUnitStack.encode(taskLength.getTimeUnit()));
     return result.toString();
   }
 
@@ -607,7 +612,7 @@ public class TaskManagerImpl implements TaskManager {
   }
 
   private TimeUnit findTimeUnit(String code) {
-    return myConfig.getTimeUnitStack().findTimeUnit(code);
+    return myTimeUnitStack.findTimeUnit(code);
   }
 
   @Override
@@ -617,12 +622,12 @@ public class TaskManagerImpl implements TaskManager {
 
   @Override
   public TimeDuration createLength(long count) {
-    return new TimeDurationImpl(getConfig().getTimeUnitStack().getDefaultTimeUnit(), count);
+    return new TimeDurationImpl(myTimeUnitStack.getDefaultTimeUnit(), count);
   }
 
   @Override
   public TimeDuration createLength(TimeUnit timeUnit, Date startDate, Date endDate) {
-    return getConfig().getTimeUnitStack().createDuration(timeUnit, startDate, endDate);
+    return myTimeUnitStack.createDuration(timeUnit, startDate, endDate);
   }
 
   @Override
@@ -672,9 +677,13 @@ public class TaskManagerImpl implements TaskManager {
     myListeners.add(listener);
   }
 
+  public HumanResourceManager getHumanResourceManager() {
+    return myHumanResourceManager;
+  }
+
   @Override
   public GPCalendarCalc getCalendar() {
-    return getConfig().getCalendar();
+    return myCalendar;
   }
 
   public ProjectEventListener getProjectListener() {
@@ -790,10 +799,6 @@ public class TaskManagerImpl implements TaskManager {
         next.taskModelReset();
       }
     }
-  }
-
-  public TaskManagerConfig getConfig() {
-    return myConfig;
   }
 
   private final class FacadeImpl implements TaskContainmentHierarchyFacade {
@@ -1038,7 +1043,7 @@ public class TaskManagerImpl implements TaskManager {
 
   @Override
   public TaskManager emptyClone() {
-    TaskManagerImpl result = new TaskManagerImpl(null, myConfig);
+    TaskManagerImpl result = new TaskManagerImpl(null, myHumanResourceManager, myCalendar, myTimeUnitStack, myConfig);
     result.myDependencyHardnessOption.setValue(this.myDependencyHardnessOption.getValue());
     return result;
   }
@@ -1120,7 +1125,7 @@ public class TaskManagerImpl implements TaskManager {
   }
 
   public Date findClosestWorkingTime(Date time) {
-    return getCalendar().findClosestWorkingTime(time);
+    return myCalendar.findClosestWorkingTime(time);
   }
 
   @Override
@@ -1217,6 +1222,10 @@ public class TaskManagerImpl implements TaskManager {
   @Override
   public StringOption getTaskCopyNamePrefixOption() {
     return myTaskCopyNamePrefixOption;
+  }
+
+  public Color getDefaultTaskColor() {
+    return myConfig.getDefaultColor();
   }
 
   @Override

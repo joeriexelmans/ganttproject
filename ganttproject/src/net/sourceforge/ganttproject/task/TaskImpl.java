@@ -34,6 +34,7 @@ import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.chart.MilestoneTaskFakeActivity;
 import net.sourceforge.ganttproject.document.AbstractURLDocument;
 import net.sourceforge.ganttproject.document.Document;
+import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmCollection;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmException;
 import net.sourceforge.ganttproject.task.algorithm.CostAlgorithmImpl;
@@ -144,7 +145,7 @@ public class TaskImpl implements Task {
     myManager = taskManager;
     myID = taskID;
 
-    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getConfig().getResourceManager());
+    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
     myDependencySlice = new TaskDependencySliceImpl(this, myManager.getDependencyCollection(), TaskDependencySlice.COMPLETE_SLICE_FXN);
     myDependencySliceAsDependant = new TaskDependencySliceAsDependant(this, myManager.getDependencyCollection());
     myDependencySliceAsDependee = new TaskDependencySliceAsDependee(this, myManager.getDependencyCollection());
@@ -157,9 +158,9 @@ public class TaskImpl implements Task {
     customValues = new CustomColumnsValues(myManager.getCustomPropertyManager());
   }
 
-  protected TaskImpl(TaskManagerImpl manager, TaskImpl copy, boolean isUnplugged) {
+  protected TaskImpl(TaskImpl copy, boolean isUnplugged) {
     this.isUnplugged = isUnplugged;
-    myManager = manager;
+    myManager = copy.myManager;
     // Use a new (unique) ID for the cloned task
     myID = myManager.getAndIncrementId();
 
@@ -168,7 +169,7 @@ public class TaskImpl implements Task {
     } else {
       myTaskHierarchyItem = copy.myTaskHierarchyItem;
     }
-    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getConfig().getResourceManager());
+    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
     myAssignments.importData(copy.getAssignmentCollection());
     myName = copy.myName;
     myWebLink = copy.myWebLink;
@@ -198,7 +199,7 @@ public class TaskImpl implements Task {
 
   @Override
   public Task unpluggedClone() {
-    TaskImpl result = new TaskImpl(myManager, this, true) {
+    TaskImpl result = new TaskImpl(this, true) {
       @Override
       public boolean isSupertask() {
         return false;
@@ -374,7 +375,7 @@ public class TaskImpl implements Task {
     GanttCalendar modelEnd = getEnd();
     if (modelEnd.equals(getStart())) {
       boolean allMilestones = true;
-      Task[] deepNestedTasks = getManager().getTaskHierarchy().getDeepNestedTasks(this);
+      Task[] deepNestedTasks = myManager.getTaskHierarchy().getDeepNestedTasks(this);
       for (Task t : deepNestedTasks) {
         if (!t.isSupertask() && !t.isMilestone()) {
           allMilestones = false;
@@ -456,7 +457,7 @@ public class TaskImpl implements Task {
       if (isMilestone() || myManager.getTaskHierarchy().hasNestedTasks(this)) {
         result = Color.BLACK;
       } else {
-        result = myManager.getConfig().getDefaultColor();
+        result = myManager.getDefaultTaskColor();
       }
     }
     return result;
@@ -679,7 +680,7 @@ public class TaskImpl implements Task {
     public List<TaskActivity> getActivities() {
       if (myActivities == null && (myStartChange != null) || (myDurationChange != null)) {
         myActivities = new ArrayList<TaskActivity>();
-        TaskImpl.recalculateActivities(myManager.getConfig().getCalendar(), TaskImpl.this, myActivities,
+        TaskImpl.recalculateActivities(myManager.getCalendar(), TaskImpl.this, myActivities,
             getStart().getTime(), TaskImpl.this.getEnd().getTime());
       }
       return myActivities;
@@ -1032,14 +1033,14 @@ public class TaskImpl implements Task {
         TimeDuration length = myManager.createLength(myLength.getTimeUnit(), unitCount);
         // clone.setDuration(length);
         newStart = RESTLESS_CALENDAR.shiftDate(myStart.getTime(), length);
-        if (0 == (getManager().getCalendar().getDayMask(newStart) & DayMask.WORKING)) {
-          newStart = getManager().getCalendar().findClosest(newStart, myLength.getTimeUnit(), MoveDirection.FORWARD, DayType.WORKING);
+        if (0 == (myManager.getCalendar().getDayMask(newStart) & DayMask.WORKING)) {
+          newStart = myManager.getCalendar().findClosest(newStart, myLength.getTimeUnit(), MoveDirection.FORWARD, DayType.WORKING);
         }
       } else {
         newStart = RESTLESS_CALENDAR.shiftDate(clone.getStart().getTime(),
-            getManager().createLength(clone.getDuration().getTimeUnit(), (long) unitCount));
-        if (0 == (getManager().getCalendar().getDayMask(newStart) & DayMask.WORKING)) {
-          newStart = getManager().getCalendar().findClosest(newStart, myLength.getTimeUnit(), MoveDirection.BACKWARD, DayType.WORKING);
+            myManager.createLength(clone.getDuration().getTimeUnit(), (long) unitCount));
+        if (0 == (myManager.getCalendar().getDayMask(newStart) & DayMask.WORKING)) {
+          newStart = myManager.getCalendar().findClosest(newStart, myLength.getTimeUnit(), MoveDirection.BACKWARD, DayType.WORKING);
         }
       }
       clone.setStart(CalendarFactory.createGanttCalendar(newStart));
@@ -1058,7 +1059,7 @@ public class TaskImpl implements Task {
   }
 
   private Date shiftDate(Date input, TimeDuration duration) {
-    return myManager.getConfig().getCalendar().shiftDate(input, duration);
+    return myManager.getCalendar().shiftDate(input, duration);
   }
 
   @Override
@@ -1097,14 +1098,14 @@ public class TaskImpl implements Task {
       return;
     }
 
-    recalculateActivities(myManager.getConfig().getCalendar(), this, myActivities, startDate, endDate);
+    recalculateActivities(myManager.getCalendar(), this, myActivities, startDate, endDate);
     int length = 0;
     for (TaskActivity activity : myActivities) {
       if (activity.getIntensity() > 0) {
         length += activity.getDuration().getLength(getDuration().getTimeUnit());
       }
     }
-    myLength = getManager().createLength(myLength.getTimeUnit(), length);
+    myLength = myManager.createLength(myLength.getTimeUnit(), length);
   }
 
   private static void recalculateActivities(GPCalendarCalc calendar, Task task, List<TaskActivity> output, Date startDate,

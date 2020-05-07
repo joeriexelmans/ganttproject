@@ -85,7 +85,7 @@ abstract class GanttProjectBase extends JFrame implements IGanttProject, UIFacad
   private final List<ProjectEventListener> myModifiedStateChangeListeners = new ArrayList<ProjectEventListener>();
   private final UIFacadeImpl myUIFacade;
   private final GanttStatusBar statusBar;
-  private final TimeUnitStack myTimeUnitStack;
+  protected final TimeUnitStack myTimeUnitStack;
   private final ProjectUIFacadeImpl myProjectUIFacade;
   private final DocumentManager myDocumentManager;
   /** The tabbed pane with the different parts of the project */

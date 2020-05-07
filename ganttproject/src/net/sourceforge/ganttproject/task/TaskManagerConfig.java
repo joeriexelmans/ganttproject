@@ -27,12 +27,6 @@ public interface TaskManagerConfig {
 
   ColorOption getDefaultColorOption();
 
-  GPCalendarCalc getCalendar();
-
-  TimeUnitStack getTimeUnitStack();
-
-  HumanResourceManager getResourceManager();
-
   URL getProjectDocumentURL();
 
   NotificationManager getNotificationManager();

@@ -219,21 +219,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
       }
 
       @Override
-      public GPCalendarCalc getCalendar() {
-        return GanttProject.this.getActiveCalendar();
-      }
-
-      @Override
-      public TimeUnitStack getTimeUnitStack() {
-        return GanttProject.this.getTimeUnitStack();
-      }
-
-      @Override
-      public HumanResourceManager getResourceManager() {
-        return GanttProject.this.getHumanResourceManager();
-      }
-
-      @Override
       public URL getProjectDocumentURL() {
         try {
           return getDocument().getURI().toURL();
@@ -255,7 +240,7 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
       public TaskContainmentHierarchyFacade createFacade() {
         return GanttProject.this.getTaskContainment();
       }
-    }, taskConfig);
+    }, myHumanResourceManager, myCalendar, myTimeUnitStack, taskConfig);
     addProjectEventListener(myTaskManager.getProjectListener());
     getActiveCalendar().addListener(myTaskManager.getCalendarListener());
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject.png"));

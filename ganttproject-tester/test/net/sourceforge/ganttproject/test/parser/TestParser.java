@@ -16,6 +16,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.parser.*;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RoleManagerImpl;
@@ -139,9 +140,8 @@ public class TestParser extends TestCase {
         RoleManagerImpl roleManager = new RoleManagerImpl();
         CustomColumnsManager hrCustomPropertyManager = new CustomColumnsManager();
         HumanResourceManager hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
-        TaskManager taskManager = TestSetupHelper.newTaskManagerBuilder().build();
+        TaskManager taskManager = TaskManager.Access.newInstance(null, hrManager, calendar, timeUnitStack, new TestSetupHelper.TaskManagerTestConfig());
         PrjInfos prjinfos = new PrjInfos();
-        UIConfiguration uiConfig = new UIConfiguration(Color.BLACK, false);
         ArrayList<GanttPreviousState> baseLines = new ArrayList<GanttPreviousState>();
 
         // Parse...

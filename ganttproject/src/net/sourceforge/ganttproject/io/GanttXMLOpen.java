@@ -42,28 +42,13 @@ public class GanttXMLOpen implements GPParser {
 
   private final ParsingContext myContext = new ParsingContext();
 
-  private UIFacade myUIFacade = null;
-
-  public GanttXMLOpen(UIFacade uiFacade) {
-    myUIFacade = uiFacade;
-  }
+  public GanttXMLOpen() {}
 
   @Override
   public boolean load(InputStream inStream) throws IOException {
     // Use an instance of ourselves as the SAX event handler
     XmlParser parser = new XmlParser(myTagHandlers, myListeners);
     parser.parse(inStream);
-    return true;
-  }
-
-  public boolean load(File file) {
-    XmlParser parser = new XmlParser(myTagHandlers, myListeners);
-    try {
-      parser.parse(new BufferedInputStream(new FileInputStream(file)));
-    } catch (Exception e) {
-      myUIFacade.showErrorDialog(e);
-      return false;
-    }
     return true;
   }
 

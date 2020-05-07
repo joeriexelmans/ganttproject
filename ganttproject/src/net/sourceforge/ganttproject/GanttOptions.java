@@ -32,10 +32,7 @@ import com.google.common.xml.XmlEscapers;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.options.model.GP1XOptionConverter;
-import net.sourceforge.ganttproject.io.CSVOptions;
-import net.sourceforge.ganttproject.io.GanttXMLOpen;
-import net.sourceforge.ganttproject.io.OptionSaver;
-import net.sourceforge.ganttproject.io.SaverBase;
+import net.sourceforge.ganttproject.io.*;
 import net.sourceforge.ganttproject.parser.RoleTagHandler;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
@@ -58,12 +55,7 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.AccessControlException;
 import java.util.HashMap;
 import java.util.Map;
@@ -482,11 +474,11 @@ public class GanttOptions extends SaverBase {
     return true;
   }
 
-  private void loadRoleSets(File optionsFile) {
-    GanttXMLOpen loader = new GanttXMLOpen(null);
+  private void loadRoleSets(File optionsFile) throws IOException {
+    GanttXMLOpen loader = new GanttXMLOpen();
 
     loader.addTagHandler(new RoleTagHandler(getRoleManager()));
-    loader.load(optionsFile);
+    loader.load(new BufferedInputStream(new FileInputStream(optionsFile)));
   }
 
   private void saveRoleSets(TransformerHandler handler) throws TransformerFactoryConfigurationError, SAXException {

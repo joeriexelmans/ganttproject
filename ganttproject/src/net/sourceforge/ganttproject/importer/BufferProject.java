@@ -73,7 +73,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
 
   @Override
   public GPParser newParser() {
-    return new GanttXMLOpen(myUIfacade);
+    return new GanttXMLOpen();
   }
 
   @Override

@@ -145,7 +145,7 @@ public class TestParser extends TestCase {
         UIFacade uiFacade = null;
 
         // Parse...
-        GPParser opener = new GanttXMLOpen(taskManager);
+        GPParser opener = new GanttXMLOpen();
         ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
                 hrCustomPropertyManager);
         DependencyTagHandler dependencyHandler = new DependencyTagHandler(opener.getContext(), taskManager, uiFacade);
@@ -161,7 +161,7 @@ public class TestParser extends TestCase {
         opener.addTagHandler(taskPropHandler);
         CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(opener.getContext(), taskManager);
         opener.addTagHandler(customPropHandler);
-        
+
         TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
         TaskDisplayColumnsTagHandler legacyTaskDisplayHandler = TaskDisplayColumnsTagHandler.createLegacyHandler();
 

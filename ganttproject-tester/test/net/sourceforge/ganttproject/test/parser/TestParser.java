@@ -42,7 +42,8 @@ import java.util.Locale;
   */
 public class TestParser extends TestCase {
     private static final String projectFile =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><project name=\"Untitled Gantt Project\" company=\"\" webLink=\"http://\" view-date=\"2020-04-22\" view-index=\"0\" gantt-divider-location=\"420\" resource-divider-location=\"300\" version=\"2.8.10\" locale=\"en\">\n" +
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<project name=\"Untitled Gantt Project\" company=\"\" webLink=\"http://\" view-date=\"2020-04-22\" view-index=\"0\" gantt-divider-location=\"420\" resource-divider-location=\"300\" version=\"2.8.10\" locale=\"en\">\n" +
             "    <description/>\n" +
             "    <view zooming-state=\"default:2\" id=\"gantt-chart\">\n" +
             "        <field id=\"tpd3\" name=\"Name\" width=\"157\" order=\"0\"/>\n" +
@@ -144,8 +145,6 @@ public class TestParser extends TestCase {
         ArrayList<GanttPreviousState> baseLines = new ArrayList<GanttPreviousState>();
         UIFacade uiFacade = null;
 
-
-
         // Parse...
         GPParser opener = new GanttXMLOpen();
         ParsingContext ctx = new ParsingContext();
@@ -195,17 +194,16 @@ public class TestParser extends TestCase {
         opener.addParsingListener(dependencyHandler);
         opener.addParsingListener(resourceHandler);
 
-
         HolidayTagHandler holidayHandler = new HolidayTagHandler(calendar);
         opener.addTagHandler(new CalendarsTagHandler(calendar));
         opener.addTagHandler(holidayHandler);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
         opener.load(is);
 
-        int count = taskManager.getTaskCount();
-        if (true) {
-
-        }
+        assertEquals(4, taskManager.getTaskCount());
+        assertEquals(2, hrManager.getResources().size());
+        assertEquals(1, taskManager.getTask(1).getAssignments().length);
+        assertEquals(0, taskManager.getTask(1).getAssignments()[0].getResource().getId());
     }
 
 

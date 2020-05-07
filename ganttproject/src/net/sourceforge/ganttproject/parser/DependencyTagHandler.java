@@ -36,13 +36,10 @@ import org.xml.sax.Attributes;
 public class DependencyTagHandler extends AbstractTagHandler implements ParsingListener {
   private final TaskManager myTaskManager;
 
-  private final UIFacade myUIFacade;
-
-  public DependencyTagHandler(ParsingContext context, TaskManager taskManager, UIFacade uiFacade) {
+  public DependencyTagHandler(ParsingContext context, TaskManager taskManager) {
     super("depend");
     myContext = context;
     myTaskManager = taskManager;
-    myUIFacade = uiFacade;
   }
 
   @Override

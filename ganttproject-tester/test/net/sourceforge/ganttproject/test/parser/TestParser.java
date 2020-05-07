@@ -143,14 +143,13 @@ public class TestParser extends TestCase {
         PrjInfos prjinfos = new PrjInfos();
         UIConfiguration uiConfig = new UIConfiguration(Color.BLACK, false);
         ArrayList<GanttPreviousState> baseLines = new ArrayList<GanttPreviousState>();
-        UIFacade uiFacade = null;
 
         // Parse...
         GPParser opener = new GanttXMLOpen();
         ParsingContext ctx = new ParsingContext();
         ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
                 hrCustomPropertyManager);
-        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager, uiFacade);
+        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager);
         AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, taskManager, roleManager);
         VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
         PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(baseLines);

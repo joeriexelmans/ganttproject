@@ -281,7 +281,7 @@ public class ProxyDocument implements Document {
       TaskManager taskManager = getTaskManager();
       ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
           myProject.getResourceCustomPropertyManager());
-      DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager, getUIFacade());
+      DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager);
       AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, getTaskManager(), getRoleManager());
       VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
       PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(myProject.getBaselines());

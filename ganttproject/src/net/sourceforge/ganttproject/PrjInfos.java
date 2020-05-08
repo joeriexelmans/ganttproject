@@ -23,7 +23,7 @@ package net.sourceforge.ganttproject;
  * 
  * @author athomas
  */
-public class PrjInfos {
+public class PrjInfos extends ObservableImpl {
   /** The name of the project */
   private String _sProjectName;
 
@@ -58,6 +58,7 @@ public class PrjInfos {
   /** sets the name of the project. */
   public void setName(String projectName) {
     _sProjectName = projectName;
+    notifyListeners();
   }
 
   /** @return the description of the project. */
@@ -68,6 +69,7 @@ public class PrjInfos {
   /** sets the description of the project. */
   public void setDescription(String description) {
     _sDescription = description;
+    notifyListeners();
   }
 
   /** @return the organization of the project. */
@@ -78,6 +80,7 @@ public class PrjInfos {
   /** sets the organization of the project. */
   public void setOrganization(String organization) {
     _sOrganization = organization;
+    notifyListeners();
   }
 
   /** @return the web link for the project or for the company. */
@@ -88,5 +91,6 @@ public class PrjInfos {
   /** sets the web link for the project or for the company. */
   public void setWebLink(String webLink) {
     _sWebLink = webLink;
+    notifyListeners();
   }
 }

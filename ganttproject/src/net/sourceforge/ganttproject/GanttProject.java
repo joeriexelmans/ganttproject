@@ -36,6 +36,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import net.sourceforge.ganttproject.action.ActiveActionProvider;
@@ -188,6 +190,12 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
       @Override
       public void onCalendarChange() {
         GanttProject.this.setModified();
+      }
+    });
+    prjInfos.addListener(new InvalidationListener() {
+      @Override
+      public void invalidated(Observable observable) {
+        setAskForSave(true);
       }
     });
     Mediator.registerTaskSelectionManager(getTaskSelectionManager());
@@ -959,7 +967,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   @Override
   public void setProjectName(String projectName) {
     prjInfos.setName(projectName);
-    setAskForSave(true);
   }
 
   @Override
@@ -970,7 +977,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   @Override
   public void setDescription(String description) {
     prjInfos.setDescription(description);
-    setAskForSave(true);
   }
 
   @Override
@@ -981,7 +987,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   @Override
   public void setOrganization(String organization) {
     prjInfos.setOrganization(organization);
-    setAskForSave(true);
   }
 
   @Override
@@ -992,7 +997,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   @Override
   public void setWebLink(String webLink) {
     prjInfos.setWebLink(webLink);
-    setAskForSave(true);
   }
 
   @Override
@@ -1058,6 +1062,12 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   public void close() {
     fireProjectClosed();
     prjInfos = new PrjInfos();
+    prjInfos.addListener(new InvalidationListener() {
+      @Override
+      public void invalidated(Observable observable) {
+        setAskForSave(true);
+      }
+    });
     RoleManager.Access.getInstance().clear();
     myObservableDocument.set(null);
     getTaskCustomColumnManager().reset();

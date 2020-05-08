@@ -185,12 +185,10 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
       protected ParserFactory getParserFactory() {
         return myParserFactory;
       }
-
       @Override
       protected ColumnList getVisibleFields() {
         return myUIFacade.getTaskTree().getVisibleFields();
       }
-
       @Override
       protected ColumnList getResourceVisibleFields() {
         return myUIFacade.getResourceTree().getVisibleFields();
@@ -271,7 +269,14 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     myTaskManager = TaskManager.Access.newInstance(new TaskContainmentHierarchyFacade.Factory() {
       @Override
       public TaskContainmentHierarchyFacade createFacade() {
-        return GanttProject.this.getTaskContainment();
+        if (myFacadeInvalidator == null) {
+          return TaskContainmentHierarchyFacade.STUB;
+        }
+        if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
+          myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
+          myFacadeInvalidator.reset();
+        }
+        return myCachedFacade;
       }
     }, myHumanResourceManager, myCalendar, myTimeUnitStack, taskConfig);
     addProjectEventListener(myTaskManager.getProjectListener());
@@ -512,19 +517,6 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     }
     return new Rectangle(fitX, fitY, bounds.width, bounds.height);
 
-  }
-
-
-  @Override
-  public TaskContainmentHierarchyFacade getTaskContainment() {
-    if (myFacadeInvalidator == null) {
-      return TaskContainmentHierarchyFacade.STUB;
-    }
-    if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
-      myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
-      myFacadeInvalidator.reset();
-    }
-    return myCachedFacade;
   }
 
   private void initOptions() {
@@ -1081,7 +1073,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
         setAskForSave(true);
       }
     });
-    RoleManager.Access.getInstance().clear();
+    myRoleManager.clear();
     myObservableDocument.set(null);
     getTaskCustomColumnManager().reset();
     getResourceCustomPropertyManager().reset();

@@ -56,13 +56,14 @@ public interface IGanttProject {
 
   void setWebLink(String webLink);
 
+  TimeUnitStack getTimeUnitStack();
+
+
   // current project - entities
   HumanResourceManager getHumanResourceManager();
   RoleManager getRoleManager();
   TaskManager getTaskManager();
-  TaskContainmentHierarchyFacade getTaskContainment();
   GPCalendarCalc getActiveCalendar();
-  TimeUnitStack getTimeUnitStack();
   CustomPropertyManager getResourceCustomPropertyManager();
   CustomPropertyManager getTaskCustomColumnManager();
   // CustomColumnsStorage getCustomColumnsStorage();

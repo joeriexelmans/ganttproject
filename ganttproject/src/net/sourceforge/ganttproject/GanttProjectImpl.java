@@ -149,11 +149,6 @@ public class GanttProjectImpl implements IGanttProject {
   }
 
   @Override
-  public TaskContainmentHierarchyFacade getTaskContainment() {
-    return getTaskManager().getTaskHierarchy();
-  }
-
-  @Override
   public GPCalendarCalc getActiveCalendar() {
     return myCalendar;
   }

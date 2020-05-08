@@ -30,7 +30,6 @@ import java.util.List;
  */
 public class Project extends ObservableImpl {
     public final WeekendCalendarImpl calendar;
-    public final GPTimeUnitStack timeUnitStack;
     public final RoleManagerImpl roleManager;
     public final CustomColumnsManager hrCustomPropertyManager;
     public final HumanResourceManager hrManager;
@@ -42,9 +41,8 @@ public class Project extends ObservableImpl {
      * @param facadeFactory This is a "hack" to allow the view to be updated when anything changes to the task hierarchy. Can be set to null if there is no view.
      * @param tmConfig
      */
-    public Project(TaskContainmentHierarchyFacade.Factory facadeFactory, TaskManagerConfig tmConfig) {
+    public Project(TimeUnitStack timeUnitStack, TaskContainmentHierarchyFacade.Factory facadeFactory, TaskManagerConfig tmConfig) {
         calendar = new WeekendCalendarImpl();
-        timeUnitStack = new GPTimeUnitStack();
         roleManager = new RoleManagerImpl();
         hrCustomPropertyManager = new CustomColumnsManager();
         hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);

@@ -1,29 +1,14 @@
 package net.sourceforge.ganttproject.test.parser;
 
-import biz.ganttproject.core.calendar.WeekendCalendarImpl;
 import biz.ganttproject.core.option.ListOption;
 import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import junit.framework.TestCase;
-import net.sourceforge.ganttproject.GanttPreviousState;
-import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.TestSetupHelper;
-import net.sourceforge.ganttproject.document.Document;
-import net.sourceforge.ganttproject.document.ProxyDocument;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
-import net.sourceforge.ganttproject.gui.UIConfiguration;
-import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
-import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.parser.*;
 import net.sourceforge.ganttproject.project.Project;
-import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.roles.RoleManager;
-import net.sourceforge.ganttproject.roles.RoleManagerImpl;
-import net.sourceforge.ganttproject.task.CustomColumnsManager;
-import net.sourceforge.ganttproject.task.TaskManager;
-import net.sourceforge.ganttproject.task.TaskManagerImpl;
-import org.xml.sax.Attributes;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -134,7 +119,10 @@ public class TestParser extends TestCase {
     }
 
     public void testParser() throws IOException {
-        Project project = new Project(null, new TestSetupHelper.TaskManagerTestConfig());
+        Project project = new Project(
+                new GPTimeUnitStack(),
+                null,
+                new TestSetupHelper.TaskManagerTestConfig());
 
         GPParser opener = new GanttXMLOpen();
         ParsingContext ctx = new ParsingContext();

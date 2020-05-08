@@ -27,16 +27,34 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
 
 public interface ProjectUIFacade {
+  /**
+   * Saves project
+   */
   void saveProject(IGanttProject project);
 
+  /**
+   * Shows "save as" dialog
+   */
   void saveProjectAs(IGanttProject project);
 
+  /**
+   * Shows "save project?" confirmation dialog
+   */
   public boolean ensureProjectSaved(IGanttProject project);
 
+  /**
+   * Shows dialog
+   */
   void openProject(IGanttProject project) throws IOException, DocumentException;
 
+  /**
+   * Actual "open" logic
+   */
   void openProject(Document document, IGanttProject project) throws IOException, DocumentException;
 
+  /**
+   * Shows new project wizard
+   */
   void createProject(IGanttProject project);
 
   GPOptionGroup[] getOptionGroups();

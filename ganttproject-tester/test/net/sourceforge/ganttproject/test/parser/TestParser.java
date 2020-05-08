@@ -134,68 +134,56 @@ public class TestParser extends TestCase {
     }
 
     public void testParser() throws IOException {
-        // All the stuff that supposedly makes up "a project"
         Project project = new Project(null, new TestSetupHelper.TaskManagerTestConfig());
 
-        // Parse...
         GPParser opener = new GanttXMLOpen();
         ParsingContext ctx = new ParsingContext();
-        ResourceTagHandler resourceHandler = new ResourceTagHandler(project.hrManager, project.roleManager,
-                project.hrCustomPropertyManager);
-        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, project.taskManager);
-        AllocationTagHandler allocationHandler = new AllocationTagHandler(project.hrManager, project.taskManager, project.roleManager);
-        VacationTagHandler vacationHandler = new VacationTagHandler(project.hrManager);
-        PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(project.baseLines);
-        RoleTagHandler rolesHandler = new RoleTagHandler(project.roleManager);
-        TaskTagHandler taskHandler = new TaskTagHandler(project.taskManager, ctx);
-        DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(project.calendar);
-        OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(project.calendar);
 
-        TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(project.taskManager.getCustomPropertyManager());
-        opener.addTagHandler(taskPropHandler);
-        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, project.taskManager);
-        opener.addTagHandler(customPropHandler);
-
-        TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
-        TaskDisplayColumnsTagHandler legacyTaskDisplayHandler = TaskDisplayColumnsTagHandler.createLegacyHandler();
-
-        opener.addTagHandler(pilsenTaskDisplayHandler);
-        opener.addTagHandler(legacyTaskDisplayHandler);
-
-        TaskDisplayColumnsTagHandler resourceFieldsHandler = new TaskDisplayColumnsTagHandler(
-                "field", "id", "order", "width", "visible");
-        opener.addTagHandler(resourceFieldsHandler);
-
-        opener.addTagHandler(taskHandler);
-        opener.addParsingListener(customPropHandler);
+        opener.addTagHandler(TaskDisplayColumnsTagHandler.createPilsenHandler());
+        opener.addTagHandler(TaskDisplayColumnsTagHandler.createLegacyHandler());
+        opener.addTagHandler(new TaskDisplayColumnsTagHandler(
+                "field", "id", "order", "width", "visible"));
+        opener.addTagHandler(new TaskTagHandler(project.taskManager, ctx));
+        opener.addTagHandler(new TaskPropertiesTagHandler(project.taskManager.getCustomPropertyManager()));
         opener.addTagHandler(new DescriptionTagHandler(project.prjinfos));
         opener.addTagHandler(new NotesTagHandler(ctx));
         opener.addTagHandler(new ProjectTagHandler(project.prjinfos));
         opener.addTagHandler(new TasksTagHandler(project.taskManager));
+        opener.addTagHandler(new VacationTagHandler(project.hrManager));
+        opener.addTagHandler(new PreviousStateTasksTagHandler(project.baseLines));
+        opener.addTagHandler(new RoleTagHandler(project.roleManager));
+        opener.addTagHandler(new DefaultWeekTagHandler(project.calendar));
+        opener.addTagHandler(new OnlyShowWeekendsTagHandler(project.calendar));
+        opener.addTagHandler(new OptionTagHandler<ListOption<Color>>(GPColorChooser.getRecentColorsOption()));
+        opener.addTagHandler(new CalendarsTagHandler(project.calendar));
+        opener.addTagHandler(new HolidayTagHandler(project.calendar));
 
+        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, project.taskManager);
+        ResourceTagHandler resourceHandler = new ResourceTagHandler(project.hrManager, project.roleManager,
+                project.hrCustomPropertyManager);
+        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, project.taskManager);
+        AllocationTagHandler allocationHandler = new AllocationTagHandler(project.hrManager, project.taskManager, project.roleManager);
+
+        opener.addTagHandler(customPropHandler);
         opener.addTagHandler(resourceHandler);
         opener.addTagHandler(dependencyHandler);
         opener.addTagHandler(allocationHandler);
+        opener.addParsingListener(customPropHandler);
         opener.addParsingListener(allocationHandler);
-        opener.addTagHandler(vacationHandler);
-        opener.addTagHandler(previousStateHandler);
-        opener.addTagHandler(rolesHandler);
-        opener.addTagHandler(weekHandler);
-        opener.addTagHandler(onlyShowWeekendsHandler);
-        opener.addTagHandler(new OptionTagHandler<ListOption<Color>>(GPColorChooser.getRecentColorsOption()));
         opener.addParsingListener(dependencyHandler);
         opener.addParsingListener(resourceHandler);
 
-        HolidayTagHandler holidayHandler = new HolidayTagHandler(project.calendar);
-        opener.addTagHandler(new CalendarsTagHandler(project.calendar));
-        opener.addTagHandler(holidayHandler);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
         opener.load(is);
 
         assertEquals(4, project.taskManager.getTaskCount());
         assertEquals(2, project.hrManager.getResources().size());
+
         assertEquals(1, project.taskManager.getTask(1).getAssignments().length);
-        assertEquals(0, project.taskManager.getTask(1).getAssignments()[0].getResource().getId());
+        assertEquals(1, project.hrManager.getById(0).getAssignments().length);
+
+        assertTrue(project.taskManager.getTask(1).getAssignments()[0].getResource() == project.hrManager.getById(0));
+        assertTrue(project.hrManager.getById(0).getAssignments()[0].getTask() == project.taskManager.getTask(1));
     }
 
 

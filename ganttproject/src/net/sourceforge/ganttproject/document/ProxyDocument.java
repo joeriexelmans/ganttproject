@@ -50,12 +50,10 @@ import java.util.Set;
 /**
  * @author bard
  */
-public class ProxyDocument implements Document {
+public class ProxyDocument {
   private Document myPhysicalDocument;
 
   private IProject myProject;
-
-  private PrjInfos myPrjInfos;
 
   private UIFacade myUIFacade;
 
@@ -69,10 +67,9 @@ public class ProxyDocument implements Document {
 
   private final ColumnList myResourceVisibleFields;
 
-  ProxyDocument(DocumentCreator creator, Document physicalDocument, IProject project, PrjInfos prji, UIFacade uiFacade, ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
+  ProxyDocument(DocumentCreator creator, Document physicalDocument, IProject project, UIFacade uiFacade, ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
     myPhysicalDocument = physicalDocument;
     myProject = project;
-    myPrjInfos = prji;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myCreator = creator;
@@ -83,57 +80,11 @@ public class ProxyDocument implements Document {
   public Document getRealDocument() {
     return myPhysicalDocument;
   }
-  @Override
+
   public void setMirror(Document mirrorDocument) {
     myPhysicalDocument = Preconditions.checkNotNull(mirrorDocument);
   }
 
-  @Override
-  public String getFileName() {
-    return myPhysicalDocument.getFileName();
-  }
-
-  @Override
-  public boolean canRead() {
-    return myPhysicalDocument.canRead();
-  }
-
-  @Override
-  public IStatus canWrite() {
-    return myPhysicalDocument.canWrite();
-  }
-
-  @Override
-  public boolean isValidForMRU() {
-    return myPhysicalDocument.isValidForMRU();
-  }
-
-  @Override
-  public boolean acquireLock() {
-    return myPhysicalDocument.acquireLock();
-  }
-
-  @Override
-  public void releaseLock() {
-    myPhysicalDocument.releaseLock();
-  }
-
-  @Override
-  public InputStream getInputStream() throws IOException {
-    return myPhysicalDocument.getInputStream();
-  }
-
-  @Override
-  public OutputStream getOutputStream() throws IOException {
-    return myPhysicalDocument.getOutputStream();
-  }
-
-  @Override
-  public String getPath() {
-    return myPhysicalDocument.getPath();
-  }
-
-  @Override
   public String getFilePath() {
     String result = myPhysicalDocument.getFilePath();
     if (result == null) {
@@ -146,26 +97,8 @@ public class ProxyDocument implements Document {
     return result;
   }
 
-  @Override
-  public String getUsername() {
-    return myPhysicalDocument.getUsername();
-  }
-
-  @Override
-  public String getPassword() {
-    return myPhysicalDocument.getPassword();
-  }
-
-  @Override
-  public String getLastError() {
-    return myPhysicalDocument.getLastError();
-  }
-
-  @Override
-  public void read() throws IOException, DocumentException {
-    FailureState failure = new FailureState();
-    SuccessState success = new SuccessState();
-    ParsingState parsing = new ParsingState(success, failure);
+  public void read() throws IOException, Document.DocumentException {
+    ParsingState parsing = new ParsingState();
     // OpenCopyConfirmationState confirmation = new OpenCopyConfirmationState(
     // parsing, failure);
     // AcquireLockState lock = new AcquireLockState(parsing, confirmation);
@@ -178,7 +111,6 @@ public class ProxyDocument implements Document {
     // lock.enter();
   }
 
-  @Override
   public void write() throws IOException {
     GPSaver saver = myParserFactory.newSaver();
     byte[] buffer;
@@ -191,7 +123,7 @@ public class ProxyDocument implements Document {
       myUIFacade.showErrorDialog(e);
       return;
     }
-    OutputStream output = getOutputStream();
+    OutputStream output = myPhysicalDocument.getOutputStream();
     try {
       output.write(buffer);
       output.flush();
@@ -245,16 +177,11 @@ public class ProxyDocument implements Document {
   // }
 
   class ParsingState {
-    private final FailureState myFailureState;
 
-    private final SuccessState mySuccessState;
-
-    public ParsingState(SuccessState success, FailureState failure) {
-      mySuccessState = success;
-      myFailureState = failure;
+    public ParsingState() {
     }
 
-    void enter() throws IOException, DocumentException {
+    void enter() throws IOException, Document.DocumentException {
       GPParser opener = myParserFactory.newParser();
       ParsingContext ctx = new ParsingContext();
 
@@ -262,6 +189,7 @@ public class ProxyDocument implements Document {
       RoleManager roleManager = myProject.getRoleManager();
       TaskManager taskManager = myProject.getTaskManager();
       GPCalendarCalc calendar = myProject.getActiveCalendar();
+      PrjInfos prjInfos = myProject.getPrjInfos();
 
       ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
           myProject.getResourceCustomPropertyManager());
@@ -301,9 +229,9 @@ public class ProxyDocument implements Document {
 
       opener.addParsingListener(customPropHandler);
 
-      opener.addTagHandler(new DescriptionTagHandler(myPrjInfos));
+      opener.addTagHandler(new DescriptionTagHandler(prjInfos));
       opener.addTagHandler(new NotesTagHandler(ctx));
-      opener.addTagHandler(new ProjectTagHandler(myPrjInfos));
+      opener.addTagHandler(new ProjectTagHandler(prjInfos));
       opener.addTagHandler(new ProjectViewAttrsTagHandler(myUIFacade));
       opener.addTagHandler(new TasksTagHandler(taskManager));
 
@@ -333,50 +261,22 @@ public class ProxyDocument implements Document {
       opener.addTagHandler(portfolioHandler);
       InputStream is;
       try {
-        is = getInputStream();
+        is = myPhysicalDocument.getInputStream();
       } catch (IOException e) {
-        myFailureState.enter();
-        throw new DocumentException(GanttLanguage.getInstance().getText("msg8") + ": " + e.getLocalizedMessage(), e);
+        throw new Document.DocumentException(GanttLanguage.getInstance().getText("msg8") + ": " + e.getLocalizedMessage(), e);
       }
       if (opener.load(is)) {
-        mySuccessState.enter();
       } else {
-        myFailureState.enter();
       }
     }
   }
 
-  class SuccessState {
-    void enter() {
-    }
-  }
-
-  class FailureState {
-    void enter() {
-    }
-  }
-
   @Override
-  public URI getURI() {
-    return myPhysicalDocument.getURI();
-  }
-
-  @Override
-  public boolean isLocal() {
-    return myPhysicalDocument.isLocal();
-  }
-
-  @Override
-  public boolean equals(Object doc) {
-    if (false == doc instanceof ProxyDocument) {
+  public boolean equals(Object other) {
+    if (! (other instanceof ProxyDocument)) {
       return false;
     }
-    return getPath().equals(((Document) doc).getPath());
-  }
-
-  @Override
-  public Portfolio getPortfolio() {
-    return myPortfolio;
+    return myPhysicalDocument.getPath().equals(((ProxyDocument)other).myPhysicalDocument.getPath());
   }
 
   private PortfolioImpl getPortfolioImpl() {

@@ -15,7 +15,6 @@ import com.google.common.collect.Lists;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttOptions;
 import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.document.webdav.HttpDocument;
 import net.sourceforge.ganttproject.document.webdav.WebDavResource.WebDavException;
 import net.sourceforge.ganttproject.document.webdav.WebDavServerDescriptor;
@@ -50,8 +49,6 @@ import java.util.logging.Logger;
 public class DocumentCreator implements DocumentManager {
   private final IGanttProject myProject;
 
-  private final PrjInfos myPrjInfos;
-
   private final UIFacade myUIFacade;
 
   private final ParserFactory myParserFactory;
@@ -67,9 +64,8 @@ public class DocumentCreator implements DocumentManager {
   private final DocumentsMRU myMRU = new DocumentsMRU(5);
   private final File myDocumentsFolder;
 
-  public DocumentCreator(IGanttProject project, PrjInfos prjInfos, UIFacade uiFacade, ParserFactory parserFactory) {
+  public DocumentCreator(IGanttProject project, UIFacade uiFacade, ParserFactory parserFactory) {
     myProject = project;
-    myPrjInfos = prjInfos;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myWebDavStorage = new WebDavStorageImpl(project, uiFacade);
@@ -164,14 +160,14 @@ public class DocumentCreator implements DocumentManager {
   @Override
   public Document getDocument(String path) {
     Document physicalDocument = createDocument(path);
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myPrjInfos, myUIFacade, getVisibleFields(),
-        getResourceVisibleFields(), getParserFactory());
-    return proxyDocument;
+//    ProxyDocument proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, getVisibleFields(),
+//        getResourceVisibleFields(), getParserFactory());
+    return physicalDocument;
   }
 
   @Override
-  public Document getProxyDocument(Document physicalDocument) {
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myPrjInfos, myUIFacade, getVisibleFields(),
+  public ProxyDocument getProxyDocument(Document physicalDocument) {
+    ProxyDocument proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, getVisibleFields(),
         getResourceVisibleFields(), getParserFactory());
     return proxyDocument;
   }

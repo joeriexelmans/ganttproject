@@ -48,7 +48,7 @@ public interface ProjectUIFacade {
   void openProject(IGanttProject project) throws IOException, DocumentException;
 
   /**
-   * Actual "open" logic
+   * Actual "open" logic, can still cause "sign in" dialog to be shown if necessary
    */
   void openProject(Document document, IGanttProject project) throws IOException, DocumentException;
 

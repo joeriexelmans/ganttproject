@@ -101,7 +101,7 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   public GanttGraphicArea(GanttProject app, GanttTree2 ttree, TaskManager taskManager, ZoomManager zoomManager,
       GPUndoManager undoManager) {
-    super(app.getProject(), app.getUIFacade(), zoomManager);
+    super(app, app.getUIFacade(), zoomManager);
     this.setBackground(Color.WHITE);
     myTaskManager = taskManager;
     myUndoManager = undoManager;

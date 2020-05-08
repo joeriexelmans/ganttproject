@@ -61,13 +61,13 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
   private final ResourceTreeUIFacade myTreeUi;
 
   public ResourceLoadGraphicArea(GanttProject app, ZoomManager zoomManager, ResourceTreeUIFacade treeUi) {
-    super(app.getProject(), app.getUIFacade(), zoomManager);
+    super(app, app.getUIFacade(), zoomManager);
     appli = app;
     myTreeUi = treeUi;
     this.setBackground(Color.WHITE);
     myChartModel = new ChartModelResource(getTaskManager(), app.getHumanResourceManager(), getTimeUnitStack(),
         getUIConfiguration(), this);
-    myChartImplementation = new ResourcechartImplementation(app.getProject(), getUIFacade(), myChartModel, this);
+    myChartImplementation = new ResourcechartImplementation(app, getUIFacade(), myChartModel, this);
     myViewState = new ChartViewState(this, app.getUIFacade());
     app.getUIFacade().getZoomManager().addZoomListener(myViewState);
     initMouseListeners();

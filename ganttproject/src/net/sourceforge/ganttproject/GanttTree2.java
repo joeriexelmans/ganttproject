@@ -117,7 +117,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   public GanttTree2(final GanttProject project, TaskManager taskManager, TaskSelectionManager selectionManager,
       final UIFacade uiFacade) {
-    super(createTreeTable(project.getProject(), createDirtyfier(project), uiFacade));
+    super(createTreeTable(project, createDirtyfier(project), uiFacade));
     myUIFacade = uiFacade;
     myProject = project;
     myTaskManager = taskManager;
@@ -159,9 +159,9 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     });
 
     // Create Actions
-    GPAction propertiesAction = new TaskPropertiesAction(project.getProject(), selectionManager, uiFacade);
+    GPAction propertiesAction = new TaskPropertiesAction(project, selectionManager, uiFacade);
     GPAction deleteAction = new TaskDeleteAction(taskManager, selectionManager, uiFacade, this);
-    GPAction newAction = new TaskNewAction(project.getProject(), uiFacade);
+    GPAction newAction = new TaskNewAction(project, uiFacade);
 
     setArtefactActions(newAction, propertiesAction, deleteAction);
     myLinkTasksAction = new TaskLinkAction(taskManager, selectionManager, uiFacade);

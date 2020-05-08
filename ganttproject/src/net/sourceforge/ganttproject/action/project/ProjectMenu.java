@@ -42,7 +42,7 @@ public class ProjectMenu extends JMenu {
     myPrintAction = new PrintAction(project);
 
     ProjectPropertiesAction projectSettingsAction = new ProjectPropertiesAction(project);
-    myOpenProjectAction = new OpenProjectAction(project.getProject(), project.getProjectUIFacade());
+    myOpenProjectAction = new OpenProjectAction(project, project.getProjectUIFacade());
     SaveProjectAsAction saveProjectAsAction = new SaveProjectAsAction(project);
 //    OpenURLAction openURLAction = new OpenURLAction(project.getProject(), project.getUIFacade(),
 //        project.getProjectUIFacade());
@@ -55,7 +55,7 @@ public class ProjectMenu extends JMenu {
 
     WebDavStorageImpl webdavStorage = (WebDavStorageImpl) project.getDocumentManager().getWebDavStorageUi();
     StorageDialogAction cloudDialogAction = new StorageDialogAction(
-        project.getProject(), project.getProjectUIFacade(), project.getDocumentManager(), webdavStorage.getServersOption());
+        project, project.getProjectUIFacade(), project.getDocumentManager(), webdavStorage.getServersOption());
     add(cloudDialogAction);
     add(projectSettingsAction);
     add(myNewProjectAction);

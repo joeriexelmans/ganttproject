@@ -71,7 +71,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
   }
 
   public GanttResourcePanel(final GanttProject prj, final UIFacade uiFacade) {
-    super(createTreeTable(prj.getProject(), uiFacade));
+    super(createTreeTable(prj, uiFacade));
     appli = prj;
     myUIFacade = uiFacade;
 

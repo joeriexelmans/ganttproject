@@ -22,7 +22,7 @@ public class DesktopIntegration {
   }
 
   static void setup(final GanttProject app) {
-    final IGanttProject project = app.getProject();
+    final IGanttProject project = app;
     final UIFacade uiFacade = app.getUIFacade();
     final ProjectUIFacade projectUiFacade = app.getProjectUIFacade();
 

@@ -45,7 +45,7 @@ class ProjectPropertiesAction extends GPAction {
     myMainFrame.getUIFacade().getUndoManager().undoableEdit(getI18n(getID()), new Runnable() {
       @Override
       public void run() {
-        SettingsDialog2 settingsDialog = new SettingsDialog2(myMainFrame.getProject(), myMainFrame.getUIFacade(),
+        SettingsDialog2 settingsDialog = new SettingsDialog2(myMainFrame, myMainFrame.getUIFacade(),
             "settings.project.pageOrder");
         settingsDialog.show();
       }

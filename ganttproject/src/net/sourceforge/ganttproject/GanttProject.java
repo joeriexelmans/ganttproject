@@ -118,12 +118,12 @@ import java.util.regex.Pattern;
 public class GanttProject extends JFrame implements IGanttProject, UIFacade, ResourceView, GanttLanguage.Listener {
 
   //// Begin GanttProjectBase fields ////////////////////////////////////
-  protected final static GanttLanguage language = GanttLanguage.getInstance();
+  private final static GanttLanguage language = GanttLanguage.getInstance();
   private final ViewManagerImpl myViewManager;
   private final List<ProjectEventListener> myModifiedStateChangeListeners = new ArrayList<ProjectEventListener>();
   private final UIFacadeImpl myUIFacade;
   private final GanttStatusBar statusBar;
-  protected final TimeUnitStack myTimeUnitStack;
+  private final TimeUnitStack myTimeUnitStack;
   private final ProjectUIFacadeImpl myProjectUIFacade;
   private final DocumentManager myDocumentManager;
   /** The tabbed pane with the different parts of the project */
@@ -162,9 +162,9 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   private ResourceChartTabContentPanel myResourceChartTabContent;
   private List<RowHeightAligner> myRowHeightAligners = Lists.newArrayList();
   private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
-  private ParserFactory myParserFactory;
+  private ParserFactory myParserFactory = new ParserFactoryImpl();
   private HumanResourceManager myHumanResourceManager;
-  private RoleManager myRoleManager;
+  private RoleManager myRoleManager = RoleManager.Access.getInstance();
   private static Runnable ourQuitCallback;
   private FXSearchUi mySearchUi;
 
@@ -174,35 +174,35 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
     statusBar = new GanttStatusBar(this);
     myTabPane = new GanttTabbedPane();
-    myContentPaneBuilder = new ContentPaneBuilder(getTabs(), getStatusBar());
+    myContentPaneBuilder = new ContentPaneBuilder(myTabPane, statusBar);
 
     myTimeUnitStack = new GPTimeUnitStack();
     NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
-    myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, getProject(), this);
+    myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, this, this);
     GPLogger.setUIFacade(myUIFacade);
-    myDocumentManager = new DocumentCreator(this, prjInfos, getUIFacade(), null) {
+    myDocumentManager = new DocumentCreator(this, prjInfos, myUIFacade, null) {
       @Override
       protected ParserFactory getParserFactory() {
-        return GanttProject.this.getParserFactory();
+        return myParserFactory;
       }
 
       @Override
       protected ColumnList getVisibleFields() {
-        return getUIFacade().getTaskTree().getVisibleFields();
+        return myUIFacade.getTaskTree().getVisibleFields();
       }
 
       @Override
       protected ColumnList getResourceVisibleFields() {
-        return getUIFacade().getResourceTree().getVisibleFields();
+        return myUIFacade.getResourceTree().getVisibleFields();
       }
     };
     myUndoManager = new UndoManagerImpl(this, null, myDocumentManager) {
       @Override
       protected ParserFactory getParserFactory() {
-        return GanttProject.this.getParserFactory();
+        return myParserFactory;
       }
     };
-    myViewManager = new ViewManagerImpl(getProject(), myUIFacade, myTabPane, getUndoManager());
+    myViewManager = new ViewManagerImpl(this, myUIFacade, myTabPane, getUndoManager());
     myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myUndoManager);
     myRssChecker = new RssFeedChecker((GPTimeUnitStack) getTimeUnitStack(), myUIFacade);
     myUIFacade.addOptions(myRssChecker.getUiOptions());
@@ -234,39 +234,38 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     }
     setFocusable(true);
     System.err.println("1. loading look'n'feels");
-    options = new GanttOptions(getRoleManager(), getDocumentManager(), isOnlyViewer);
+    options = new GanttOptions(myRoleManager, myDocumentManager, isOnlyViewer);
     myUIConfiguration = options.getUIConfiguration();
-    myUIConfiguration.setChartFontOption(getUiFacadeImpl().getChartFontOption());
-    myUIConfiguration.setDpiOption(getUiFacadeImpl().getDpiOption());
+    myUIConfiguration.setChartFontOption(myUIFacade.getChartFontOption());
+    myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
+
+    myHumanResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(),
+            getResourceCustomPropertyManager());
+    myHumanResourceManager.addView(this);
 
     class TaskManagerConfigImpl implements TaskManagerConfig {
       final DefaultColorOption myDefaultColorOption = new GanttProjectImpl.DefaultTaskColorOption();
-
       @Override
       public Color getDefaultColor() {
-        return getUIFacade().getGanttChart().getTaskDefaultColorOption().getValue();
+        return myUIFacade.getGanttChart().getTaskDefaultColorOption().getValue();
       }
-
       @Override
       public ColorOption getDefaultColorOption() {
         return myDefaultColorOption;
       }
-
       @Override
       public URL getProjectDocumentURL() {
         try {
-          return getDocument().getURI().toURL();
+          return myObservableDocument.get().getURI().toURL();
         } catch (MalformedURLException e) {
           e.printStackTrace();
           return null;
         }
       }
-
       @Override
       public NotificationManager getNotificationManager() {
-        return getUIFacade().getNotificationManager();
+        return myUIFacade.getNotificationManager();
       }
-
     }
     TaskManagerConfig taskConfig = new TaskManagerConfigImpl();
     myTaskManager = TaskManager.Access.newInstance(new TaskContainmentHierarchyFacade.Factory() {
@@ -274,33 +273,38 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
       public TaskContainmentHierarchyFacade createFacade() {
         return GanttProject.this.getTaskContainment();
       }
-    }, getHumanResourceManager(), myCalendar, myTimeUnitStack, taskConfig);
+    }, myHumanResourceManager, myCalendar, myTimeUnitStack, taskConfig);
     addProjectEventListener(myTaskManager.getProjectListener());
-    getActiveCalendar().addListener(myTaskManager.getCalendarListener());
+    myCalendar.addListener(myTaskManager.getCalendarListener());
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject.png"));
     setIconImage(icon.getImage());
 
+    resp = new GanttResourcePanel(this, myUIFacade);
+    resp.init();
+    myRowHeightAligners.add(resp.getRowHeightAligner());
+    myHumanResourceManager.addView(resp);
 
-    myFacadeInvalidator = new FacadeInvalidator(getTree().getModel(), myRowHeightAligners);
-    getProject().addProjectEventListener(myFacadeInvalidator);
-    area = new GanttGraphicArea(this, getTree(), getTaskManager(), getZoomManager(), getUndoManager());
-    getTree().init();
-    options.addOptionGroups(getUIFacade().getOptions());
-    options.addOptionGroups(getUIFacade().getGanttChart().getOptionGroups());
-    options.addOptionGroups(getUIFacade().getResourceChart().getOptionGroups());
-    options.addOptionGroups(getProjectUIFacade().getOptionGroups());
-    options.addOptionGroups(getDocumentManager().getNetworkOptionGroups());
+    tree = new GanttTree2(this, myTaskManager, getTaskSelectionManager(), myUIFacade);
+    myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);
+    this.addProjectEventListener(myFacadeInvalidator);
+    area = new GanttGraphicArea(this, tree, myTaskManager, getZoomManager(), getUndoManager());
+    tree.init();
+    options.addOptionGroups(myUIFacade.getOptions());
+    options.addOptionGroups(myUIFacade.getGanttChart().getOptionGroups());
+    options.addOptionGroups(myUIFacade.getResourceChart().getOptionGroups());
+    options.addOptionGroups(myProjectUIFacade.getOptionGroups());
+    options.addOptionGroups(myDocumentManager.getNetworkOptionGroups());
     options.addOptions(GPCloudOptions.INSTANCE.getOptionGroup());
-    options.addOptions(getRssFeedChecker().getOptions());
+    options.addOptions(myRssChecker.getOptions());
     options.addOptions(UpdateOptions.INSTANCE.getOptionGroup());
 
     System.err.println("2. loading options");
     initOptions();
     // Not a joke. This takes value from the option and applies it to the UI.
-    getTree().setGraphicArea(area);
-    getUIFacade().setLookAndFeel(getUIFacade().getLookAndFeel());
-    myRowHeightAligners.add(getTree().getRowHeightAligner());
-    getUiFacadeImpl().getAppFontOption().addChangeValueListener(new ChangeValueListener() {
+    tree.setGraphicArea(area);
+    myUIFacade.setLookAndFeel(myUIFacade.getLookAndFeel());
+    myRowHeightAligners.add(tree.getRowHeightAligner());
+    myUIFacade.getAppFontOption().addChangeValueListener(new ChangeValueListener() {
       @Override
       public void changeValue(ChangeValueEvent event) {
         for (RowHeightAligner aligner : myRowHeightAligners) {
@@ -313,36 +317,36 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
     ScrollingManager scrollingManager = getScrollingManager();
     scrollingManager.addScrollingListener(area.getViewState());
-    scrollingManager.addScrollingListener(getResourcePanel().area.getViewState());
+    scrollingManager.addScrollingListener(resp.area.getViewState());
 
     System.err.println("3. creating menus...");
-    myResourceActions = getResourcePanel().getResourceActionSet();
+    myResourceActions = resp.getResourceActionSet();
     myZoomActions = new ZoomActionSet(getZoomManager());
     JMenuBar bar = new JMenuBar();
     setJMenuBar(bar);
     // Allocation of the menus
 
     // Project menu related sub menus and items
-    ProjectMRUMenu mruMenu = new ProjectMRUMenu(this, getUIFacade(), getProjectUIFacade(), "lastOpen");
+    ProjectMRUMenu mruMenu = new ProjectMRUMenu(this, myUIFacade, myProjectUIFacade, "lastOpen");
     mruMenu.setIcon(new ImageIcon(getClass().getResource("/icons/recent_16.gif")));
-    getDocumentManager().addListener(mruMenu);
+    myDocumentManager.addListener(mruMenu);
 
     myProjectMenu = new ProjectMenu(this, mruMenu, "project");
     bar.add(myProjectMenu);
 
-    myEditMenu = new EditMenu(getProject(), getUIFacade(), getViewManager(), () -> mySearchUi.requestFocus(), "edit");
+    myEditMenu = new EditMenu(this, myUIFacade, myViewManager, () -> mySearchUi.requestFocus(), "edit");
     bar.add(myEditMenu);
 
-    ViewMenu viewMenu = new ViewMenu(getProject(), getViewManager(), getUiFacadeImpl().getDpiOption(), getUiFacadeImpl().getChartFontOption(), "view");
+    ViewMenu viewMenu = new ViewMenu(this, myViewManager, myUIFacade.getDpiOption(), myUIFacade.getChartFontOption(), "view");
     bar.add(viewMenu);
 
     {
-      TaskTreeUIFacade taskTree = getUIFacade().getTaskTree();
+      TaskTreeUIFacade taskTree = myUIFacade.getTaskTree();
       JMenu mTask = UIUtil.createTooltiplessJMenu(GPAction.createVoidAction("task"));
       mTask.add(taskTree.getNewAction());
       mTask.add(taskTree.getPropertiesAction());
       mTask.add(taskTree.getDeleteAction());
-      getResourcePanel().setTaskPropertiesAction(taskTree.getPropertiesAction());
+      resp.setTaskPropertiesAction(taskTree.getPropertiesAction());
       bar.add(mTask);
     }
     JMenu mHuman = UIUtil.createTooltiplessJMenu(GPAction.createVoidAction("human"));
@@ -352,19 +356,19 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     mHuman.add(myResourceActions.getResourceSendMailAction());
     bar.add(mHuman);
 
-    HelpMenu helpMenu = new HelpMenu(getProject(), getUIFacade(), getProjectUIFacade());
+    HelpMenu helpMenu = new HelpMenu(this, myUIFacade, myProjectUIFacade);
     bar.add(helpMenu.createMenu());
 
     System.err.println("4. creating views...");
-    myGanttChartTabContent = new GanttChartTabContentPanel(getProject(), getUIFacade(), getTree(), area.getJComponent(),
-        getUIConfiguration());
-    getViewManager().createView(myGanttChartTabContent, new ImageIcon(getClass().getResource("/icons/tasks_16.gif")));
-    getViewManager().toggleVisible(myGanttChartTabContent);
+    myGanttChartTabContent = new GanttChartTabContentPanel(this, myUIFacade, tree, area.getJComponent(),
+        myUIConfiguration);
+    myViewManager.createView(myGanttChartTabContent, new ImageIcon(getClass().getResource("/icons/tasks_16.gif")));
+    myViewManager.toggleVisible(myGanttChartTabContent);
 
-    myResourceChartTabContent = new ResourceChartTabContentPanel(getProject(), getUIFacade(), getResourcePanel(),
-        getResourcePanel().area);
-    getViewManager().createView(myResourceChartTabContent, new ImageIcon(getClass().getResource("/icons/res_16.gif")));
-    getViewManager().toggleVisible(myResourceChartTabContent);
+    myResourceChartTabContent = new ResourceChartTabContentPanel(this, myUIFacade, resp,
+        resp.area);
+    myViewManager.createView(myResourceChartTabContent, new ImageIcon(getClass().getResource("/icons/res_16.gif")));
+    myViewManager.toggleVisible(myResourceChartTabContent);
 
     addComponentListener(new ComponentAdapter() {
       @Override
@@ -372,11 +376,11 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            getGanttChart().reset();
+            area.reset();
             getResourceChart().reset();
             // This will clear any modifications which might be caused by
             // adjusting widths of table columns during initial layout process.
-            getProject().setModified(false);
+            setModified(false);
           }
         });
       }
@@ -385,17 +389,17 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
     FXToolbar fxToolbar = createToolbar();
     Platform.runLater(() -> {
-      GPCloudStatusBar cloudStatusBar = new GPCloudStatusBar(myObservableDocument, getUIFacade());
+      GPCloudStatusBar cloudStatusBar = new GPCloudStatusBar(myObservableDocument, myUIFacade);
       Scene statusBarScene = new Scene(cloudStatusBar.getLockPanel(), javafx.scene.paint.Color.TRANSPARENT);
       statusBarScene.getStylesheets().add("biz/ganttproject/app/StatusBar.css");
-      getStatusBar().setLeftScene(statusBarScene);
+      statusBar.setLeftScene(statusBarScene);
     });
 
     createContentPane(fxToolbar.getComponent());
     //final FXToolbar toolbar = fxToolbar;
     //final List<? extends JComponent> buttons = addButtons(getToolBar());
     // Chart tabs
-    getTabs().setSelectedIndex(0);
+    myTabPane.setSelectedIndex(0);
 
     System.err.println("6. changing language ...");
     languageChanged(null);
@@ -426,7 +430,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
             }
           }
         });
-        getUiFacadeImpl().getDpiOption().addChangeValueListener(new ChangeValueListener() {
+        myUIFacade.getDpiOption().addChangeValueListener(new ChangeValueListener() {
           @Override
           public void changeValue(ChangeValueEvent event) {
             SwingUtilities.invokeLater(new Runnable() {
@@ -437,29 +441,29 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
             });
           }
         });
-        getGanttChart().reset();
+        area.reset();
         getResourceChart().reset();
         // This will clear any modifications which might be caused by
         // adjusting widths of table columns during initial layout process.
-        getProject().setModified(false);
+        setModified(false);
       }
     });
 
     System.err.println("8. finalizing...");
     // applyComponentOrientation(GanttLanguage.getInstance()
     // .getComponentOrientation());
-    myTaskManager.addTaskListener(new TaskModelModificationListener(this, getUIFacade()));
+    myTaskManager.addTaskListener(new TaskModelModificationListener(this, myUIFacade));
     addMouseListenerToAllContainer(this.getComponents());
 
     // Add globally available actions/key strokes
-    GPAction viewCycleForwardAction = new ViewCycleAction(getViewManager(), true);
-    UIUtil.pushAction(getTabs(), true, viewCycleForwardAction.getKeyStroke(), viewCycleForwardAction);
+    GPAction viewCycleForwardAction = new ViewCycleAction(myViewManager, true);
+    UIUtil.pushAction(myTabPane, true, viewCycleForwardAction.getKeyStroke(), viewCycleForwardAction);
 
-    GPAction viewCycleBackwardAction = new ViewCycleAction(getViewManager(), false);
-    UIUtil.pushAction(getTabs(), true, viewCycleBackwardAction.getKeyStroke(), viewCycleBackwardAction);
+    GPAction viewCycleBackwardAction = new ViewCycleAction(myViewManager, false);
+    UIUtil.pushAction(myTabPane, true, viewCycleBackwardAction.getKeyStroke(), viewCycleBackwardAction);
 
     try {
-      myObservableDocument.set(getDocumentManager().newUntitledDocument());
+      myObservableDocument.set(myDocumentManager.newUntitledDocument());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -580,7 +584,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   public void languageChanged(Event event) {
     applyComponentOrientation(language.getComponentOrientation());
     area.repaint();
-    getResourcePanel().area.repaint();
+    resp.area.repaint();
 
     CustomColumnsStorage.changeLanguage(language);
 
@@ -605,12 +609,12 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
     final ArtefactAction newAction;
     {
-      final GPAction taskNewAction = getTaskTree().getNewAction().asToolbarAction();
-      final GPAction resourceNewAction = getResourceTree().getNewAction().asToolbarAction();
+      final GPAction taskNewAction = tree.getNewAction().asToolbarAction();
+      final GPAction resourceNewAction = resp.getNewAction().asToolbarAction();
       newAction = new ArtefactNewAction(new ActiveActionProvider() {
         @Override
         public AbstractAction getActiveAction() {
-          return getTabs().getSelectedIndex() == UIFacade.GANTT_INDEX ? taskNewAction : resourceNewAction;
+          return myTabPane.getSelectedIndex() == UIFacade.GANTT_INDEX ? taskNewAction : resourceNewAction;
         }
       }, new Action[]{taskNewAction, resourceNewAction});
       builder.addButton(taskNewAction).addButton(resourceNewAction);
@@ -618,24 +622,24 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
     final ArtefactAction deleteAction;
     {
-      final GPAction taskDeleteAction = getTaskTree().getDeleteAction().asToolbarAction();
-      final GPAction resourceDeleteAction = getResourceTree().getDeleteAction().asToolbarAction();
+      final GPAction taskDeleteAction = tree.getDeleteAction().asToolbarAction();
+      final GPAction resourceDeleteAction = resp.getDeleteAction().asToolbarAction();
       deleteAction = new ArtefactDeleteAction(new ActiveActionProvider() {
         @Override
         public AbstractAction getActiveAction() {
-          return getTabs().getSelectedIndex() == UIFacade.GANTT_INDEX ? taskDeleteAction : resourceDeleteAction;
+          return myTabPane.getSelectedIndex() == UIFacade.GANTT_INDEX ? taskDeleteAction : resourceDeleteAction;
         }
       }, new Action[]{taskDeleteAction, resourceDeleteAction});
     }
 
     final ArtefactAction propertiesAction;
     {
-      final GPAction taskPropertiesAction = getTaskTree().getPropertiesAction().asToolbarAction();
-      final GPAction resourcePropertiesAction = getResourceTree().getPropertiesAction().asToolbarAction();
+      final GPAction taskPropertiesAction = tree.getPropertiesAction().asToolbarAction();
+      final GPAction resourcePropertiesAction = resp.getPropertiesAction().asToolbarAction();
       propertiesAction = new ArtefactPropertiesAction(new ActiveActionProvider() {
         @Override
         public AbstractAction getActiveAction() {
-          return getTabs().getSelectedIndex() == UIFacade.GANTT_INDEX ? taskPropertiesAction : resourcePropertiesAction;
+          return myTabPane.getSelectedIndex() == UIFacade.GANTT_INDEX ? taskPropertiesAction : resourcePropertiesAction;
         }
       }, new Action[]{taskPropertiesAction, resourcePropertiesAction});
     }
@@ -643,7 +647,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     UIUtil.registerActions(getRootPane(), false, newAction, propertiesAction, deleteAction);
     UIUtil.registerActions(myGanttChartTabContent.getComponent(), true, newAction, propertiesAction, deleteAction);
     UIUtil.registerActions(myResourceChartTabContent.getComponent(), true, newAction, propertiesAction, deleteAction);
-    getTabs().addChangeListener(new ChangeListener() {
+    myTabPane.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent e) {
         // Tell artefact actions that the active provider changed, so they
@@ -651,7 +655,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
         newAction.actionStateChanged();
         propertiesAction.actionStateChanged();
         deleteAction.actionStateChanged();
-        getTabs().getSelectedComponent().requestFocus();
+        myTabPane.getSelectedComponent().requestFocus();
       }
     });
 
@@ -664,7 +668,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
         .addWhitespace()
         .addButton(myEditMenu.getUndoAction().asToolbarAction())
         .addButton(myEditMenu.getRedoAction().asToolbarAction());
-    mySearchUi = new FXSearchUi(getProject(), getUIFacade());
+    mySearchUi = new FXSearchUi(this, myUIFacade);
     builder.addSearchBox(mySearchUi);
 
     //return result;
@@ -676,9 +680,9 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     GPLogger.log(String.format("Bounds after setVisible: %s", getBounds()));
     DesktopIntegration.setup(GanttProject.this);
     getActiveChart().reset();
-    getRssFeedChecker().setOptionsVersion(getGanttOptions().getVersion());
-    getRssFeedChecker().setUpdater(getUpdater());
-    getRssFeedChecker().run();
+    myRssChecker.setOptionsVersion(options.getVersion());
+    myRssChecker.setUpdater(myUpdater);
+    myRssChecker.run();
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
   }
 
@@ -691,11 +695,11 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
    * Refresh the information of the project on the status bar.
    */
   public void refreshProjectInformation() {
-    if (getTaskManager().getTaskCount() == 0 && resp.nbPeople() == 0) {
-      getStatusBar().setSecondText("");
+    if (myTaskManager.getTaskCount() == 0 && resp.nbPeople() == 0) {
+      statusBar.setSecondText("");
     } else {
-      getStatusBar().setSecondText(
-          language.getCorrectedLabel("task") + " : " + getTaskManager().getTaskCount() + "  "
+      statusBar.setSecondText(
+          language.getCorrectedLabel("task") + " : " + myTaskManager.getTaskCount() + "  "
               + language.getCorrectedLabel("resources") + " : " + resp.nbPeople());
     }
   }
@@ -704,16 +708,16 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
    * Print the project
    */
   public void printProject() {
-    Chart chart = getUIFacade().getActiveChart();
+    Chart chart = myUIFacade.getActiveChart();
     if (chart == null) {
-      getUIFacade().showErrorDialog(
+      myUIFacade.showErrorDialog(
           "Failed to find active chart.\nPlease report this problem to GanttProject development team");
       return;
     }
     try {
       PrintManager.printChart(chart, options.getExportSettings());
     } catch (OutOfMemoryError e) {
-      getUIFacade().showErrorDialog(GanttLanguage.getInstance().getText("printing.out_of_memory"));
+      myUIFacade.showErrorDialog(GanttLanguage.getInstance().getText("printing.out_of_memory"));
     }
   }
 
@@ -721,14 +725,14 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
    * Create a new project
    */
   public void newProject() {
-    getProjectUIFacade().createProject(getProject());
+    myProjectUIFacade.createProject(this);
     fireProjectCreated();
   }
 
   @Override
   public void open(Document document) throws IOException, DocumentException {
     document.read();
-    getDocumentManager().addToRecentDocuments(document);
+    myDocumentManager.addToRecentDocuments(document);
     //myMRU.add(document.getPath(), true);
     myObservableDocument.set(document);
     setTitle(language.getText("appliTitle") + " [" + document.getFileName() + "]");
@@ -744,18 +748,18 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   public void openStartupDocument(String path) {
     if (path != null) {
-      final Document document = getDocumentManager().getDocument(path);
+      final Document document = myDocumentManager.getDocument(path);
       try {
-        getProjectUIFacade().openProject(document, getProject());
+        myProjectUIFacade.openProject(document, this);
       } catch (DocumentException e) {
         fireProjectCreated(); // this will create columns in the tables, which are removed by previous call to openProject()
         if (!tryImportDocument(document)) {
-          getUIFacade().showErrorDialog(e);
+          myUIFacade.showErrorDialog(e);
         }
       } catch (IOException e) {
         fireProjectCreated(); // this will create columns in the tables, which are removed by previous call to openProject()
         if (!tryImportDocument(document)) {
-          getUIFacade().showErrorDialog(e);
+          myUIFacade.showErrorDialog(e);
         }
       }
     }
@@ -767,8 +771,8 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     for (Importer importer : importers) {
       if (Pattern.matches(".*(" + importer.getFileNamePattern() + ")$", document.getFilePath())) {
         try {
-          ((TaskManagerImpl) getTaskManager()).setEventsEnabled(false);
-          importer.setContext(getProject(), getUIFacade(), getGanttOptions().getPluginPreferences());
+          ((TaskManagerImpl) myTaskManager).setEventsEnabled(false);
+          importer.setContext(this, myUIFacade, options.getPluginPreferences());
           importer.setFile(new File(document.getFilePath()));
           importer.run();
           success = true;
@@ -778,7 +782,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
             e.printStackTrace(System.err);
           }
         } finally {
-          ((TaskManagerImpl) getTaskManager()).setEventsEnabled(true);
+          ((TaskManagerImpl) myTaskManager).setEventsEnabled(true);
         }
       }
     }
@@ -789,7 +793,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
    * Save the project as (with a dialog file chooser)
    */
   public boolean saveAsProject() {
-    getProjectUIFacade().saveProjectAs(getProject());
+    myProjectUIFacade.saveProjectAs(this);
     return true;
   }
 
@@ -797,7 +801,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
    * Save the project on a file
    */
   public void saveProject() {
-    getProjectUIFacade().saveProject(getProject());
+    myProjectUIFacade.saveProject(this);
   }
 
   public void changeWorkingDirectory(String newWorkDir) {
@@ -829,8 +833,8 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
       options.setWindowSize(getWidth(), getHeight(), (getExtendedState() & Frame.MAXIMIZED_BOTH) != 0);
       options.setUIConfiguration(myUIConfiguration);
       options.save();
-      if (getProjectUIFacade().ensureProjectSaved(getProject())) {
-        getProject().close();
+      if (myProjectUIFacade.ensureProjectSaved(this)) {
+        this.close();
         setVisible(false);
         dispose();
         if (ourQuitCallback != null) {
@@ -871,36 +875,27 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   }
 
   public GanttResourcePanel getResourcePanel() {
-    if (this.resp == null) {
-      this.resp = new GanttResourcePanel(this, getUIFacade());
-      this.resp.init();
-      myRowHeightAligners.add(this.resp.getRowHeightAligner());
-      getHumanResourceManager().addView(this.resp);
-    }
-    return this.resp;
+    return resp;
   }
 
   public GanttGraphicArea getArea() {
-    return this.area;
+    return area;
   }
 
   public GanttTree2 getTree() {
-    if (tree == null) {
-      tree = new GanttTree2(this, getTaskManager(), getTaskSelectionManager(), getUIFacade());
-    }
     return tree;
   }
 
   public GPAction getCopyAction() {
-    return getViewManager().getCopyAction();
+    return myViewManager.getCopyAction();
   }
 
   public GPAction getCutAction() {
-    return getViewManager().getCutAction();
+    return myViewManager.getCutAction();
   }
 
   public GPAction getPasteAction() {
-    return getViewManager().getPasteAction();
+    return myViewManager.getPasteAction();
   }
 
   @Override
@@ -1027,11 +1022,6 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   @Override
   public HumanResourceManager getHumanResourceManager() {
-    if (myHumanResourceManager == null) {
-      myHumanResourceManager = new HumanResourceManager(getRoleManager().getDefaultRole(),
-          getResourceCustomPropertyManager());
-      myHumanResourceManager.addView(this);
-    }
     return myHumanResourceManager;
   }
 
@@ -1042,9 +1032,6 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   @Override
   public RoleManager getRoleManager() {
-    if (myRoleManager == null) {
-      myRoleManager = RoleManager.Access.getInstance();
-    }
     return myRoleManager;
   }
 
@@ -1107,24 +1094,17 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     myFacadeInvalidator.projectClosed();
   }
 
-  protected ParserFactory getParserFactory() {
-    if (myParserFactory == null) {
-      myParserFactory = new ParserFactoryImpl();
-    }
-    return myParserFactory;
-  }
-
   // ///////////////////////////////////////////////////////////////
   // ResourceView implementation
   @Override
   public void resourceAdded(ResourceEvent event) {
-    if (getStatusBar() != null) {
+    if (statusBar != null) {
       // tabpane.setSelectedIndex(1);
       String description = language.getCorrectedLabel("resource.new.description");
       if (description == null) {
         description = language.getCorrectedLabel("resource.new");
       }
-      getUIFacade().setStatusText(description);
+      myUIFacade.setStatusText(description);
       setAskForSave(true);
       refreshProjectInformation();
     }
@@ -1151,12 +1131,12 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   @Override
   public GanttChart getGanttChart() {
-    return getArea();
+    return area;
   }
 
   @Override
   public TimelineChart getResourceChart() {
-    return getResourcePanel().area;
+    return resp.area;
   }
 
   @Override
@@ -1181,12 +1161,12 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   @Override
   public TaskTreeUIFacade getTaskTree() {
-    return getTree();
+    return tree;
   }
 
   @Override
   public ResourceTreeUIFacade getResourceTree() {
-    return getResourcePanel();
+    return resp;
   }
 
   private class ParserFactoryImpl implements ParserFactory {
@@ -1197,22 +1177,22 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
     @Override
     public GPSaver newSaver() {
-      return new GanttXMLSaver(GanttProject.this, getTree(), getResourcePanel(), getArea(), getUIFacade());
+      return new GanttXMLSaver(GanttProject.this, tree, resp, area, myUIFacade);
     }
   }
 
   @Override
   public int getViewIndex() {
-    if (getTabs() == null) {
+    if (myTabPane == null) {
       return -1;
     }
-    return getTabs().getSelectedIndex();
+    return myTabPane.getSelectedIndex();
   }
 
   @Override
   public void setViewIndex(int viewIndex) {
-    if (getTabs().getTabCount() > viewIndex) {
-      getTabs().setSelectedIndex(viewIndex);
+    if (myTabPane.getTabCount() > viewIndex) {
+      myTabPane.setSelectedIndex(viewIndex);
     }
   }
 
@@ -1222,9 +1202,9 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   @Override
   public void refresh() {
-    getTaskManager().processCriticalPath(getTaskManager().getRootTask());
-    getResourcePanel().getResourceTreeTableModel().updateResources();
-    getResourcePanel().getResourceTreeTable().setRowHeight(getResourceChart().getModel().calculateRowHeight());
+    myTaskManager.processCriticalPath(myTaskManager.getRootTask());
+    resp.getResourceTreeTableModel().updateResources();
+    resp.getResourceTreeTable().setRowHeight(getResourceChart().getModel().calculateRowHeight());
     for (Chart chart : PluginManager.getCharts()) {
       chart.reset();
     }
@@ -1243,7 +1223,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     myModifiedStateChangeListeners.remove(listener);
   }
 
-  protected void fireProjectModified(boolean isModified) {
+  private void fireProjectModified(boolean isModified) {
     for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
       try {
         if (isModified) {
@@ -1257,7 +1237,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     }
   }
 
-  protected void fireProjectCreated() {
+  private void fireProjectCreated() {
     for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
       modifiedStateChangeListener.projectCreated();
     }
@@ -1270,13 +1250,13 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     });
   }
 
-  protected void fireProjectClosed() {
+  private void fireProjectClosed() {
     for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
       modifiedStateChangeListener.projectClosed();
     }
   }
 
-  protected void fireProjectOpened() {
+  private void fireProjectOpened() {
     for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
       modifiedStateChangeListener.projectOpened();
     }
@@ -1291,11 +1271,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   public UIFacade getUIFacade() {
     return myUIFacade;
   }
-
-  protected UIFacadeImpl getUiFacadeImpl() {
-    return myUIFacade;
-  }
-
+  
   @Override
   public Frame getMainFrame() {
     return myUIFacade.getMainFrame();
@@ -1460,7 +1436,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     }
   }
 
-  protected void createContentPane(JComponent toolbar) {
+  private void createContentPane(JComponent toolbar) {
     myContentPaneBuilder.build(toolbar, getContentPane());
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
@@ -1470,15 +1446,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     setLocation(screenSize.width / 2 - (windowSize.width / 2), screenSize.height / 2 - (windowSize.height / 2));
     pack();
   }
-
-  public GanttTabbedPane getTabs() {
-    return myTabPane;
-  }
-
-  public IGanttProject getProject() {
-    return this;
-  }
-
+  
   @Override
   public TimeUnitStack getTimeUnitStack() {
     return myTimeUnitStack;
@@ -1486,7 +1454,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
 
   @Override
   public CustomPropertyManager getTaskCustomColumnManager() {
-    return getTaskManager().getCustomPropertyManager();
+    return myTaskManager.getCustomPropertyManager();
   }
 
   @Override
@@ -1497,20 +1465,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   protected void setUpdater(Updater updater) {
     myUpdater = updater;
   }
-
-  protected Updater getUpdater() {
-    return myUpdater;
-  }
-
-
-  protected RssFeedChecker getRssFeedChecker() {
-    return myRssChecker;
-  }
-
-  protected GanttStatusBar getStatusBar() {
-    return statusBar;
-  }
-
+  
   @Override
   public DocumentManager getDocumentManager() {
     return myDocumentManager;

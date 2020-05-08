@@ -24,14 +24,14 @@ import biz.ganttproject.app.FXToolbarBuilder;
 import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.calendar.GPCalendarListener;
 import biz.ganttproject.core.calendar.WeekendCalendarImpl;
-import biz.ganttproject.core.option.ChangeValueEvent;
-import biz.ganttproject.core.option.ChangeValueListener;
-import biz.ganttproject.core.option.ColorOption;
-import biz.ganttproject.core.option.DefaultColorOption;
+import biz.ganttproject.core.option.*;
+import biz.ganttproject.core.table.ColumnList;
 import biz.ganttproject.core.time.TimeUnitStack;
+import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import biz.ganttproject.platform.UpdateOptions;
 import biz.ganttproject.storage.cloud.GPCloudOptions;
 import biz.ganttproject.storage.cloud.GPCloudStatusBar;
+import com.bardsoftware.eclipsito.update.Updater;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.google.common.collect.Lists;
@@ -54,19 +54,21 @@ import net.sourceforge.ganttproject.action.view.ViewCycleAction;
 import net.sourceforge.ganttproject.action.view.ViewMenu;
 import net.sourceforge.ganttproject.action.zoom.ZoomActionSet;
 import net.sourceforge.ganttproject.chart.Chart;
+import net.sourceforge.ganttproject.chart.ChartModelBase;
 import net.sourceforge.ganttproject.chart.GanttChart;
 import net.sourceforge.ganttproject.chart.TimelineChart;
+import net.sourceforge.ganttproject.client.RssFeedChecker;
 import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
+import net.sourceforge.ganttproject.document.DocumentCreator;
+import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.export.CommandLineExportApplication;
-import net.sourceforge.ganttproject.gui.NotificationManager;
-import net.sourceforge.ganttproject.gui.ProjectMRUMenu;
-import net.sourceforge.ganttproject.gui.ResourceTreeUIFacade;
-import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
-import net.sourceforge.ganttproject.gui.UIConfiguration;
-import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.gui.UIUtil;
+import net.sourceforge.ganttproject.gui.*;
 import net.sourceforge.ganttproject.gui.scrolling.ScrollingManager;
+import net.sourceforge.ganttproject.gui.view.GPViewManager;
+import net.sourceforge.ganttproject.gui.view.ViewManagerImpl;
+import net.sourceforge.ganttproject.gui.window.ContentPaneBuilder;
+import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.importer.Importer;
 import net.sourceforge.ganttproject.io.GPSaver;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
@@ -81,15 +83,14 @@ import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceView;
 import net.sourceforge.ganttproject.roles.RoleManager;
-import net.sourceforge.ganttproject.task.CustomColumnsStorage;
-import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
-import net.sourceforge.ganttproject.task.TaskManager;
-import net.sourceforge.ganttproject.task.TaskManagerConfig;
-import net.sourceforge.ganttproject.task.TaskManagerImpl;
+import net.sourceforge.ganttproject.task.*;
+import net.sourceforge.ganttproject.undo.GPUndoManager;
+import net.sourceforge.ganttproject.undo.UndoManagerImpl;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -106,13 +107,34 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
  * Main frame of the project
  */
-public class GanttProject extends GanttProjectBase implements ResourceView, GanttLanguage.Listener {
+public class GanttProject extends JFrame implements IGanttProject, UIFacade, ResourceView, GanttLanguage.Listener {
+
+  //// Begin GanttProjectBase fields ////////////////////////////////////
+  protected final static GanttLanguage language = GanttLanguage.getInstance();
+  private final ViewManagerImpl myViewManager;
+  private final List<ProjectEventListener> myModifiedStateChangeListeners = new ArrayList<ProjectEventListener>();
+  private final UIFacadeImpl myUIFacade;
+  private final GanttStatusBar statusBar;
+  protected final TimeUnitStack myTimeUnitStack;
+  private final ProjectUIFacadeImpl myProjectUIFacade;
+  private final DocumentManager myDocumentManager;
+  /** The tabbed pane with the different parts of the project */
+  private final GanttTabbedPane myTabPane;
+  private final GPUndoManager myUndoManager;
+  private final CustomColumnsManager myResourceCustomPropertyManager = new CustomColumnsManager();
+  private final RssFeedChecker myRssChecker;
+  private final ContentPaneBuilder myContentPaneBuilder;
+  private Updater myUpdater;
+  public PrjInfos prjInfos = new PrjInfos();
+  //// End GanttProjectBase fields ////////////////////////////////////
 
   /**
    * The JTree part.
@@ -182,6 +204,45 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
   private FXSearchUi mySearchUi;
 
   public GanttProject(boolean isOnlyViewer) {
+    //// Begin GanttProjectBase constructor ///////////////////////////////
+    super("GanttProject");
+
+    statusBar = new GanttStatusBar(this);
+    myTabPane = new GanttTabbedPane();
+    myContentPaneBuilder = new ContentPaneBuilder(getTabs(), getStatusBar());
+
+    myTimeUnitStack = new GPTimeUnitStack();
+    NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
+    myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, getProject(), this);
+    GPLogger.setUIFacade(myUIFacade);
+    myDocumentManager = new DocumentCreator(this, prjInfos, getUIFacade(), null) {
+      @Override
+      protected ParserFactory getParserFactory() {
+        return GanttProject.this.getParserFactory();
+      }
+
+      @Override
+      protected ColumnList getVisibleFields() {
+        return getUIFacade().getTaskTree().getVisibleFields();
+      }
+
+      @Override
+      protected ColumnList getResourceVisibleFields() {
+        return getUIFacade().getResourceTree().getVisibleFields();
+      }
+    };
+    myUndoManager = new UndoManagerImpl(this, null, myDocumentManager) {
+      @Override
+      protected ParserFactory getParserFactory() {
+        return GanttProject.this.getParserFactory();
+      }
+    };
+    myViewManager = new ViewManagerImpl(getProject(), myUIFacade, myTabPane, getUndoManager());
+    myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myUndoManager);
+    myRssChecker = new RssFeedChecker((GPTimeUnitStack) getTimeUnitStack(), myUIFacade);
+    myUIFacade.addOptions(myRssChecker.getUiOptions());
+    //// End GanttProjectBase constructor ///////////////////////////////
+
     System.err.println("Creating main frame...");
     ToolTipManager.sharedInstance().setInitialDelay(200);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
@@ -1081,7 +1142,6 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
     myFacadeInvalidator.projectClosed();
   }
 
-  @Override
   protected ParserFactory getParserFactory() {
     if (myParserFactory == null) {
       myParserFactory = new ParserFactoryImpl();
@@ -1204,5 +1264,290 @@ public class GanttProject extends GanttProjectBase implements ResourceView, Gant
       chart.reset();
     }
     super.repaint();
+  }
+
+
+  //// GanttProjectBase methods /////////////// ////////////////////////////////////////////
+  @Override
+  public void addProjectEventListener(ProjectEventListener listener) {
+    myModifiedStateChangeListeners.add(listener);
+  }
+
+  @Override
+  public void removeProjectEventListener(ProjectEventListener listener) {
+    myModifiedStateChangeListeners.remove(listener);
+  }
+
+  protected void fireProjectModified(boolean isModified) {
+    for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
+      try {
+        if (isModified) {
+          modifiedStateChangeListener.projectModified();
+        } else {
+          modifiedStateChangeListener.projectSaved();
+        }
+      } catch (Exception e) {
+        showErrorDialog(e);
+      }
+    }
+  }
+
+  protected void fireProjectCreated() {
+    for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
+      modifiedStateChangeListener.projectCreated();
+    }
+    // A new project just got created, so it is not yet modified
+    SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        setModified(false);
+      }
+    });
+  }
+
+  protected void fireProjectClosed() {
+    for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
+      modifiedStateChangeListener.projectClosed();
+    }
+  }
+
+  protected void fireProjectOpened() {
+    for (ProjectEventListener modifiedStateChangeListener : myModifiedStateChangeListeners) {
+      modifiedStateChangeListener.projectOpened();
+    }
+  }
+
+  // ////////////////////////////////////////////////////////////////
+  // UIFacade
+  public ProjectUIFacade getProjectUIFacade() {
+    return myProjectUIFacade;
+  }
+
+  public UIFacade getUIFacade() {
+    return myUIFacade;
+  }
+
+  protected UIFacadeImpl getUiFacadeImpl() {
+    return myUIFacade;
+  }
+
+  @Override
+  public Frame getMainFrame() {
+    return myUIFacade.getMainFrame();
+  }
+
+  @Override
+  public Image getLogo() {
+    return myUIFacade.getLogo();
+  }
+
+  @Override
+  public void setLookAndFeel(GanttLookAndFeelInfo laf) {
+    myUIFacade.setLookAndFeel(laf);
+  }
+
+  @Override
+  public GanttLookAndFeelInfo getLookAndFeel() {
+    return myUIFacade.getLookAndFeel();
+  }
+
+  @Override
+  public DefaultEnumerationOption<Locale> getLanguageOption() {
+    return myUIFacade.getLanguageOption();
+  }
+
+  @Override
+  public IntegerOption getDpiOption() {
+    return myUIFacade.getDpiOption();
+  }
+
+  @Override
+  public GPOption<String> getLafOption() {
+    return myUIFacade.getLafOption();
+  }
+
+  @Override
+  public GPOptionGroup[] getOptions() {
+    return myUIFacade.getOptions();
+  }
+
+  @Override
+  public void addOnUpdateComponentTreeUi(Runnable callback) {
+    myUIFacade.addOnUpdateComponentTreeUi(callback);
+  }
+
+  @Override
+  public ScrollingManager getScrollingManager() {
+    return myUIFacade.getScrollingManager();
+  }
+
+  @Override
+  public ZoomManager getZoomManager() {
+    return myUIFacade.getZoomManager();
+  }
+
+  @Override
+  public GPUndoManager getUndoManager() {
+    return myUndoManager;
+  }
+
+  @Override
+  public void setStatusText(String text) {
+    myUIFacade.setStatusText(text);
+  }
+
+  @Override
+  public Dialog createDialog(Component content, Action[] buttonActions, String title) {
+    return myUIFacade.createDialog(content, buttonActions, title);
+  }
+
+  @Override
+  public UIFacade.Choice showConfirmationDialog(String message, String title) {
+    return myUIFacade.showConfirmationDialog(message, title);
+  }
+
+  @Override
+  public void showOptionDialog(int messageType, String message, Action[] actions) {
+    myUIFacade.showOptionDialog(messageType, message, actions);
+  }
+
+  @Override
+  public void showErrorDialog(String message) {
+    myUIFacade.showErrorDialog(message);
+  }
+
+  @Override
+  public void showErrorDialog(Throwable e) {
+    myUIFacade.showErrorDialog(e);
+  }
+
+  @Override
+  public void showNotificationDialog(NotificationChannel channel, String message) {
+    myUIFacade.showNotificationDialog(channel, message);
+  }
+
+  @Override
+  public void showSettingsDialog(String pageID) {
+    myUIFacade.showSettingsDialog(pageID);
+  }
+
+  @Override
+  public NotificationManager getNotificationManager() {
+    return myUIFacade.getNotificationManager();
+  }
+
+  @Override
+  public void showPopupMenu(Component invoker, Action[] actions, int x, int y) {
+    myUIFacade.showPopupMenu(invoker, actions, x, y);
+  }
+
+  @Override
+  public void showPopupMenu(Component invoker, Collection<Action> actions, int x, int y) {
+    myUIFacade.showPopupMenu(invoker, actions, x, y);
+  }
+
+  @Override
+  public TaskSelectionContext getTaskSelectionContext() {
+    return myUIFacade.getTaskSelectionContext();
+  }
+
+  @Override
+  public TaskSelectionManager getTaskSelectionManager() {
+    return myUIFacade.getTaskSelectionManager();
+  }
+
+  @Override
+  public TaskView getCurrentTaskView() {
+    return myUIFacade.getCurrentTaskView();
+  }
+
+  @Override
+  public void setWorkbenchTitle(String title) {
+    myUIFacade.setWorkbenchTitle(title);
+  }
+
+  public GPViewManager getViewManager() {
+    return myViewManager;
+  }
+
+  @Override
+  public Chart getActiveChart() {
+    return myViewManager.getSelectedView().getChart();
+  }
+
+  protected static class RowHeightAligner implements GPOptionChangeListener {
+    private final ChartModelBase myChartModel;
+
+    private final TreeTableContainer myTreeView;
+
+    public RowHeightAligner(TreeTableContainer treeView, ChartModelBase chartModel) {
+      myChartModel = chartModel;
+      myTreeView = treeView;
+      myChartModel.addOptionChangeListener(this);
+    }
+
+    @Override
+    public void optionsChanged() {
+      myTreeView.getTreeTable().setRowHeight(myChartModel.calculateRowHeight());
+      AbstractTableModel model = (AbstractTableModel) myTreeView.getTreeTable().getModel();
+      model.fireTableStructureChanged();
+      myTreeView.updateUI();
+    }
+  }
+
+  protected void createContentPane(JComponent toolbar) {
+    myContentPaneBuilder.build(toolbar, getContentPane());
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    Dimension windowSize = getPreferredSize();
+    // Put the frame at the middle of the screen
+    setLocation(screenSize.width / 2 - (windowSize.width / 2), screenSize.height / 2 - (windowSize.height / 2));
+    pack();
+  }
+
+  public GanttTabbedPane getTabs() {
+    return myTabPane;
+  }
+
+  public IGanttProject getProject() {
+    return this;
+  }
+
+  @Override
+  public TimeUnitStack getTimeUnitStack() {
+    return myTimeUnitStack;
+  }
+
+  @Override
+  public CustomPropertyManager getTaskCustomColumnManager() {
+    return getTaskManager().getCustomPropertyManager();
+  }
+
+  @Override
+  public CustomPropertyManager getResourceCustomPropertyManager() {
+    return myResourceCustomPropertyManager;
+  }
+
+  protected void setUpdater(Updater updater) {
+    myUpdater = updater;
+  }
+
+  protected Updater getUpdater() {
+    return myUpdater;
+  }
+
+
+  protected RssFeedChecker getRssFeedChecker() {
+    return myRssChecker;
+  }
+
+  protected GanttStatusBar getStatusBar() {
+    return statusBar;
+  }
+
+  @Override
+  public DocumentManager getDocumentManager() {
+    return myDocumentManager;
   }
 }

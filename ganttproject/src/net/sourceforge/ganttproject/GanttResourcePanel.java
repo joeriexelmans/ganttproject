@@ -55,7 +55,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
   public final GanttProject appli;
 
   private final ResourceActionSet myResourceActionSet;
-  private final GanttProjectBase.RowHeightAligner myRowHeightAligner;
+  private final GanttProject.RowHeightAligner myRowHeightAligner;
 
   public ResourceLoadGraphicArea area;
 
@@ -117,7 +117,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
     this.setBackground(new Color(0.0f, 0.0f, 0.0f));
     updateContextActions();
     // applyComponentOrientation(lang.getComponentOrientation());
-    myRowHeightAligner = new GanttProjectBase.RowHeightAligner(this, this.area.getChartModel());
+    myRowHeightAligner = new GanttProject.RowHeightAligner(this, this.area.getChartModel());
   }
 
   @Override
@@ -125,7 +125,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
     getTreeTable().initTreeTable();
   }
 
-  public GanttProjectBase.RowHeightAligner getRowHeightAligner() {
+  public GanttProject.RowHeightAligner getRowHeightAligner() {
     return myRowHeightAligner;
   }
 

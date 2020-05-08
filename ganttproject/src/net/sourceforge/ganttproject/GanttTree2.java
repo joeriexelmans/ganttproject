@@ -70,7 +70,7 @@ import java.util.logging.Level;
  */
 public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> implements
     /*DragSourceListener, DragGestureListener,*/ TaskTreeUIFacade {
-  private GanttProjectBase.RowHeightAligner myRowHeightAligner;
+  private GanttProject.RowHeightAligner myRowHeightAligner;
   private UIFacade myUIFacade;
 
   /** Pointer on graphic area */
@@ -99,7 +99,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
 
   private Highlighter myDragHighlighter;
 
-  private static Runnable createDirtyfier(final GanttProjectBase project) {
+  private static Runnable createDirtyfier(final GanttProject project) {
     return new Runnable() {
       @Override
       public void run() {
@@ -343,7 +343,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
   /** Change graphic part */
   public void setGraphicArea(ChartComponentBase area) {
     this.area = area;
-    myRowHeightAligner = new GanttProjectBase.RowHeightAligner(this, this.area.getChartModel());
+    myRowHeightAligner = new GanttProject.RowHeightAligner(this, this.area.getChartModel());
   }
 
   @Override
@@ -465,7 +465,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     }
   }
 
-  public GanttProjectBase.RowHeightAligner getRowHeightAligner() {
+  public GanttProject.RowHeightAligner getRowHeightAligner() {
     return myRowHeightAligner;
   }
 

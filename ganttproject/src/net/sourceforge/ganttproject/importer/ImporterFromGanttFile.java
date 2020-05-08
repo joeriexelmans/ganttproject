@@ -233,8 +233,8 @@ public class ImporterFromGanttFile extends ImporterBase {
 
     Map<Task, Task> result = null;
     {
-      CustomPropertyManager targetCustomColumnStorage = targetProject.getTaskCustomColumnManager();
-      Map<CustomPropertyDefinition, CustomPropertyDefinition> that2thisCustomDefs = targetCustomColumnStorage.importData(bufferProject.getTaskCustomColumnManager());
+      CustomPropertyManager targetCustomColumnStorage = targetProject.getTaskCustomPropertyManager();
+      Map<CustomPropertyDefinition, CustomPropertyDefinition> that2thisCustomDefs = targetCustomColumnStorage.importData(bufferProject.getTaskCustomPropertyManager());
       TaskManagerImpl origTaskManager = (TaskManagerImpl) targetProject.getTaskManager();
       try {
         origTaskManager.setEventsEnabled(false);

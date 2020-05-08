@@ -38,7 +38,7 @@ import net.sourceforge.ganttproject.task.TaskManager;
  *
  * @author bard
  */
-public interface IGanttProject {
+public interface IGanttProject extends IProject {
 
   String getProjectName();
 
@@ -58,16 +58,8 @@ public interface IGanttProject {
 
   TimeUnitStack getTimeUnitStack();
 
-
-  // current project - entities
-  HumanResourceManager getHumanResourceManager();
-  RoleManager getRoleManager();
-  TaskManager getTaskManager();
-  GPCalendarCalc getActiveCalendar();
-  CustomPropertyManager getResourceCustomPropertyManager();
-  CustomPropertyManager getTaskCustomColumnManager();
-  // CustomColumnsStorage getCustomColumnsStorage();
-  List<GanttPreviousState> getBaselines();
+  // Get the currently opened project
+  public IProject getCurrentProject();
 
   // main app logic
   void open(Document document) throws IOException, DocumentException;

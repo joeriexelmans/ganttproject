@@ -87,14 +87,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   }
 
   @Override
-  public CustomPropertyManager getTaskCustomColumnManager() {
-    return getTaskManager().getCustomPropertyManager();
-  }
-
-  @Override
   public HumanResourceManager getHumanResourceManager() {
     return myBufferResourceManager;
   }
-
-
 }

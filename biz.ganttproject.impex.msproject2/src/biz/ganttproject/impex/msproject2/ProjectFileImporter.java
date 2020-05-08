@@ -529,7 +529,7 @@ class ProjectFileImporter {
           name = tf.getName();
         }
 
-        def = myNativeProject.getTaskCustomColumnManager().createDefinition(typeAsString, name, null);
+        def = myNativeProject.getTaskCustomPropertyManager().createDefinition(typeAsString, name, null);
         def.getAttributes().put(CustomPropertyMapping.MSPROJECT_TYPE, tf.name());
         myTaskCustomPropertyMapping.put(tf, def);
       }

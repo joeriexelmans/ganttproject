@@ -58,7 +58,7 @@ public class GanttTreeTable extends GPTreeTableBase {
   }
 
   GanttTreeTable(IGanttProject project, final UIFacade uifacade, GanttTreeTableModel model) {
-    super(project, uifacade, project.getTaskCustomColumnManager(), model);
+    super(project, uifacade, project.getTaskManager().getCustomPropertyManager(), model);
     myUIfacade = uifacade;
     getTableHeaderUiFacade().createDefaultColumns(TaskDefaultColumn.getColumnStubs());
     setDropMode(DropMode.ON);

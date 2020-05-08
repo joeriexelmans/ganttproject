@@ -7,10 +7,7 @@ import biz.ganttproject.core.time.TimeUnitStack;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import net.sourceforge.ganttproject.GanttPreviousState;
-import net.sourceforge.ganttproject.ObservableImpl;
-import net.sourceforge.ganttproject.PrjInfos;
-import net.sourceforge.ganttproject.ProjectEventListener;
+import net.sourceforge.ganttproject.*;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
@@ -28,7 +25,7 @@ import java.util.List;
  * Domain model class for everything that makes up a "project" in GanttProject, and nothing more.
  * Does not include or depend on any "view" or UI logic.
  */
-public class Project extends ObservableImpl {
+public class Project extends ObservableImpl implements IProject {
     public final WeekendCalendarImpl calendar;
     public final RoleManagerImpl roleManager;
     public final CustomColumnsManager hrCustomPropertyManager;
@@ -147,5 +144,40 @@ public class Project extends ObservableImpl {
                 notifyListeners();
             }
         });
+    }
+
+    // Implementation of IProject:
+
+    @Override
+    public WeekendCalendarImpl getActiveCalendar() {
+        return calendar;
+    }
+    @Override
+    public RoleManagerImpl getRoleManager() {
+        return roleManager;
+    }
+    @Override
+    public CustomColumnsManager getResourceCustomPropertyManager() {
+        return hrCustomPropertyManager;
+    }
+    @Override
+    public HumanResourceManager getHumanResourceManager() {
+        return hrManager;
+    }
+    @Override
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+    @Override
+    public CustomPropertyManager getTaskCustomPropertyManager() {
+        return taskManager.getCustomPropertyManager();
+    }
+    @Override
+    public PrjInfos getPrjInfos() {
+        return prjinfos;
+    }
+    @Override
+    public ArrayList<GanttPreviousState> getBaselines() {
+        return baseLines;
     }
 }

@@ -25,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.IGanttProject;
+import net.sourceforge.ganttproject.IProject;
 import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.gui.UIFacade;
@@ -52,7 +53,7 @@ import java.util.Set;
 public class ProxyDocument implements Document {
   private Document myPhysicalDocument;
 
-  private IGanttProject myProject;
+  private IProject myProject;
 
   private PrjInfos myPrjInfos;
 
@@ -68,7 +69,7 @@ public class ProxyDocument implements Document {
 
   private final ColumnList myResourceVisibleFields;
 
-  ProxyDocument(DocumentCreator creator, Document physicalDocument, IGanttProject project, PrjInfos prji, UIFacade uiFacade, ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
+  ProxyDocument(DocumentCreator creator, Document physicalDocument, IProject project, PrjInfos prji, UIFacade uiFacade, ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
     myPhysicalDocument = physicalDocument;
     myProject = project;
     myPrjInfos = prji;
@@ -169,10 +170,10 @@ public class ProxyDocument implements Document {
     // parsing, failure);
     // AcquireLockState lock = new AcquireLockState(parsing, confirmation);
     try {
-      getTaskManager().setEventsEnabled(false);
+      ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(false);
       parsing.enter();
     } finally {
-      getTaskManager().setEventsEnabled(true);
+      ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(true);
     }
     // lock.enter();
   }
@@ -187,7 +188,7 @@ public class ProxyDocument implements Document {
       bufferStream.flush();
       buffer = bufferStream.toByteArray();
     } catch (IOException e) {
-      getUIFacade().showErrorDialog(e);
+      myUIFacade.showErrorDialog(e);
       return;
     }
     OutputStream output = getOutputStream();
@@ -197,26 +198,6 @@ public class ProxyDocument implements Document {
     } finally {
       output.close();
     }
-  }
-
-  private TaskManagerImpl getTaskManager() {
-    return (TaskManagerImpl) myProject.getTaskManager();
-  }
-
-  private RoleManager getRoleManager() {
-    return myProject.getRoleManager();
-  }
-
-  private HumanResourceManager getHumanResourceManager() {
-    return myProject.getHumanResourceManager();
-  }
-
-  private GPCalendarCalc getActiveCalendar() {
-    return myProject.getActiveCalendar();
-  }
-
-  private UIFacade getUIFacade() {
-    return myUIFacade;
   }
 
   // class AcquireLockState {
@@ -276,25 +257,27 @@ public class ProxyDocument implements Document {
     void enter() throws IOException, DocumentException {
       GPParser opener = myParserFactory.newParser();
       ParsingContext ctx = new ParsingContext();
-      HumanResourceManager hrManager = getHumanResourceManager();
-      RoleManager roleManager = getRoleManager();
-      TaskManager taskManager = getTaskManager();
+
+      HumanResourceManager hrManager = myProject.getHumanResourceManager();
+      RoleManager roleManager = myProject.getRoleManager();
+      TaskManager taskManager = myProject.getTaskManager();
+      GPCalendarCalc calendar = myProject.getActiveCalendar();
+
       ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
           myProject.getResourceCustomPropertyManager());
       DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager);
-      AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, getTaskManager(), getRoleManager());
+      AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, taskManager, roleManager);
       VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
       PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(myProject.getBaselines());
       RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
       TaskTagHandler taskHandler = new TaskTagHandler(taskManager, ctx);
       TaskParsingListener taskParsingListener = new TaskParsingListener(taskManager, myUIFacade.getTaskTree());
-      DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(getActiveCalendar());
-      OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(getActiveCalendar());
+      DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
+      OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(calendar);
 
-      TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(myProject.getTaskCustomColumnManager());
+      TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager());
       opener.addTagHandler(taskPropHandler);
-      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx,
-          getTaskManager());
+      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, taskManager);
       opener.addTagHandler(customPropHandler);
 
 
@@ -304,14 +287,14 @@ public class ProxyDocument implements Document {
       opener.addTagHandler(pilsenTaskDisplayHandler);
       opener.addTagHandler(legacyTaskDisplayHandler);
       opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myTaskVisibleFields, pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
-      opener.addTagHandler(new ViewTagHandler("gantt-chart", getUIFacade(), pilsenTaskDisplayHandler));
+      opener.addTagHandler(new ViewTagHandler("gantt-chart", myUIFacade, pilsenTaskDisplayHandler));
 
 
       TaskDisplayColumnsTagHandler resourceFieldsHandler = new TaskDisplayColumnsTagHandler(
           "field", "id", "order", "width", "visible");
       opener.addTagHandler(resourceFieldsHandler);
       opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myResourceVisibleFields, resourceFieldsHandler));
-      opener.addTagHandler(new ViewTagHandler("resource-table", getUIFacade(), resourceFieldsHandler));
+      opener.addTagHandler(new ViewTagHandler("resource-table", myUIFacade, resourceFieldsHandler));
 
       opener.addTagHandler(taskHandler);
       opener.addParsingListener(taskParsingListener);
@@ -342,8 +325,8 @@ public class ProxyDocument implements Document {
       opener.addParsingListener(resourceHandler);
 
 
-      HolidayTagHandler holidayHandler = new HolidayTagHandler(myProject.getActiveCalendar());
-      opener.addTagHandler(new CalendarsTagHandler(myProject.getActiveCalendar()));
+      HolidayTagHandler holidayHandler = new HolidayTagHandler(calendar);
+      opener.addTagHandler(new CalendarsTagHandler(calendar));
       opener.addTagHandler(holidayHandler);
 
       PortfolioTagHandler portfolioHandler = new PortfolioTagHandler();

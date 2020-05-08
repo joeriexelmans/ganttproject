@@ -148,7 +148,7 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
       }
     });
     myPublicHolidayDialogAction = new ProjectCalendarDialogAction(getProject(), getUIFacade());
-    getProject().getTaskCustomColumnManager().addListener(this);
+    getProject().getTaskManager().getCustomPropertyManager().addListener(this);
     initMouseListeners();
   }
 

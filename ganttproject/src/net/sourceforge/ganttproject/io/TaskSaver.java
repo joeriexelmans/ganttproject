@@ -50,12 +50,12 @@ class TaskSaver extends SaverBase {
     startElement("tasks", attrs, handler);
 
     startElement("taskproperties", handler);
-    writeTaskProperties(handler, project.getTaskCustomColumnManager());
+    writeTaskProperties(handler, project.getTaskManager().getCustomPropertyManager());
     endElement("taskproperties", handler);
     Task rootTask = project.getTaskManager().getTaskHierarchy().getRootTask();
     Task[] tasks = project.getTaskManager().getTaskHierarchy().getNestedTasks(rootTask);
     for (Task task : tasks) {
-      writeTask(handler, (GanttTask) task, project.getTaskCustomColumnManager());
+      writeTask(handler, (GanttTask) task, project.getTaskManager().getCustomPropertyManager());
     }
     endElement("tasks", handler);
   }

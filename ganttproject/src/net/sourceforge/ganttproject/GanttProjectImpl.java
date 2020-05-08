@@ -48,10 +48,7 @@ import java.util.List;
 
 public class GanttProjectImpl implements IGanttProject {
   private static final GanttLanguage language = GanttLanguage.getInstance();
-  private String myProjectName;
-  private String myDescription;
-  private String myOrganization;
-  private String myWebLink;
+  private PrjInfos myPrjInfos;
   private final TaskManager myTaskManager;
   private final HumanResourceManager myResourceManager;
   private final TaskManagerConfigImpl myTaskManagerConfig;
@@ -59,7 +56,7 @@ public class GanttProjectImpl implements IGanttProject {
   private final List<ProjectEventListener> myListeners = new ArrayList<ProjectEventListener>();
   private UIConfiguration myUIConfiguration;
   private final CustomColumnsManager myTaskCustomColumnManager;
-  private final List<GanttPreviousState> myBaselines = new ArrayList<GanttPreviousState>();
+  private final ArrayList<GanttPreviousState> myBaselines = new ArrayList<GanttPreviousState>();
   private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
   private final GPTimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
 
@@ -80,42 +77,42 @@ public class GanttProjectImpl implements IGanttProject {
 
   @Override
   public String getProjectName() {
-    return myProjectName;
+    return myPrjInfos.getName();
   }
 
   @Override
   public void setProjectName(String projectName) {
-    myProjectName = projectName;
+    myPrjInfos.setName(projectName);
   }
 
   @Override
   public String getDescription() {
-    return Strings.nullToEmpty(myDescription);
+    return myPrjInfos.getDescription();
   }
 
   @Override
   public void setDescription(String description) {
-    myDescription = description;
+    myPrjInfos.setDescription(description);
   }
 
   @Override
   public String getOrganization() {
-    return myOrganization;
+    return myPrjInfos.getOrganization();
   }
 
   @Override
   public void setOrganization(String organization) {
-    myOrganization = organization;
+    myPrjInfos.setOrganization(organization);
   }
 
   @Override
   public String getWebLink() {
-    return myWebLink;
+    return myPrjInfos.getWebLink();
   }
 
   @Override
   public void setWebLink(String webLink) {
-    myWebLink = webLink;
+    myPrjInfos.setWebLink(webLink);
   }
 
   public Task newTask() {
@@ -147,6 +144,19 @@ public class GanttProjectImpl implements IGanttProject {
   public TaskManager getTaskManager() {
     return myTaskManager;
   }
+
+  @Override
+  public CustomPropertyManager getTaskCustomPropertyManager() {
+    return myTaskCustomColumnManager;
+  }
+
+  @Override
+  public PrjInfos getPrjInfos() {
+    return myPrjInfos;
+  }
+
+  @Override
+  public IProject getCurrentProject() { return this; }
 
   @Override
   public GPCalendarCalc getActiveCalendar() {
@@ -248,12 +258,7 @@ public class GanttProjectImpl implements IGanttProject {
   }
 
   @Override
-  public CustomPropertyManager getTaskCustomColumnManager() {
-    return myTaskCustomColumnManager;
-  }
-
-  @Override
-  public List<GanttPreviousState> getBaselines() {
+  public ArrayList<GanttPreviousState> getBaselines() {
     return myBaselines;
   }
 

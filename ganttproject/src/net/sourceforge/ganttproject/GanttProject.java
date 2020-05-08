@@ -115,7 +115,7 @@ import java.util.regex.Pattern;
 /**
  * Main frame of the project
  */
-public class GanttProject extends JFrame implements IGanttProject, UIFacade, ResourceView, GanttLanguage.Listener {
+public class GanttProject extends JFrame implements IGanttProject, IProject, UIFacade, ResourceView, GanttLanguage.Listener {
 
   //// Begin GanttProjectBase fields ////////////////////////////////////
   private final static GanttLanguage language = GanttLanguage.getInstance();
@@ -679,7 +679,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   }
 
   @Override
-  public List<GanttPreviousState> getBaselines() {
+  public ArrayList<GanttPreviousState> getBaselines() {
     return myPreviousStates;
   }
 
@@ -1028,6 +1028,22 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   }
 
   @Override
+  public PrjInfos getPrjInfos() {
+    return prjInfos;
+  }
+
+  @Override
+  public CustomPropertyManager getTaskCustomPropertyManager() {
+    return myTaskManager.getCustomPropertyManager();
+  }
+
+  @Override
+  public IProject getCurrentProject() {
+    // TODO: instead return a 'Project' object
+    return this;
+  }
+
+  @Override
   public Document getDocument() {
     return myObservableDocument.get();
   }
@@ -1075,7 +1091,7 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
     });
     myRoleManager.clear();
     myObservableDocument.set(null);
-    getTaskCustomColumnManager().reset();
+    getTaskCustomPropertyManager().reset();
     getResourceCustomPropertyManager().reset();
 
     for (int i = 0; i < myPreviousStates.size(); i++) {
@@ -1442,11 +1458,6 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   @Override
   public TimeUnitStack getTimeUnitStack() {
     return myTimeUnitStack;
-  }
-
-  @Override
-  public CustomPropertyManager getTaskCustomColumnManager() {
-    return myTaskManager.getCustomPropertyManager();
   }
 
   @Override

@@ -66,7 +66,7 @@ public class PropertyFetcher {
     id2value.put(TaskDefaultColumn.COST.getStub().getID(), t.getCost().getValue().toPlainString());
 
     CustomColumnsValues customValues = t.getCustomValues();
-    for (CustomPropertyDefinition def : myProject.getTaskCustomColumnManager().getDefinitions()) {
+    for (CustomPropertyDefinition def : myProject.getTaskCustomPropertyManager().getDefinitions()) {
       Object value = customValues.getValue(def);
       String valueAsString = value == null ? "" : value.toString();
       id2value.put(def.getID(), valueAsString);

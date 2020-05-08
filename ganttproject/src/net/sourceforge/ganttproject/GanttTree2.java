@@ -111,7 +111,7 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
   private static Pair<GanttTreeTable, GanttTreeTableModel> createTreeTable(
       IGanttProject project, Runnable dirtyfier, UIFacade uiFacade) {
     GanttTreeTableModel tableModel = new GanttTreeTableModel(project.getTaskManager(),
-        project.getTaskCustomColumnManager(), uiFacade, dirtyfier);
+        project.getTaskManager().getCustomPropertyManager(), uiFacade, dirtyfier);
     return Pair.create(new GanttTreeTable(project, uiFacade, tableModel), tableModel);
   }
 

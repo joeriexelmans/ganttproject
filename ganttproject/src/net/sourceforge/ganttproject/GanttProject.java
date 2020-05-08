@@ -136,71 +136,36 @@ public class GanttProject extends JFrame implements IGanttProject, UIFacade, Res
   public PrjInfos prjInfos = new PrjInfos();
   //// End GanttProjectBase fields ////////////////////////////////////
 
-  /**
-   * The JTree part.
-   */
+  /** The JTree part. */
   private GanttTree2 tree;
-
-  /**
-   * GanttGraphicArea for the calendar with Gantt
-   */
+  /** GanttGraphicArea for the calendar with Gantt */
   private GanttGraphicArea area;
-
-  /**
-   * GanttPeoplePanel to edit person that work on the project
-   */
+  /** GanttPeoplePanel to edit person that work on the project */
   private GanttResourcePanel resp;
-
   private final EditMenu myEditMenu;
-
   private final ProjectMenu myProjectMenu;
-
   private SimpleObjectProperty<Document> myObservableDocument = new SimpleObjectProperty<>();
-
-  /**
-   * Boolean to know if the file has been modify
-   */
+  /** Boolean to know if the file has been modify */
   public boolean askForSave = false;
-
-  /**
-   * Is the application only for viewer.
-   */
+  /** Is the application only for viewer. */
   public boolean isOnlyViewer;
-
   private final ResourceActionSet myResourceActions;
-
   private final ZoomActionSet myZoomActions;
-
   private final TaskManager myTaskManager;
-
   private final FacadeInvalidator myFacadeInvalidator;
-
   private UIConfiguration myUIConfiguration;
-
   private final GanttOptions options;
-
   private TaskContainmentHierarchyFacadeImpl myCachedFacade;
-
   private ArrayList<GanttPreviousState> myPreviousStates = new ArrayList<GanttPreviousState>();
-
   private MouseListener myStopEditingMouseListener = null;
-
   private GanttChartTabContentPanel myGanttChartTabContent;
-
   private ResourceChartTabContentPanel myResourceChartTabContent;
-
   private List<RowHeightAligner> myRowHeightAligners = Lists.newArrayList();
-
   private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
-
   private ParserFactory myParserFactory;
-
   private HumanResourceManager myHumanResourceManager;
-
   private RoleManager myRoleManager;
-
   private static Runnable ourQuitCallback;
-
   private FXSearchUi mySearchUi;
 
   public GanttProject(boolean isOnlyViewer) {

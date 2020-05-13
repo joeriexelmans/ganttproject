@@ -269,9 +269,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
     myTaskManager = TaskManager.Access.newInstance(new TaskContainmentHierarchyFacade.Factory() {
       @Override
       public TaskContainmentHierarchyFacade createFacade() {
-        if (myFacadeInvalidator == null) {
-          return TaskContainmentHierarchyFacade.STUB;
-        }
         if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
           myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
           myFacadeInvalidator.reset();

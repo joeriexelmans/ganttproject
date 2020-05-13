@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.importer;
 
 import biz.ganttproject.core.table.ColumnList;
-import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttProjectImpl;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.PrjInfos;
@@ -46,7 +45,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   PrjInfos myProjectInfo = new PrjInfos();
   final DocumentManager myDocumentManager;
   final UIFacade myUIfacade;
-  private final ColumnList myVisibleFields = new VisibleFieldsImpl();
+  private final ColumnList myTaskVisibleFields = new VisibleFieldsImpl();
   final ColumnList myResourceVisibleFields = new VisibleFieldsImpl();
   private final HumanResourceManager myBufferResourceManager;
 
@@ -54,7 +53,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
     myDocumentManager = new DocumentCreator(this, myProjectInfo, uiFacade, this) {
       @Override
       protected ColumnList getTaskVisibleFields() {
-        return myVisibleFields;
+        return myTaskVisibleFields;
       }
       @Override
       protected ColumnList getResourceVisibleFields() {
@@ -68,7 +67,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   }
 
   public ColumnList getVisibleFields() {
-    return myVisibleFields;
+    return myTaskVisibleFields;
   }
 
   @Override

@@ -186,7 +186,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
         return myParserFactory;
       }
       @Override
-      protected ColumnList getVisibleFields() {
+      protected ColumnList getTaskVisibleFields() {
         return myUIFacade.getTaskTree().getVisibleFields();
       }
       @Override

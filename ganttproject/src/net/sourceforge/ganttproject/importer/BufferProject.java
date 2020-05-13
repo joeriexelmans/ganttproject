@@ -53,7 +53,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   public BufferProject(IGanttProject targetProject, UIFacade uiFacade) {
     myDocumentManager = new DocumentCreator(this, myProjectInfo, uiFacade, this) {
       @Override
-      protected ColumnList getVisibleFields() {
+      protected ColumnList getTaskVisibleFields() {
         return myVisibleFields;
       }
       @Override

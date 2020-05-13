@@ -9,6 +9,7 @@ import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.parser.*;
 import net.sourceforge.ganttproject.project.Project;
+import net.sourceforge.ganttproject.project.ProjectFactory;
 
 import java.awt.*;
 import java.io.ByteArrayInputStream;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -119,50 +119,18 @@ public class TestParser extends TestCase {
     }
 
     public void testParser() throws IOException {
-        Project project = new Project(
-                new GPTimeUnitStack(),
-                null,
-                new TestSetupHelper.TaskManagerTestConfig());
+        ProjectFactory factory = new ProjectFactory(){
+            public Project newProject() {
+                return new Project(
+                    new GPTimeUnitStack(),
+                    null,
+                    new TestSetupHelper.TaskManagerTestConfig());
+            }
+        };
 
-        GPParser opener = new GanttXMLOpen();
-        ParsingContext ctx = new ParsingContext();
-
-        opener.addTagHandler(TaskDisplayColumnsTagHandler.createPilsenHandler());
-        opener.addTagHandler(TaskDisplayColumnsTagHandler.createLegacyHandler());
-        opener.addTagHandler(new TaskDisplayColumnsTagHandler(
-                "field", "id", "order", "width", "visible"));
-        opener.addTagHandler(new TaskTagHandler(project.taskManager, ctx));
-        opener.addTagHandler(new TaskPropertiesTagHandler(project.taskManager.getCustomPropertyManager()));
-        opener.addTagHandler(new DescriptionTagHandler(project.prjinfos));
-        opener.addTagHandler(new NotesTagHandler(ctx));
-        opener.addTagHandler(new ProjectTagHandler(project.prjinfos));
-        opener.addTagHandler(new TasksTagHandler(project.taskManager));
-        opener.addTagHandler(new VacationTagHandler(project.hrManager));
-        opener.addTagHandler(new PreviousStateTasksTagHandler(project.baseLines));
-        opener.addTagHandler(new RoleTagHandler(project.roleManager));
-        opener.addTagHandler(new DefaultWeekTagHandler(project.calendar));
-        opener.addTagHandler(new OnlyShowWeekendsTagHandler(project.calendar));
-        opener.addTagHandler(new OptionTagHandler<ListOption<Color>>(GPColorChooser.getRecentColorsOption()));
-        opener.addTagHandler(new CalendarsTagHandler(project.calendar));
-        opener.addTagHandler(new HolidayTagHandler(project.calendar));
-
-        CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, project.taskManager);
-        ResourceTagHandler resourceHandler = new ResourceTagHandler(project.hrManager, project.roleManager,
-                project.hrCustomPropertyManager);
-        DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, project.taskManager);
-        AllocationTagHandler allocationHandler = new AllocationTagHandler(project.hrManager, project.taskManager, project.roleManager);
-
-        opener.addTagHandler(customPropHandler);
-        opener.addTagHandler(resourceHandler);
-        opener.addTagHandler(dependencyHandler);
-        opener.addTagHandler(allocationHandler);
-        opener.addParsingListener(customPropHandler);
-        opener.addParsingListener(allocationHandler);
-        opener.addParsingListener(dependencyHandler);
-        opener.addParsingListener(resourceHandler);
-
+        Parser parser = new Parser(factory);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
-        opener.load(is);
+        Project project = parser.parse(is);
 
         assertEquals(4, project.taskManager.getTaskCount());
         assertEquals(2, project.hrManager.getResources().size());
@@ -172,9 +140,5 @@ public class TestParser extends TestCase {
 
         assertTrue(project.taskManager.getTask(1).getAssignments()[0].getResource() == project.hrManager.getById(0));
         assertTrue(project.hrManager.getById(0).getAssignments()[0].getTask() == project.taskManager.getTask(1));
-    }
-
-
-    public void setUp() throws Exception {
     }
 }

@@ -79,6 +79,7 @@ import net.sourceforge.ganttproject.parser.GPParser;
 import net.sourceforge.ganttproject.parser.ParserFactory;
 import net.sourceforge.ganttproject.plugins.PluginManager;
 import net.sourceforge.ganttproject.print.PrintManager;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceView;

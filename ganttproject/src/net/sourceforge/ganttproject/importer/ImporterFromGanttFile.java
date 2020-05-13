@@ -246,7 +246,7 @@ public class ImporterFromGanttFile extends ImporterBase {
       }
     }
     uiFacade.refresh();
-    uiFacade.getTaskTree().getVisibleFields().importData(bufferProject.getVisibleFields());
+    uiFacade.getTaskTree().getVisibleFields().importData(bufferProject.getTaskVisibleFields());
     uiFacade.getResourceTree().getVisibleFields().importData(bufferProject.myResourceVisibleFields);
     return result;
   }

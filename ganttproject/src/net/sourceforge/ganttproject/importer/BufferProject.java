@@ -66,7 +66,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
         new CustomColumnsManager(), targetProject.getRoleManager());
   }
 
-  public ColumnList getVisibleFields() {
+  public ColumnList getTaskVisibleFields() {
     return myTaskVisibleFields;
   }
 

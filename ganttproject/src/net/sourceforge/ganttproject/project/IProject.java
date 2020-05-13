@@ -1,6 +1,9 @@
-package net.sourceforge.ganttproject;
+package net.sourceforge.ganttproject.project;
 
 import biz.ganttproject.core.calendar.GPCalendarCalc;
+import net.sourceforge.ganttproject.CustomPropertyManager;
+import net.sourceforge.ganttproject.GanttPreviousState;
+import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.TaskManager;

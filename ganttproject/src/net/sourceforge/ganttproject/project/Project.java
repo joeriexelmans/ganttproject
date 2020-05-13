@@ -2,13 +2,10 @@ package net.sourceforge.ganttproject.project;
 
 import biz.ganttproject.core.calendar.GPCalendarListener;
 import biz.ganttproject.core.calendar.WeekendCalendarImpl;
-import biz.ganttproject.core.time.TimeUnit;
 import biz.ganttproject.core.time.TimeUnitStack;
-import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import net.sourceforge.ganttproject.*;
-import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceView;
@@ -17,9 +14,7 @@ import net.sourceforge.ganttproject.roles.RoleManagerImpl;
 import net.sourceforge.ganttproject.task.*;
 import net.sourceforge.ganttproject.task.event.*;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Domain model class for everything that makes up a "project" in GanttProject, and nothing more.

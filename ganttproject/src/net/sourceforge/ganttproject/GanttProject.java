@@ -279,7 +279,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
     }, myHumanResourceManager, myCalendar, myTimeUnitStack, taskConfig);
     addProjectEventListener(myTaskManager.getProjectListener());
     myCalendar.addListener(myTaskManager.getCalendarListener());
-    ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject.png"));
+    ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
 
     resp = new GanttResourcePanel(this, myUIFacade);

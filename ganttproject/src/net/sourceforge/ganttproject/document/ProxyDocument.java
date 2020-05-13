@@ -284,6 +284,7 @@ public class ProxyDocument implements Document {
 
       opener.addTagHandler(pilsenTaskDisplayHandler);
       opener.addTagHandler(legacyTaskDisplayHandler);
+      // check
       opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myTaskVisibleFields, pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
       opener.addTagHandler(new ViewTagHandler("gantt-chart", myUIFacade, pilsenTaskDisplayHandler));
 

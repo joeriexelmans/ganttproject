@@ -718,7 +718,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
    * Create a new project
    */
   public void newProject() {
-    myProjectUIFacade.createProject(this);
+    myProjectUIFacade.createProjectWizard(this);
     fireProjectCreated();
   }
 

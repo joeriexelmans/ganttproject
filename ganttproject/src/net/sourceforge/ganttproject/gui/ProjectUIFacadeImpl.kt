@@ -92,7 +92,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
       if (canWrite.code == Document.ErrorCode.LOST_UPDATE.ordinal) {
         actions.add(object : GPAction("document.overwrite") {
           override fun actionPerformed(e: ActionEvent) {
-            saveProjectTryLock(project, document)
+            saveProjectTrySave(project, document)
           }
         })
       }
@@ -101,10 +101,6 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
 
       return false
     }
-    return saveProjectTryLock(project, document)
-  }
-
-  private fun saveProjectTryLock(project: IGanttProject, document: Document): Boolean {
     return saveProjectTrySave(project, document)
   }
 
@@ -113,7 +109,9 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
   private fun saveProjectTrySave(project: IGanttProject, document: Document): Boolean {
     val onlineDoc = document.asOnlineDocument()
     try {
-      saveProject(document)
+      myWorkbenchFacade.setStatusText(GanttLanguage.getInstance().getText("saving") + " " + document.path)
+      // overwrite existing document
+      document.write()
       afterSaveProject(project)
       return true
     } catch (e: VersionMismatchException) {
@@ -192,12 +190,6 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
       }
     }
     project.isModified = false
-  }
-
-  @Throws(IOException::class)
-  private fun saveProject(document: Document) {
-    myWorkbenchFacade.setStatusText(GanttLanguage.getInstance().getText("saving") + " " + document.path)
-    document.write()
   }
 
   override fun saveProjectAsDialog(project: IGanttProject) {
@@ -314,17 +306,13 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
     undoManager.die()
   }
 
-  override fun createProject(project: IGanttProject) {
+  override fun createProjectWizard(project: IGanttProject) {
     if (!ensureProjectSaved(project)) {
       return
     }
     beforeClose()
     project.close()
     myWorkbenchFacade.setStatusText(i18n.getText("project.new.description"))
-    showNewProjectWizard(project)
-  }
-
-  private fun showNewProjectWizard(project: IGanttProject) {
     val wizard = NewProjectWizard()
     wizard.createNewProject(project, myWorkbenchFacade)
   }

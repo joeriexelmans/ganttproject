@@ -28,7 +28,7 @@ import net.sourceforge.ganttproject.document.Document.DocumentException;
 
 public interface ProjectUIFacade {
   /**
-   * Saves project
+   * Attempt to save project (overwrite), possibly showing dialog(s) if additional input required (untitled document, signin, ...)
    */
   void saveProject(IGanttProject project);
 
@@ -55,7 +55,7 @@ public interface ProjectUIFacade {
   /**
    * Shows new project wizard
    */
-  void createProject(IGanttProject project);
+  void createProjectWizard(IGanttProject project);
 
   GPOptionGroup[] getOptionGroups();
 }

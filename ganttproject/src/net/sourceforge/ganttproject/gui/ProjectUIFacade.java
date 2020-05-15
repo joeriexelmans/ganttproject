@@ -45,7 +45,7 @@ public interface ProjectUIFacade {
   /**
    * Shows dialog
    */
-  void openProject(IGanttProject project) throws IOException, DocumentException;
+  void openProjectDialog(IGanttProject project) throws IOException, DocumentException;
 
   /**
    * Actual "open" logic

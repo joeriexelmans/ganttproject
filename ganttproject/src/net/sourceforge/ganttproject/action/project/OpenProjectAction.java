@@ -58,7 +58,7 @@ public class OpenProjectAction extends GPAction {
       return;
     }
     try {
-      myProjectUiFacade.openProject(myProject);
+      myProjectUiFacade.openProjectDialog(myProject);
     } catch (Exception ex) {
       GPLogger.log(ex);
     }

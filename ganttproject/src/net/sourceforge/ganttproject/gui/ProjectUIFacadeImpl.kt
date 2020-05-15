@@ -237,7 +237,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
   }
 
   @Throws(IOException::class, DocumentException::class)
-  override fun openProject(project: IGanttProject) {
+  override fun openProjectDialog(project: IGanttProject) {
     if (!ensureProjectSaved(project)) {
       return
     }

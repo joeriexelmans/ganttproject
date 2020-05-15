@@ -43,7 +43,7 @@ public class OpenURLAction extends CloudProjectActionBase {
     if (calledFromAppleScreenMenu(e)) {
       return;
     }
-    if (myProjectUiFacade.ensureProjectSaved(myProject)) {
+    if (myProjectUiFacade.saveChangesDialog(myProject)) {
       try {
         openRemoteProject(myProject);
       } catch (IOException e1) {

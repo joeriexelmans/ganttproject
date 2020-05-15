@@ -60,7 +60,7 @@ public class OpenMRUDocumentAction extends GPAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    if (myProjectUIFacade.ensureProjectSaved(myProject)) {
+    if (myProjectUIFacade.saveChangesDialog(myProject)) {
       try {
         Document doc = myProject.getDocumentManager().getDocument(myDocument);
         myProjectUIFacade.openProject(doc, myProject);

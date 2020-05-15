@@ -826,7 +826,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
       options.setWindowSize(getWidth(), getHeight(), (getExtendedState() & Frame.MAXIMIZED_BOTH) != 0);
       options.setUIConfiguration(myUIConfiguration);
       options.save();
-      if (myProjectUIFacade.ensureProjectSaved(this)) {
+      if (myProjectUIFacade.saveChangesDialog(this)) {
         this.close();
         setVisible(false);
         dispose();

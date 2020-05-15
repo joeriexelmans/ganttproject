@@ -64,7 +64,7 @@ import javax.swing.JFileChooser
 import javax.swing.JOptionPane
 import javax.swing.SwingUtilities
 
-class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val documentManager: DocumentManager, private val undoManager: GPUndoManager) : ProjectUIFacade {
+class ProjectUIFacadeImpl(private val myUIFacade: UIFacade, private val documentManager: DocumentManager, private val undoManager: GPUndoManager) : ProjectUIFacade {
   private val i18n = GanttLanguage.getInstance()
 
   private val myConverterGroup = GPOptionGroup("convert", ProjectOpenStrategy.milestonesOption)
@@ -97,7 +97,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
         })
       }
       actions.add(CancelAction.EMPTY)
-      myWorkbenchFacade.showOptionDialog(JOptionPane.ERROR_MESSAGE, message, actions.toTypedArray())
+      myUIFacade.showOptionDialog(JOptionPane.ERROR_MESSAGE, message, actions.toTypedArray())
 
       return false
     }
@@ -109,7 +109,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
   private fun saveProjectTrySave(project: IGanttProject, document: Document): Boolean {
     val onlineDoc = document.asOnlineDocument()
     try {
-      myWorkbenchFacade.setStatusText(GanttLanguage.getInstance().getText("saving") + " " + document.path)
+      myUIFacade.setStatusText(GanttLanguage.getInstance().getText("saving") + " " + document.path)
       // overwrite existing document
       document.write()
       afterSaveProject(project)
@@ -151,7 +151,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
       }
       return false
     } catch (e: Throwable) {
-      myWorkbenchFacade.showErrorDialog(e)
+      myUIFacade.showErrorDialog(e)
       return false
     }
 
@@ -181,7 +181,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
     val document = project.document
     documentManager.addToRecentDocuments(document)
     val title = i18n.getText("appliTitle") + " [" + document.fileName + "]"
-    myWorkbenchFacade.setWorkbenchTitle(title)
+    myUIFacade.setWorkbenchTitle(title)
     if (document.isLocal) {
       val url = document.uri
       if (url != null) {
@@ -197,16 +197,9 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
         (project.documentManager.webDavStorageUi as WebDavStorageImpl).serversOption).actionPerformed(null)
   }
 
-  /**
-   * Check if the project has been modified, before creating or opening another
-   * project
-   *
-   * @return true when the project is **not** modified or is allowed to be
-   * discarded
-   */
-  override fun ensureProjectSaved(project: IGanttProject): Boolean {
+  override fun saveChangesDialog(project: IGanttProject): Boolean {
     if (project.isModified) {
-      val saveChoice = myWorkbenchFacade.showConfirmationDialog(i18n.getText("msg1"),
+      val saveChoice = myUIFacade.showConfirmationDialog(i18n.getText("msg1"),
           i18n.getText("warning"))
       if (UIFacade.Choice.CANCEL == saveChoice) {
         return false
@@ -219,10 +212,9 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
           // Otherwise it remains true which means we have not saved and can't continue
           !project.isModified
         } catch (e: Exception) {
-          myWorkbenchFacade.showErrorDialog(e)
+          myUIFacade.showErrorDialog(e)
           false
         }
-
       }
     }
     return true
@@ -230,7 +222,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
 
   @Throws(IOException::class, DocumentException::class)
   override fun openProjectDialog(project: IGanttProject) {
-    if (!ensureProjectSaved(project)) {
+    if (!saveChangesDialog(project)) {
       return
     }
     val fc = JFileChooser(documentManager.workingDirectory)
@@ -243,7 +235,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
     }
     fc.addChoosableFileFilter(ganttFilter)
 
-    val returnVal = fc.showOpenDialog(myWorkbenchFacade.mainFrame)
+    val returnVal = fc.showOpenDialog(myUIFacade.mainFrame)
     if (returnVal == JFileChooser.APPROVE_OPTION) {
       val document = documentManager.getDocument(fc.selectedFile.absolutePath)
       openProject(document, project)
@@ -255,7 +247,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
 
 
     try {
-      ProjectOpenStrategy(project, myWorkbenchFacade).use { strategy ->
+      ProjectOpenStrategy(project, myUIFacade).use { strategy ->
         // Run coroutine which fetches document and wait until it sends the result to the channel.
         val job = GlobalScope.launch(Dispatchers.Main) {
           val successChannel = Channel<Document>()
@@ -302,19 +294,19 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
   }
 
   private fun beforeClose() {
-    myWorkbenchFacade.setWorkbenchTitle(i18n.getText("appliTitle"))
+    myUIFacade.setWorkbenchTitle(i18n.getText("appliTitle"))
     undoManager.die()
   }
 
   override fun createProjectWizard(project: IGanttProject) {
-    if (!ensureProjectSaved(project)) {
+    if (!saveChangesDialog(project)) {
       return
     }
     beforeClose()
     project.close()
-    myWorkbenchFacade.setStatusText(i18n.getText("project.new.description"))
+    myUIFacade.setStatusText(i18n.getText("project.new.description"))
     val wizard = NewProjectWizard()
-    wizard.createNewProject(project, myWorkbenchFacade)
+    wizard.createNewProject(project, myUIFacade)
   }
 
   override fun getOptionGroups(): Array<GPOptionGroup> {

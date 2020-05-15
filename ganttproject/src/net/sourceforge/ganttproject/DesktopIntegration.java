@@ -51,7 +51,7 @@ public class DesktopIntegration {
         @Override
         public void openFile(final File file) {
           javax.swing.SwingUtilities.invokeLater(() -> {
-            if (projectUiFacade.ensureProjectSaved(project)) {
+            if (projectUiFacade.saveChangesDialog(project)) {
               Document myDocument = project.getDocumentManager().getDocument(file.getAbsolutePath());
               try {
                 projectUiFacade.openProject(myDocument, project);

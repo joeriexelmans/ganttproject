@@ -38,9 +38,11 @@ public interface ProjectUIFacade {
   void saveProjectAsDialog(IGanttProject project);
 
   /**
-   * Shows "save project?" confirmation dialog
+   * Shows "save project?" confirmation dialog if there are changes.
+   * Typically called before closing the current project.
+   * @return Whether the caller may proceed closing the current project. False only if "cancel" was selected. True if there are no changes, or user decided to save or discard changes.
    */
-  public boolean ensureProjectSaved(IGanttProject project);
+  public boolean saveChangesDialog(IGanttProject project);
 
   /**
    * Shows dialog

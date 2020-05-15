@@ -71,7 +71,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
 
   override fun saveProject(project: IGanttProject) {
     if (project.document == null) {
-      saveProjectAs(project)
+      saveProjectAsDialog(project)
       return
     }
     val document = project.document
@@ -86,7 +86,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
       val actions = ArrayList<Action>()
       actions.add(object : GPAction("project.saveas") {
         override fun actionPerformed(e: ActionEvent) {
-          saveProjectAs(project)
+          saveProjectAsDialog(project)
         }
       })
       if (canWrite.code == Document.ErrorCode.LOST_UPDATE.ordinal) {
@@ -138,7 +138,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
                   afterSaveProject(project)
                 }
                 VersionMismatchChoice.MAKE_COPY -> {
-                  saveProjectAs(project)
+                  saveProjectAsDialog(project)
                 }
               }
             }
@@ -200,7 +200,7 @@ class ProjectUIFacadeImpl(private val myWorkbenchFacade: UIFacade, private val d
     document.write()
   }
 
-  override fun saveProjectAs(project: IGanttProject) {
+  override fun saveProjectAsDialog(project: IGanttProject) {
     StorageDialogAction(project, this, project.documentManager,
         (project.documentManager.webDavStorageUi as WebDavStorageImpl).serversOption).actionPerformed(null)
   }

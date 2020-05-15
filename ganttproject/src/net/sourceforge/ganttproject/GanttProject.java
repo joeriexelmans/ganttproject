@@ -786,7 +786,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
    * Save the project as (with a dialog file chooser)
    */
   public boolean saveAsProject() {
-    myProjectUIFacade.saveProjectAs(this);
+    myProjectUIFacade.saveProjectAsDialog(this);
     return true;
   }
 

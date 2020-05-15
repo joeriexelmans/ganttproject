@@ -35,7 +35,7 @@ public interface ProjectUIFacade {
   /**
    * Shows "save as" dialog
    */
-  void saveProjectAs(IGanttProject project);
+  void saveProjectAsDialog(IGanttProject project);
 
   /**
    * Shows "save project?" confirmation dialog

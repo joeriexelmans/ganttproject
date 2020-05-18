@@ -41,11 +41,10 @@ public class GanttXMLOpen implements GPParser {
   public GanttXMLOpen() {}
 
   @Override
-  public boolean load(InputStream inStream) throws IOException {
+  public void load(InputStream inStream) throws IOException {
     // Use an instance of ourselves as the SAX event handler
     XmlParser parser = new XmlParser(myTagHandlers, myListeners);
     parser.parse(inStream);
-    return true;
   }
 
   @Override

@@ -10,7 +10,7 @@ import java.io.InputStream;
  * @author bard
  */
 public interface GPParser {
-  boolean load(InputStream inStream) throws IOException;
+  void load(InputStream inStream) throws IOException;
 
   void addTagHandler(TagHandler handler);
 

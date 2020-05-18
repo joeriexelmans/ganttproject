@@ -343,6 +343,7 @@ public class ProxyDocument implements Document {
       } else {
         myFailureState.enter();
       }
+      opener.load(is);
     }
   }
 

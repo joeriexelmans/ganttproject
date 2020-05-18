@@ -162,9 +162,7 @@ public class ProxyDocument implements Document {
 
   @Override
   public void read() throws IOException, DocumentException {
-    FailureState failure = new FailureState();
-    SuccessState success = new SuccessState();
-    ParsingState parsing = new ParsingState(success, failure);
+    ParsingState parsing = new ParsingState();
     // OpenCopyConfirmationState confirmation = new OpenCopyConfirmationState(
     // parsing, failure);
     // AcquireLockState lock = new AcquireLockState(parsing, confirmation);
@@ -199,60 +197,7 @@ public class ProxyDocument implements Document {
     }
   }
 
-  // class AcquireLockState {
-  // OpenCopyConfirmationState myConfirmationState;
-  //
-  // ParsingState myParsingState;
-  //
-  // public AcquireLockState(ParsingState parsing,
-  // OpenCopyConfirmationState confirmation) {
-  // myParsingState = parsing;
-  // myConfirmationState = confirmation;
-  // }
-  //
-  // void enter() throws IOException, DocumentException {
-  // boolean locked = acquireLock();
-  // if (!locked) {
-  // myConfirmationState.enter();
-  // } else {
-  // myParsingState.enter();
-  // }
-  // }
-  // }
-  //
-  // class OpenCopyConfirmationState {
-  // private final ParsingState myParsingState;
-  //
-  // private final FailureState myExitState;
-  //
-  // public OpenCopyConfirmationState(ParsingState parsing,
-  // FailureState failure) {
-  // myParsingState = parsing;
-  // myExitState = failure;
-  // }
-  //
-  // void enter() throws IOException, DocumentException {
-  // String message = GanttLanguage.getInstance().getText("msg13");
-  // String title = GanttLanguage.getInstance().getText("warning");
-  // if (UIFacade.Choice.YES==getUIFacade().showConfirmationDialog(message,
-  // title)) {
-  // myParsingState.enter();
-  // } else {
-  // myExitState.enter();
-  // }
-  // }
-  // }
-
   class ParsingState {
-    private final FailureState myFailureState;
-
-    private final SuccessState mySuccessState;
-
-    public ParsingState(SuccessState success, FailureState failure) {
-      mySuccessState = success;
-      myFailureState = failure;
-    }
-
     void enter() throws IOException, DocumentException {
       GPParser opener = new GanttXMLOpen();
       ParsingContext ctx = new ParsingContext();
@@ -338,22 +283,7 @@ public class ProxyDocument implements Document {
         myFailureState.enter();
         throw new DocumentException(GanttLanguage.getInstance().getText("msg8") + ": " + e.getLocalizedMessage(), e);
       }
-      if (opener.load(is)) {
-        mySuccessState.enter();
-      } else {
-        myFailureState.enter();
-      }
       opener.load(is);
-    }
-  }
-
-  class SuccessState {
-    void enter() {
-    }
-  }
-
-  class FailureState {
-    void enter() {
     }
   }
 

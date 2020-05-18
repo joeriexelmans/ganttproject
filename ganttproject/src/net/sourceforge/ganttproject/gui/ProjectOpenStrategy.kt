@@ -72,7 +72,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
   private val myCloseables = Lists.newArrayList<AutoCloseable>()
   private val myEnableAlgorithmsCmd: AutoCloseable
   private val myAlgs: AlgorithmCollection
-  private val myTasks = Lists.newArrayList<Runnable>()
+  private val myJobs = Lists.newArrayList<Runnable>()
   private var myOldDuration: TimeDuration? = null
   private val i18n = GanttLanguage.getInstance()
   private var myResetModifiedState = true
@@ -258,7 +258,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
         else
           milestonesOption.selectedValue
         when (option) {
-          ProjectOpenStrategy.ConvertMilestones.UNKNOWN -> myTasks.add(Runnable {
+          ProjectOpenStrategy.ConvertMilestones.UNKNOWN -> myJobs.add(Runnable {
             try {
               myProject.taskManager.algorithmCollection.scheduler.setDiagnostic(myDiagnostics)
               tryPatchMilestones(myProject, taskManager)
@@ -368,22 +368,22 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
   // the remaining are added here.
   internal inner class Step3 {
     fun runUiTasks(): Step4 {
-      myTasks.add(Runnable {
+      myJobs.add(Runnable {
         if (!myDiagnostics.myMessages.isEmpty()) {
           myDiagnostics.showDialog()
         }
       })
       if (myDiagnostics.myMessages.isEmpty() && myResetModifiedState) {
-        myTasks.add(Runnable { myProject.isModified = false })
+        myJobs.add(Runnable { myProject.isModified = false })
       }
-      myTasks.add(Runnable {
+      myJobs.add(Runnable {
         try {
           this@ProjectOpenStrategy.close()
         } catch (e: Exception) {
           GPLogger.log(e)
         }
       })
-      processTasks(myTasks)
+      processTasks(myJobs)
       return Step4()
     }
 

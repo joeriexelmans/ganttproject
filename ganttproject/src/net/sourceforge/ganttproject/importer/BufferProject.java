@@ -71,11 +71,6 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   }
 
   @Override
-  public GPParser newParser() {
-    return new GanttXMLOpen();
-  }
-
-  @Override
   public GPSaver newSaver() {
     return new GanttXMLSaver(this);
   }

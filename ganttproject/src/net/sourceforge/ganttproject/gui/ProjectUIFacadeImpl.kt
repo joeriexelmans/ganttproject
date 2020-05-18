@@ -154,7 +154,6 @@ class ProjectUIFacadeImpl(private val myUIFacade: UIFacade, private val document
       myUIFacade.showErrorDialog(e)
       return false
     }
-
   }
 
   private fun signin(onAuth: ()->Unit) {
@@ -244,8 +243,6 @@ class ProjectUIFacadeImpl(private val myUIFacade: UIFacade, private val document
 
   @Throws(IOException::class, DocumentException::class)
   override fun openProject(document: Document, project: IGanttProject) {
-
-
     try {
       ProjectOpenStrategy(project, myUIFacade).use { strategy ->
         // Run coroutine which fetches document and wait until it sends the result to the channel.

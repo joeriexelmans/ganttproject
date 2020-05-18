@@ -23,6 +23,7 @@ import biz.ganttproject.core.option.ListOption;
 import biz.ganttproject.core.table.ColumnList;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
@@ -253,7 +254,7 @@ public class ProxyDocument implements Document {
     }
 
     void enter() throws IOException, DocumentException {
-      GPParser opener = myParserFactory.newParser();
+      GPParser opener = new GanttXMLOpen();
       ParsingContext ctx = new ParsingContext();
 
       HumanResourceManager hrManager = myProject.getHumanResourceManager();

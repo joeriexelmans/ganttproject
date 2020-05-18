@@ -9,7 +9,5 @@ import net.sourceforge.ganttproject.io.GPSaver;
  * @author bard
  */
 public interface ParserFactory {
-  GPParser newParser();
-
   GPSaver newSaver();
 }

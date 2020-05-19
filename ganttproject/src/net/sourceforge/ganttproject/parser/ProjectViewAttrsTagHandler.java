@@ -29,8 +29,7 @@ public class ProjectViewAttrsTagHandler extends AbstractTagHandler implements Pa
             myUIFacade.getScrollingManager().scrollTo(GanttCalendar.parseXMLDate(attrViewDate).getTime());
         }
         if (attrViewIndex != null) {
-            // original code (before refactoring) calculated hashcode, don't know why:
-            viewIndex = Integer.hashCode(Integer.parseInt(attrViewIndex));
+            viewIndex = Integer.parseInt(attrViewIndex);
         }
         if (attrGanttDivLoc != null) {
             ganttDividerLocation = Integer.parseInt(attrGanttDivLoc);

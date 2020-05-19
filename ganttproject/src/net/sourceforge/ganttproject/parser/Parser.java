@@ -3,8 +3,8 @@ package net.sourceforge.ganttproject.parser;
 import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.option.ListOption;
 import net.sourceforge.ganttproject.CustomPropertyManager;
-import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.PrjInfos;
+import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.project.Project;
@@ -23,12 +23,14 @@ import java.io.InputStream;
  */
 public class Parser {
     ProjectFactory factory;
+    DocumentManager documentManager;
 
     /**
      * @param f Factory object to create a new blank project
      */
-    public Parser(ProjectFactory f) {
+    public Parser(ProjectFactory f, DocumentManager d) {
         factory = f;
+        documentManager = d;
     }
 
     /**
@@ -40,10 +42,22 @@ public class Parser {
         ParsingContext ctx = new ParsingContext();
         Project project = factory.newProject();
         GPParser parser = createParser(ctx, project);
+
+        // "special" tag handler
+        PortfolioTagHandler portfolioTagHandler = new PortfolioTagHandler(documentManager);
+        parser.addTagHandler(portfolioTagHandler);
+
         parser.load(is);
+
+        if (portfolioTagHandler.getDefaultDocument() != null) {
+            // we're dealing with a portfolio, not with a document
+            return parse(portfolioTagHandler.getDefaultDocument().getInputStream());
+        }
+
         return project;
     }
-    
+
+    // The "overridable" part
     protected GPParser createParser(ParsingContext ctx, Project project) {
         TaskManager taskManager = project.getTaskManager();
         HumanResourceManager hrManager = project.getHumanResourceManager();
@@ -54,10 +68,6 @@ public class Parser {
 
         GPParser parser = new GanttXMLOpen();
 
-        parser.addTagHandler(TaskDisplayColumnsTagHandler.createPilsenHandler());
-        parser.addTagHandler(TaskDisplayColumnsTagHandler.createLegacyHandler());
-        parser.addTagHandler(new TaskDisplayColumnsTagHandler(
-                "field", "id", "order", "width", "visible"));
         parser.addTagHandler(new TaskTagHandler(taskManager, ctx));
         parser.addTagHandler(new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager()));
         parser.addTagHandler(new DescriptionTagHandler(prjInfos));

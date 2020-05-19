@@ -22,7 +22,6 @@ import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.option.ListOption;
 import biz.ganttproject.core.table.ColumnList;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.PrjInfos;
@@ -36,7 +35,6 @@ import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskManagerImpl;
 import org.eclipse.core.runtime.IStatus;
-import org.xml.sax.Attributes;
 
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
@@ -44,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Set;
 
 /**
  * @author bard
@@ -61,8 +58,6 @@ public class ProxyDocument implements Document {
   private final ParserFactory myParserFactory;
 
   private final DocumentCreator myCreator;
-
-  private PortfolioImpl myPortfolio;
 
   private final ColumnList myTaskVisibleFields;
 
@@ -163,16 +158,12 @@ public class ProxyDocument implements Document {
   @Override
   public void read() throws IOException, DocumentException {
     ParsingState parsing = new ParsingState();
-    // OpenCopyConfirmationState confirmation = new OpenCopyConfirmationState(
-    // parsing, failure);
-    // AcquireLockState lock = new AcquireLockState(parsing, confirmation);
     try {
       ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(false);
       parsing.enter();
     } finally {
       ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(true);
     }
-    // lock.enter();
   }
 
   @Override
@@ -215,41 +206,43 @@ public class ProxyDocument implements Document {
       PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(myProject.getBaselines());
       RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
       TaskTagHandler taskHandler = new TaskTagHandler(taskManager, ctx);
-      TaskParsingListener taskParsingListener = new TaskParsingListener(taskManager, myUIFacade.getTaskTree());
       DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
       OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(calendar);
 
       TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager());
       opener.addTagHandler(taskPropHandler);
-      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, taskManager);
-      opener.addTagHandler(customPropHandler);
-
 
       TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
       TaskDisplayColumnsTagHandler legacyTaskDisplayHandler = TaskDisplayColumnsTagHandler.createLegacyHandler();
 
       opener.addTagHandler(pilsenTaskDisplayHandler);
       opener.addTagHandler(legacyTaskDisplayHandler);
-      // check
-      opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myTaskVisibleFields, pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
+
+      opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myUIFacade.getTaskTree().getVisibleFields(), pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
       opener.addTagHandler(new ViewTagHandler("gantt-chart", myUIFacade, pilsenTaskDisplayHandler));
 
-
-      TaskDisplayColumnsTagHandler resourceFieldsHandler = new TaskDisplayColumnsTagHandler(
-          "field", "id", "order", "width", "visible");
+      TaskDisplayColumnsTagHandler resourceFieldsHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
       opener.addTagHandler(resourceFieldsHandler);
-      opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myResourceVisibleFields, resourceFieldsHandler));
+
+      opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myUIFacade.getResourceTree().getVisibleFields(), resourceFieldsHandler));
       opener.addTagHandler(new ViewTagHandler("resource-table", myUIFacade, resourceFieldsHandler));
 
       opener.addTagHandler(taskHandler);
+      TaskParsingListener taskParsingListener = new TaskParsingListener(taskManager, myUIFacade.getTaskTree());
       opener.addParsingListener(taskParsingListener);
 
+      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, taskManager);
+      opener.addTagHandler(customPropHandler);
       opener.addParsingListener(customPropHandler);
 
       opener.addTagHandler(new DescriptionTagHandler(myPrjInfos));
       opener.addTagHandler(new NotesTagHandler(ctx));
       opener.addTagHandler(new ProjectTagHandler(myPrjInfos));
-      opener.addTagHandler(new ProjectViewAttrsTagHandler(myUIFacade));
+
+      ProjectViewAttrsTagHandler projectViewAttrsTagHandler = new ProjectViewAttrsTagHandler(myUIFacade);
+      opener.addTagHandler(projectViewAttrsTagHandler);
+      opener.addParsingListener(projectViewAttrsTagHandler);
+
       opener.addTagHandler(new TasksTagHandler(taskManager));
 
       TimelineTagHandler timelineTagHandler = new TimelineTagHandler(myUIFacade, taskManager);
@@ -274,16 +267,20 @@ public class ProxyDocument implements Document {
       opener.addTagHandler(new CalendarsTagHandler(calendar));
       opener.addTagHandler(holidayHandler);
 
-      PortfolioTagHandler portfolioHandler = new PortfolioTagHandler();
+      PortfolioTagHandler portfolioHandler = new PortfolioTagHandler(myCreator);
       opener.addTagHandler(portfolioHandler);
+
       InputStream is;
       try {
         is = getInputStream();
       } catch (IOException e) {
-        myFailureState.enter();
         throw new DocumentException(GanttLanguage.getInstance().getText("msg8") + ": " + e.getLocalizedMessage(), e);
       }
       opener.load(is);
+
+      if (portfolioHandler.getDefaultDocument() != null) {
+        portfolioHandler.getDefaultDocument().read();
+      }
     }
   }
 
@@ -304,76 +301,4 @@ public class ProxyDocument implements Document {
     }
     return getPath().equals(((Document) doc).getPath());
   }
-
-  @Override
-  public Portfolio getPortfolio() {
-    return myPortfolio;
-  }
-
-  private PortfolioImpl getPortfolioImpl() {
-    if (myPortfolio == null) {
-      myPortfolio = new PortfolioImpl();
-    }
-    return myPortfolio;
-  }
-
-  private class PortfolioImpl implements Portfolio {
-    private Document myDefaultDocument;
-
-    @Override
-    public Document getDefaultDocument() {
-      return myDefaultDocument;
-    }
-
-    void setDefaultDocument(Document document) {
-      if (myDefaultDocument != null) {
-        throw new IllegalStateException("Don't set default document twice");
-      }
-      myDefaultDocument = document;
-    }
-  }
-
-  private class PortfolioTagHandler extends AbstractTagHandler {
-    private static final String PORTFOLIO_TAG = "portfolio";
-    private static final String PROJECT_TAG = "project";
-    private final Set<String> TAGS = ImmutableSet.of(PORTFOLIO_TAG, PROJECT_TAG);
-    private static final String LOCATION_ATTR = "location";
-    private boolean isReadingPortfolio = false;
-
-    public PortfolioTagHandler() {
-      super(null, false);
-    }
-    @Override
-    public void startElement(String namespaceURI, String sName, String qName, Attributes attrs)
-        throws FileFormatException {
-      if (!TAGS.contains(qName)) {
-        return;
-      }
-      setTagStarted(true);
-      if (PORTFOLIO_TAG.equals(qName)) {
-        isReadingPortfolio = true;
-        return;
-      }
-      if (PROJECT_TAG.equals(qName) && isReadingPortfolio) {
-        String locationAsString = attrs.getValue(LOCATION_ATTR);
-        if (locationAsString != null) {
-          Document document = myCreator.getDocument(locationAsString);
-          getPortfolioImpl().setDefaultDocument(document);
-        }
-
-      }
-    }
-
-    @Override
-    public void endElement(String namespaceURI, String sName, String qName) {
-      if (!TAGS.contains(qName)) {
-        return;
-      }
-      if (PORTFOLIO_TAG.equals(qName)) {
-        isReadingPortfolio = false;
-      }
-      setTagStarted(false);
-    }
-  }
-
 }

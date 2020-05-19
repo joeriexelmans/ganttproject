@@ -229,10 +229,6 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
     } finally {
       myAlgs.scheduler.setDiagnostic(null)
     }
-    if (document.portfolio != null) {
-      val defaultDocument = document.portfolio.defaultDocument
-      myProject.open(defaultDocument)
-    }
     myOldDuration = myProject.taskManager.projectLength
     return Step1()
   }

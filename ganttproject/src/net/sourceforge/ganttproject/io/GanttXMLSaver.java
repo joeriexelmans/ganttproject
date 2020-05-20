@@ -26,6 +26,7 @@ import net.sourceforge.ganttproject.GanttPreviousState;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RoleSet;
@@ -43,7 +44,7 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
 
   private static final String VERSION = GPVersion.getCurrentVersionNumber();
 
-  private final IGanttProject myProject;
+  private final IProject myProject;
 
   private final UIFacade myUIFacade;
 
@@ -67,9 +68,9 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
       TransformerHandler handler = createHandler(result);
       handler.startDocument();
       AttributesImpl attrs = new AttributesImpl();
-      addAttribute("name", myProject.getProjectName(), attrs);
-      addAttribute("company", myProject.getOrganization(), attrs);
-      addAttribute("webLink", myProject.getWebLink(), attrs);
+      addAttribute("name", myProject.getPrjInfos().getName(), attrs);
+      addAttribute("company", myProject.getPrjInfos().getOrganization(), attrs);
+      addAttribute("webLink", myProject.getPrjInfos().getWebLink(), attrs);
       if (myArea != null) {
         addAttribute("view-date", CalendarFactory.createGanttCalendar(myArea.getStartDate()).toXMLString(), attrs);
       }
@@ -85,8 +86,8 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
       startElement("project", attrs, handler);
       //
       // See https://bugs.openjdk.java.net/browse/JDK-8133452
-      if (myProject.getDescription() != null) {
-        String projectDescription = myProject.getDescription().replace("\\r\\n", "\\n");
+      if (myProject.getPrjInfos().getDescription() != null) {
+        String projectDescription = myProject.getPrjInfos().getDescription().replace("\\r\\n", "\\n");
         cdataElement("description", projectDescription, attrs, handler);
       }
 

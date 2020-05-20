@@ -51,27 +51,18 @@ public class ProxyDocument implements Document {
 
   private IProject myProject;
 
-  private PrjInfos myPrjInfos;
-
   private UIFacade myUIFacade;
 
   private final ParserFactory myParserFactory;
 
   private final DocumentCreator myCreator;
 
-  private final ColumnList myTaskVisibleFields;
-
-  private final ColumnList myResourceVisibleFields;
-
-  ProxyDocument(DocumentCreator creator, Document physicalDocument, IProject project, PrjInfos prji, UIFacade uiFacade, ColumnList taskVisibleFields, ColumnList resourceVisibleFields, ParserFactory parserFactory) {
+  ProxyDocument(DocumentCreator creator, Document physicalDocument, IProject project, UIFacade uiFacade, ParserFactory parserFactory) {
     myPhysicalDocument = physicalDocument;
     myProject = project;
-    myPrjInfos = prji;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myCreator = creator;
-    myTaskVisibleFields = taskVisibleFields;
-    myResourceVisibleFields = resourceVisibleFields;
   }
 
   public Document getRealDocument() {
@@ -187,7 +178,7 @@ public class ProxyDocument implements Document {
       output.close();
     }
   }
-  
+
   @Override
   public URI getURI() {
     return myPhysicalDocument.getURI();

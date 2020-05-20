@@ -162,15 +162,13 @@ public class DocumentCreator implements DocumentManager {
   @Override
   public Document getDocument(String path) {
     Document physicalDocument = createDocument(path);
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myPrjInfos, myUIFacade, getTaskVisibleFields(),
-        getResourceVisibleFields(), getParserFactory());
+    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, getParserFactory());
     return proxyDocument;
   }
 
   @Override
   public Document getProxyDocument(Document physicalDocument) {
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myPrjInfos, myUIFacade, getTaskVisibleFields(),
-        getResourceVisibleFields(), getParserFactory());
+    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, getParserFactory());
     return proxyDocument;
   }
 

@@ -26,10 +26,14 @@ import biz.ganttproject.core.option.GPOption;
 import biz.ganttproject.core.option.GPOptionGroup;
 import biz.ganttproject.core.option.ListOption;
 import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.google.common.xml.XmlEscapers;
+import net.sourceforge.ganttproject.document.Document;
+import net.sourceforge.ganttproject.document.DocumentMRUListener;
 import net.sourceforge.ganttproject.document.DocumentManager;
+import net.sourceforge.ganttproject.document.DocumentsMRU;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.options.model.GP1XOptionConverter;
 import net.sourceforge.ganttproject.io.*;
@@ -58,6 +62,7 @@ import java.awt.*;
 import java.io.*;
 import java.security.AccessControlException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -135,7 +140,9 @@ public class GanttOptions extends SaverBase {
   private Map<String, GPOption<?>> myGPOptions = Maps.newLinkedHashMap();
   private Map<String, GP1XOptionConverter> myTagDotAttribute_Converter = new HashMap<String, GP1XOptionConverter>();
 
-  private final DocumentManager myDocumentManager;
+  /** List containing the Most Recent Used documents */
+  private final DocumentsMRU myMRU;
+
 
   private final PluginPreferencesImpl myPluginPreferencesRootNode;
 
@@ -159,9 +166,9 @@ public class GanttOptions extends SaverBase {
     }
   };
 
-  public GanttOptions(RoleManager roleManager, DocumentManager documentManager, boolean isOnlyViewer) {
-    myDocumentManager = documentManager;
+  public GanttOptions(RoleManager roleManager, DocumentsMRU mru) {
     myRoleManager = roleManager;
+    myMRU = mru;
     myPluginPreferencesRootNode = new PluginPreferencesImpl(null, "");
     initDefault();
     try {
@@ -354,7 +361,7 @@ public class GanttOptions extends SaverBase {
     {
       startElement("files", attrs, handler);
 
-      for (String recent : myDocumentManager.getRecentDocuments()) {
+      for (String recent : Lists.newArrayList(myMRU.iterator())) {
         addAttribute("path", recent, attrs);
         emptyElement("file", attrs, handler);
       }
@@ -454,7 +461,7 @@ public class GanttOptions extends SaverBase {
         return false;
       }
 
-      myDocumentManager.clearRecentDocuments();
+      myMRU.clear();
 
       // Parse the input
       SAXParser saxParser = factory.newSAXParser();
@@ -617,7 +624,7 @@ public class GanttOptions extends SaverBase {
             }
           } else if (qName.equals("file")) {
             if (aName.equals("path")) {
-              myDocumentManager.addToRecentDocuments(value);
+              myMRU.add(value, false);
             }
           } else if (qName.equals("automatic-launch")) {
             if (aName.equals("value")) {

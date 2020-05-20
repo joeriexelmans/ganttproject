@@ -42,6 +42,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import net.sourceforge.ganttproject.document.Document
 import net.sourceforge.ganttproject.document.DocumentManager
+import net.sourceforge.ganttproject.document.DocumentsMRU
 import net.sourceforge.ganttproject.document.ReadOnlyProxyDocument
 import net.sourceforge.ganttproject.document.webdav.WebDavServerDescriptor
 import java.io.File
@@ -95,6 +96,7 @@ class StoragePane internal constructor(
     private val cloudStorageOptions: GPCloudStorageOptions,
     private val documentManager: DocumentManager,
     private val currentDocument: ReadOnlyProxyDocument,
+    private val mru: DocumentsMRU,
     private val documentReceiver: Consumer<Document>,
     private val documentUpdater: Consumer<Document>,
     private val dialogUi: StorageDialogBuilder.DialogUi) {
@@ -159,6 +161,7 @@ class StoragePane internal constructor(
         mode,
         documentManager,
         currentDocument,
+        mru,
         openDocument).also{ storageUiList.add(it) }
     storageUiList.add(GPCloudStorage(mode, openDocument, dialogUi, documentManager))
     cloudStorageOptions.webdavServers.mapTo(storageUiList) {

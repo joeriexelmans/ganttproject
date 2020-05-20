@@ -62,6 +62,7 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
 import net.sourceforge.ganttproject.document.DocumentCreator;
 import net.sourceforge.ganttproject.document.DocumentManager;
+import net.sourceforge.ganttproject.document.DocumentsMRU;
 import net.sourceforge.ganttproject.export.CommandLineExportApplication;
 import net.sourceforge.ganttproject.gui.*;
 import net.sourceforge.ganttproject.gui.scrolling.ScrollingManager;
@@ -168,6 +169,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
   private RoleManager myRoleManager = RoleManager.Access.getInstance();
   private static Runnable ourQuitCallback;
   private FXSearchUi mySearchUi;
+  private final DocumentsMRU myMRU;
 
   public GanttProject(boolean isOnlyViewer) {
     //// Begin GanttProjectBase constructor ///////////////////////////////
@@ -202,7 +204,8 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
       }
     };
     myViewManager = new ViewManagerImpl(this, myUIFacade, myTabPane, getUndoManager());
-    myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myUndoManager);
+    myMRU = new DocumentsMRU(5);
+    myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myMRU, myUndoManager);
     myRssChecker = new RssFeedChecker((GPTimeUnitStack) getTimeUnitStack(), myUIFacade);
     myUIFacade.addOptions(myRssChecker.getUiOptions());
     //// End GanttProjectBase constructor ///////////////////////////////
@@ -233,7 +236,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
     }
     setFocusable(true);
     System.err.println("1. loading look'n'feels");
-    options = new GanttOptions(myRoleManager, myDocumentManager, isOnlyViewer);
+    options = new GanttOptions(myRoleManager, myMRU);
     myUIConfiguration = options.getUIConfiguration();
     myUIConfiguration.setChartFontOption(myUIFacade.getChartFontOption());
     myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
@@ -335,9 +338,9 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
     // Project menu related sub menus and items
     ProjectMRUMenu mruMenu = new ProjectMRUMenu(this, myUIFacade, myProjectUIFacade, "lastOpen");
     mruMenu.setIcon(new ImageIcon(getClass().getResource("/icons/recent_16.gif")));
-    myDocumentManager.addListener(mruMenu);
+    myMRU.addListener(mruMenu);
 
-    myProjectMenu = new ProjectMenu(this, mruMenu, "project");
+    myProjectMenu = new ProjectMenu(this, myMRU, "project");
     bar.add(myProjectMenu);
 
     myEditMenu = new EditMenu(this, myUIFacade, myViewManager, () -> mySearchUi.requestFocus(), "edit");
@@ -725,8 +728,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
   @Override
   public void open(Document document) throws IOException, DocumentException {
     document.read();
-    myDocumentManager.addToRecentDocuments(document);
-    //myMRU.add(document.getPath(), true);
+    myMRU.add(document.getPath(), true);
     myObservableDocument.set(document);
     setTitle(language.getText("appliTitle") + " [" + document.getFileName() + "]");
     for (Chart chart : PluginManager.getCharts()) {

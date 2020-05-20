@@ -33,6 +33,7 @@ import javafx.scene.layout.*
 import net.sourceforge.ganttproject.IGanttProject
 import net.sourceforge.ganttproject.document.Document
 import net.sourceforge.ganttproject.document.DocumentManager
+import net.sourceforge.ganttproject.document.DocumentsMRU
 import net.sourceforge.ganttproject.document.ReadOnlyProxyDocument
 import net.sourceforge.ganttproject.gui.ProjectUIFacade
 import net.sourceforge.ganttproject.language.GanttLanguage
@@ -49,6 +50,7 @@ class StorageDialogBuilder(
     private val myProject: IGanttProject,
     projectUi: ProjectUIFacade,
     documentManager: DocumentManager,
+    private val myMRU: DocumentsMRU,
     cloudStorageOptions: GPCloudStorageOptions,
     private val dialogBuildApi: DialogController) {
   private val myCloudStorageOptions: GPCloudStorageOptions = Preconditions.checkNotNull(cloudStorageOptions)
@@ -161,7 +163,7 @@ class StorageDialogBuilder(
 
   private fun buildStoragePane(mode: Mode): Pane {
     if (myProject.document != null) {
-      val storagePane = StoragePane(myCloudStorageOptions, myProject.documentManager, ReadOnlyProxyDocument(myProject.document), myDocumentReceiver, myDocumentUpdater, myDialogUi)
+      val storagePane = StoragePane(myCloudStorageOptions, myProject.documentManager, ReadOnlyProxyDocument(myProject.document), myMRU, myDocumentReceiver, myDocumentUpdater, myDialogUi)
       return storagePane.buildStoragePane(mode)
     } else {
       return Pane(Label("No document!"))

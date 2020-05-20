@@ -47,6 +47,7 @@ import net.sourceforge.ganttproject.action.GPAction
 import net.sourceforge.ganttproject.document.Document
 import net.sourceforge.ganttproject.document.Document.DocumentException
 import net.sourceforge.ganttproject.document.DocumentManager
+import net.sourceforge.ganttproject.document.DocumentsMRU
 import net.sourceforge.ganttproject.document.webdav.WebDavStorageImpl
 import net.sourceforge.ganttproject.filter.GanttXMLFileFilter
 import net.sourceforge.ganttproject.gui.projectwizard.NewProjectWizard
@@ -64,7 +65,11 @@ import javax.swing.JFileChooser
 import javax.swing.JOptionPane
 import javax.swing.SwingUtilities
 
-class ProjectUIFacadeImpl(private val myUIFacade: UIFacade, private val documentManager: DocumentManager, private val undoManager: GPUndoManager) : ProjectUIFacade {
+class ProjectUIFacadeImpl(
+        private val myUIFacade: UIFacade,
+        private val documentManager: DocumentManager,
+        private val mru: DocumentsMRU,
+        private val undoManager: GPUndoManager) : ProjectUIFacade {
   private val i18n = GanttLanguage.getInstance()
 
   private val myConverterGroup = GPOptionGroup("convert", ProjectOpenStrategy.milestonesOption)
@@ -178,7 +183,7 @@ class ProjectUIFacadeImpl(private val myUIFacade: UIFacade, private val document
 
   private fun afterSaveProject(project: IGanttProject) {
     val document = project.document
-    documentManager.addToRecentDocuments(document)
+    mru.add(document.getPath(), true);
     val title = i18n.getText("appliTitle") + " [" + document.fileName + "]"
     myUIFacade.setWorkbenchTitle(title)
     if (document.isLocal) {
@@ -192,8 +197,11 @@ class ProjectUIFacadeImpl(private val myUIFacade: UIFacade, private val document
   }
 
   override fun saveProjectAsDialog(project: IGanttProject) {
-    StorageDialogAction(project, this, project.documentManager,
-        (project.documentManager.webDavStorageUi as WebDavStorageImpl).serversOption).actionPerformed(null)
+    StorageDialogAction(project,
+            this,
+            project.documentManager,
+            mru,
+            (project.documentManager.webDavStorageUi as WebDavStorageImpl).serversOption).actionPerformed(null)
   }
 
   override fun saveChangesDialog(project: IGanttProject): Boolean {

@@ -63,8 +63,6 @@ public class DocumentCreator implements DocumentManager {
 
   private final GPOptionGroup myWebDavOptionGroup;
   private final Logger myLogger = GPLogger.getLogger(DocumentManager.class);
-  /** List containing the Most Recent Used documents */
-  private final DocumentsMRU myMRU = new DocumentsMRU(5);
   private final File myDocumentsFolder;
 
   public DocumentCreator(IGanttProject project, PrjInfos prjInfos, UIFacade uiFacade, ParserFactory parserFactory) {
@@ -418,30 +416,5 @@ public class DocumentCreator implements DocumentManager {
     public void loadValue(String legacyValue) {
       loadPersistentValue(legacyValue);
     }
-  }
-
-  @Override
-  public List<String> getRecentDocuments() {
-    return Lists.newArrayList(myMRU.iterator());
-  }
-
-  @Override
-  public void addListener(DocumentMRUListener listener) {
-    myMRU.addListener(listener);
-  }
-
-  @Override
-  public void addToRecentDocuments(Document document) {
-    myMRU.add(document.getPath(), true);
-  }
-
-  @Override
-  public void addToRecentDocuments(String value) {
-    myMRU.add(value, false);
-  }
-
-  @Override
-  public void clearRecentDocuments() {
-    myMRU.clear();
   }
 }

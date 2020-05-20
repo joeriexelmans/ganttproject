@@ -66,14 +66,4 @@ public interface DocumentManager {
 
     public abstract StringOption getPassword();
   }
-
-  List<String> getRecentDocuments();
-
-  void addListener(DocumentMRUListener listener);
-
-  void addToRecentDocuments(Document document);
-
-  void addToRecentDocuments(String value);
-
-  void clearRecentDocuments();
 }

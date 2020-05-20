@@ -25,6 +25,7 @@ import javafx.application.Platform
 import net.sourceforge.ganttproject.IGanttProject
 import net.sourceforge.ganttproject.action.GPAction
 import net.sourceforge.ganttproject.document.DocumentManager
+import net.sourceforge.ganttproject.document.DocumentsMRU
 import net.sourceforge.ganttproject.gui.ProjectUIFacade
 import java.awt.event.ActionEvent
 
@@ -35,12 +36,13 @@ class StorageDialogAction(
     private val myProject: IGanttProject,
     private val myProjectUiFacade: ProjectUIFacade,
     private val myDocumentManager: DocumentManager,
+    private val myMRU: DocumentsMRU,
     private val myCloudStorageOptions: GPCloudStorageOptions) : GPAction("myProjects.action") {
 
   override fun actionPerformed(actionEvent: ActionEvent?) {
     Platform.runLater {
       dialog(RootLocalizer.create("myProjects.title")) { dialogBuildApi ->
-        val dialogBuilder = StorageDialogBuilder(myProject, myProjectUiFacade, myDocumentManager, myCloudStorageOptions, dialogBuildApi)
+        val dialogBuilder = StorageDialogBuilder(myProject, myProjectUiFacade, myDocumentManager, myMRU, myCloudStorageOptions, dialogBuildApi)
         dialogBuilder.build()
       }
     }

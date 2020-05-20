@@ -20,6 +20,7 @@ package biz.ganttproject.storage
 
 //import biz.ganttproject.storage.local.setupErrorLabel
 import biz.ganttproject.app.RootLocalizer
+import com.google.common.collect.Lists
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
@@ -37,6 +38,7 @@ import kotlinx.coroutines.runBlocking
 import net.sourceforge.ganttproject.GPLogger
 import net.sourceforge.ganttproject.document.Document
 import net.sourceforge.ganttproject.document.DocumentManager
+import net.sourceforge.ganttproject.document.DocumentsMRU
 import net.sourceforge.ganttproject.document.FileDocument
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -52,6 +54,7 @@ class RecentProjects(
     private val mode: StorageDialogBuilder.Mode,
     private val documentManager: DocumentManager,
     private val currentDocument: Document,
+    private val mru: DocumentsMRU,
     private val documentReceiver: (Document) -> Unit) : StorageDialogBuilder.Ui {
 
   override val name = i18n.formatText("listLabel")
@@ -161,7 +164,7 @@ class RecentProjects(
     val result = FXCollections.observableArrayList<RecentDocAsFolderItem>()
 
     runBlocking {
-      result.addAll(documentManager.recentDocuments.map { path ->
+      result.addAll(Lists.newArrayList(mru.iterator()).map { path ->
         GlobalScope.async {
           // TODO: This currently works for local docs only. Make it working for GP Cloud/WebDAV docs too.
           documentManager.newDocument(path)?.let {doc ->

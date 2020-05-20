@@ -21,6 +21,7 @@ package net.sourceforge.ganttproject.action.project;
 import biz.ganttproject.storage.StorageDialogAction;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
+import net.sourceforge.ganttproject.document.DocumentsMRU;
 import net.sourceforge.ganttproject.document.webdav.WebDavStorageImpl;
 
 import javax.swing.*;
@@ -33,13 +34,15 @@ public class ProjectMenu extends JMenu {
   private final NewProjectAction myNewProjectAction;
   private final SaveProjectAction mySaveProjectAction;
   private final PrintAction myPrintAction;
-  private OpenProjectAction myOpenProjectAction;
+  private final DocumentsMRU myMRU;
+  private final OpenProjectAction myOpenProjectAction;
 
-  public ProjectMenu(final GanttProject project, JMenu mru, String key) {
+  public ProjectMenu(final GanttProject project, DocumentsMRU mru, String key) {
     super(GPAction.createVoidAction(key));
     myNewProjectAction = new NewProjectAction(project);
     mySaveProjectAction = new SaveProjectAction(project);
     myPrintAction = new PrintAction(project);
+    myMRU = mru;
 
     ProjectPropertiesAction projectSettingsAction = new ProjectPropertiesAction(project);
     myOpenProjectAction = new OpenProjectAction(project, project.getProjectUIFacade());
@@ -55,7 +58,7 @@ public class ProjectMenu extends JMenu {
 
     WebDavStorageImpl webdavStorage = (WebDavStorageImpl) project.getDocumentManager().getWebDavStorageUi();
     StorageDialogAction cloudDialogAction = new StorageDialogAction(
-        project, project.getProjectUIFacade(), project.getDocumentManager(), webdavStorage.getServersOption());
+        project, project.getProjectUIFacade(), project.getDocumentManager(), myMRU, webdavStorage.getServersOption());
     add(cloudDialogAction);
     add(projectSettingsAction);
     add(myNewProjectAction);

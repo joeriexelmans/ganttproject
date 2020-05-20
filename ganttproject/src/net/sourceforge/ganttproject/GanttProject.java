@@ -1181,7 +1181,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
   private class ParserFactoryImpl implements ParserFactory {
     @Override
     public GPSaver newSaver() {
-      return new GanttXMLSaver(GanttProject.this, tree, resp, area, myUIFacade);
+      return new GanttXMLSaver(GanttProject.this, area, myUIFacade);
     }
   }
 

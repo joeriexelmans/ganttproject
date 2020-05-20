@@ -23,9 +23,7 @@ import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GPVersion;
 import net.sourceforge.ganttproject.GanttGraphicArea;
 import net.sourceforge.ganttproject.GanttPreviousState;
-import net.sourceforge.ganttproject.GanttResourcePanel;
 import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.roles.Role;
@@ -49,15 +47,15 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
 
   private final UIFacade myUIFacade;
 
-  private GanttGraphicArea area;
+  private GanttGraphicArea myArea;
 
   public GanttXMLSaver(IGanttProject project) {
-    this(project, null, null, null, null);
+    this(project, null, null);
   }
 
-  public GanttXMLSaver(IGanttProject project, TaskTreeUIFacade taskTree, GanttResourcePanel peop, GanttGraphicArea area,
+  public GanttXMLSaver(IGanttProject project, GanttGraphicArea area,
                        UIFacade uiFacade) {
-    this.area = area;
+    myArea = area;
     myProject = project;
     myUIFacade = uiFacade;
   }
@@ -65,15 +63,15 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
   @Override
   public void save(OutputStream stream) throws IOException {
     try {
-      AttributesImpl attrs = new AttributesImpl();
       StreamResult result = new StreamResult(stream);
       TransformerHandler handler = createHandler(result);
       handler.startDocument();
-      addAttribute("name", getProject().getProjectName(), attrs);
-      addAttribute("company", getProject().getOrganization(), attrs);
-      addAttribute("webLink", getProject().getWebLink(), attrs);
-      if (area != null) {
-        addAttribute("view-date", CalendarFactory.createGanttCalendar(area.getStartDate()).toXMLString(), attrs);
+      AttributesImpl attrs = new AttributesImpl();
+      addAttribute("name", myProject.getProjectName(), attrs);
+      addAttribute("company", myProject.getOrganization(), attrs);
+      addAttribute("webLink", myProject.getWebLink(), attrs);
+      if (myArea != null) {
+        addAttribute("view-date", CalendarFactory.createGanttCalendar(myArea.getStartDate()).toXMLString(), attrs);
       }
       if (myUIFacade != null) {
         addAttribute("view-index", "" + myUIFacade.getViewIndex(), attrs);
@@ -87,8 +85,8 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
       startElement("project", attrs, handler);
       //
       // See https://bugs.openjdk.java.net/browse/JDK-8133452
-      if (getProject().getDescription() != null) {
-        String projectDescription = getProject().getDescription().replace("\\r\\n", "\\n");
+      if (myProject.getDescription() != null) {
+        String projectDescription = myProject.getDescription().replace("\\r\\n", "\\n");
         cdataElement("description", projectDescription, attrs, handler);
       }
 
@@ -121,34 +119,34 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
   }
 
   private void saveVacations(TransformerHandler handler) throws SAXException {
-    new VacationSaver().save(getProject(), handler);
+    new VacationSaver().save(myProject, handler);
   }
 
   private void saveResources(TransformerHandler handler) throws SAXException {
-    new ResourceSaver().save(getProject(), handler);
+    new ResourceSaver().save(myProject, handler);
   }
 
   private void saveViews(TransformerHandler handler) throws SAXException {
-    if (getUIFacade() != null) {
-      new ViewSaver().save(getUIFacade(), handler);
+    if (myUIFacade != null) {
+      new ViewSaver().save(myUIFacade, handler);
     }
   }
 
   private void saveCalendar(TransformerHandler handler) throws SAXException {
-    new CalendarSaver().save(getProject(), handler);
+    new CalendarSaver().save(myProject, handler);
   }
 
   private void saveTasks(TransformerHandler handler) throws SAXException, IOException {
-    new TaskSaver().save(getProject(), handler);
+    new TaskSaver().save(myProject, handler);
   }
 
   private void saveAssignments(TransformerHandler handler) throws SAXException {
-    new AssignmentSaver().save(getProject(), handler);
+    new AssignmentSaver().save(myProject, handler);
   }
 
   private void saveRoles(TransformerHandler handler) throws SAXException {
     AttributesImpl attrs = new AttributesImpl();
-    RoleManager roleManager = getProject().getRoleManager();
+    RoleManager roleManager = myProject.getRoleManager();
     RoleSet[] roleSets = roleManager.getRoleSets();
     for (int i = 0; i < roleSets.length; i++) {
       RoleSet next = roleSets[i];
@@ -170,13 +168,5 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
       }
       endElement("roles", handler);
     }
-  }
-
-  IGanttProject getProject() {
-    return myProject;
-  }
-
-  UIFacade getUIFacade() {
-    return myUIFacade;
   }
 }

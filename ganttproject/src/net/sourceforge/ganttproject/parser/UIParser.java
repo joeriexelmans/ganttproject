@@ -2,8 +2,7 @@ package net.sourceforge.ganttproject.parser;
 
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.Project;
-import net.sourceforge.ganttproject.project.ProjectFactory;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.TaskManager;
 
 /**
@@ -12,12 +11,13 @@ import net.sourceforge.ganttproject.task.TaskManager;
 public class UIParser extends Parser {
     UIFacade myUIFacade;
     
-    public UIParser(ProjectFactory f, DocumentManager d, UIFacade uiFacade) {
-        super(f, d);
+    public UIParser(DocumentManager docManager, UIFacade uiFacade) {
+        super(docManager);
         myUIFacade = uiFacade;
     }
 
-    protected GPParser createParser(ParsingContext ctx, Project project) {
+    @Override
+    protected GPParser createParser(ParsingContext ctx, IProject project) {
         GPParser parser = super.createParser(ctx, project);
 
         TaskManager taskManager = project.getTaskManager();

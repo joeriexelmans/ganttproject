@@ -136,9 +136,10 @@ public class TestParser extends TestCase {
     private IProject project;
 
     public void testParser() throws IOException {
-        Parser parser = new Parser(factory, null);
+        Parser parser = new Parser(null);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
-        project = parser.parse(is);
+        project = factory.newProject();
+        parser.parse(project, is);
 
         // task and resource count
         assertEquals(5, project.getTaskManager().getTaskCount());
@@ -227,9 +228,10 @@ public class TestParser extends TestCase {
 
     public void testUnparser() throws IOException {
         // parse our project like in testParser
-        Parser parser = new Parser(factory, null);
+        Parser parser = new Parser(null);
         InputStream is = new ByteArrayInputStream(projectFile.getBytes(StandardCharsets.UTF_8));
-        project = parser.parse(is);
+        project = factory.newProject();
+        parser.parse(project, is);
 
         // now serialize it to a string
         GanttXMLSaver saver = new GanttXMLSaver(project);

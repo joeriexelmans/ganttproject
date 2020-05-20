@@ -7,8 +7,7 @@ import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
-import net.sourceforge.ganttproject.project.Project;
-import net.sourceforge.ganttproject.project.ProjectFactory;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -22,26 +21,21 @@ import java.io.InputStream;
  *  not including tag handlers that depend on the UI.
  */
 public class Parser {
-    ProjectFactory factory;
     DocumentManager documentManager;
 
-    /**
-     * @param f Factory object to create a new blank project
-     */
-    public Parser(ProjectFactory f, DocumentManager d) {
-        factory = f;
-        documentManager = d;
+    public Parser(DocumentManager docManager) {
+        documentManager = docManager;
     }
 
     /**
      * Constructs a new Project object from parsing a stream in XML format.
+     * @param project A blank project
      * @param is Input stream for reading XML data from
      * @throws IOException
      */
-    public final Project parse(InputStream is) throws IOException {
+    public final void parse(IProject project, InputStream is) throws IOException {
         ParsingContext ctx = new ParsingContext();
-        Project project = factory.newProject();
-        GPParser parser = createParser(ctx, project);
+        GPParser parser = this.createParser(ctx, project);
 
         // "special" tag handler
         PortfolioTagHandler portfolioTagHandler = new PortfolioTagHandler(documentManager);
@@ -51,14 +45,12 @@ public class Parser {
 
         if (portfolioTagHandler.getDefaultDocument() != null) {
             // we're dealing with a portfolio, not with a document
-            return parse(portfolioTagHandler.getDefaultDocument().getInputStream());
+            parse(project, portfolioTagHandler.getDefaultDocument().getInputStream());
         }
-
-        return project;
     }
 
     // The "overridable" part
-    protected GPParser createParser(ParsingContext ctx, Project project) {
+    protected GPParser createParser(ParsingContext ctx, IProject project) {
         TaskManager taskManager = project.getTaskManager();
         HumanResourceManager hrManager = project.getHumanResourceManager();
         CustomPropertyManager hrCustomPropertyManager = project.getResourceCustomPropertyManager();

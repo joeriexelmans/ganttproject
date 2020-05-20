@@ -157,10 +157,10 @@ public class ProxyDocument implements Document {
 
   @Override
   public void read() throws IOException, DocumentException {
-    ParsingState parsing = new ParsingState();
     try {
       ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(false);
-      parsing.enter();
+      UIParser parser = new UIParser(myCreator, myUIFacade);
+      parser.parse(myProject, getInputStream());
     } finally {
       ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(true);
     }
@@ -187,103 +187,7 @@ public class ProxyDocument implements Document {
       output.close();
     }
   }
-
-  class ParsingState {
-    void enter() throws IOException, DocumentException {
-      GPParser opener = new GanttXMLOpen();
-      ParsingContext ctx = new ParsingContext();
-
-      HumanResourceManager hrManager = myProject.getHumanResourceManager();
-      RoleManager roleManager = myProject.getRoleManager();
-      TaskManager taskManager = myProject.getTaskManager();
-      GPCalendarCalc calendar = myProject.getActiveCalendar();
-
-      ResourceTagHandler resourceHandler = new ResourceTagHandler(hrManager, roleManager,
-          myProject.getResourceCustomPropertyManager());
-      DependencyTagHandler dependencyHandler = new DependencyTagHandler(ctx, taskManager);
-      AllocationTagHandler allocationHandler = new AllocationTagHandler(hrManager, taskManager, roleManager);
-      VacationTagHandler vacationHandler = new VacationTagHandler(hrManager);
-      PreviousStateTasksTagHandler previousStateHandler = new PreviousStateTasksTagHandler(myProject.getBaselines());
-      RoleTagHandler rolesHandler = new RoleTagHandler(roleManager);
-      TaskTagHandler taskHandler = new TaskTagHandler(taskManager, ctx);
-      DefaultWeekTagHandler weekHandler = new DefaultWeekTagHandler(calendar);
-      OnlyShowWeekendsTagHandler onlyShowWeekendsHandler = new OnlyShowWeekendsTagHandler(calendar);
-
-      TaskPropertiesTagHandler taskPropHandler = new TaskPropertiesTagHandler(taskManager.getCustomPropertyManager());
-      opener.addTagHandler(taskPropHandler);
-
-      TaskDisplayColumnsTagHandler pilsenTaskDisplayHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
-      TaskDisplayColumnsTagHandler legacyTaskDisplayHandler = TaskDisplayColumnsTagHandler.createLegacyHandler();
-
-      opener.addTagHandler(pilsenTaskDisplayHandler);
-      opener.addTagHandler(legacyTaskDisplayHandler);
-
-      opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myUIFacade.getTaskTree().getVisibleFields(), pilsenTaskDisplayHandler, legacyTaskDisplayHandler));
-      opener.addTagHandler(new ViewTagHandler("gantt-chart", myUIFacade, pilsenTaskDisplayHandler));
-
-      TaskDisplayColumnsTagHandler resourceFieldsHandler = TaskDisplayColumnsTagHandler.createPilsenHandler();
-      opener.addTagHandler(resourceFieldsHandler);
-
-      opener.addParsingListener(TaskDisplayColumnsTagHandler.createTaskDisplayColumnsWrapper(myUIFacade.getResourceTree().getVisibleFields(), resourceFieldsHandler));
-      opener.addTagHandler(new ViewTagHandler("resource-table", myUIFacade, resourceFieldsHandler));
-
-      opener.addTagHandler(taskHandler);
-      TaskParsingListener taskParsingListener = new TaskParsingListener(taskManager, myUIFacade.getTaskTree());
-      opener.addParsingListener(taskParsingListener);
-
-      CustomPropertiesTagHandler customPropHandler = new CustomPropertiesTagHandler(ctx, taskManager);
-      opener.addTagHandler(customPropHandler);
-      opener.addParsingListener(customPropHandler);
-
-      opener.addTagHandler(new DescriptionTagHandler(myPrjInfos));
-      opener.addTagHandler(new NotesTagHandler(ctx));
-      opener.addTagHandler(new ProjectTagHandler(myPrjInfos));
-
-      ProjectViewAttrsTagHandler projectViewAttrsTagHandler = new ProjectViewAttrsTagHandler(myUIFacade);
-      opener.addTagHandler(projectViewAttrsTagHandler);
-      opener.addParsingListener(projectViewAttrsTagHandler);
-
-      opener.addTagHandler(new TasksTagHandler(taskManager));
-
-      TimelineTagHandler timelineTagHandler = new TimelineTagHandler(myUIFacade, taskManager);
-      opener.addTagHandler(timelineTagHandler);
-      opener.addParsingListener(timelineTagHandler);
-
-      opener.addTagHandler(resourceHandler);
-      opener.addTagHandler(dependencyHandler);
-      opener.addTagHandler(allocationHandler);
-      opener.addParsingListener(allocationHandler);
-      opener.addTagHandler(vacationHandler);
-      opener.addTagHandler(previousStateHandler);
-      opener.addTagHandler(rolesHandler);
-      opener.addTagHandler(weekHandler);
-      opener.addTagHandler(onlyShowWeekendsHandler);
-      opener.addTagHandler(new OptionTagHandler<ListOption<Color>>(GPColorChooser.getRecentColorsOption()));
-      opener.addParsingListener(dependencyHandler);
-      opener.addParsingListener(resourceHandler);
-
-
-      HolidayTagHandler holidayHandler = new HolidayTagHandler(calendar);
-      opener.addTagHandler(new CalendarsTagHandler(calendar));
-      opener.addTagHandler(holidayHandler);
-
-      PortfolioTagHandler portfolioHandler = new PortfolioTagHandler(myCreator);
-      opener.addTagHandler(portfolioHandler);
-
-      InputStream is;
-      try {
-        is = getInputStream();
-      } catch (IOException e) {
-        throw new DocumentException(GanttLanguage.getInstance().getText("msg8") + ": " + e.getLocalizedMessage(), e);
-      }
-      opener.load(is);
-
-      if (portfolioHandler.getDefaultDocument() != null) {
-        portfolioHandler.getDefaultDocument().read();
-      }
-    }
-  }
-
+  
   @Override
   public URI getURI() {
     return myPhysicalDocument.getURI();

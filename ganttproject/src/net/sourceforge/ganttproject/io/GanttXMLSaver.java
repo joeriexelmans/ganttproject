@@ -40,6 +40,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
+/**
+ * Embeds logic for saving a project (= IProject instance).
+ * If GanttGraphicArea instance is passed to constructor, the currently visible date is saved as well.
+ * If UIFacade instance is passed to constructor, saves additional things about the view state, not part of the domain model.
+ */
 public class GanttXMLSaver extends SaverBase implements GPSaver {
 
   private static final String VERSION = GPVersion.getCurrentVersionNumber();
@@ -50,11 +55,11 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
 
   private GanttGraphicArea myArea;
 
-  public GanttXMLSaver(IGanttProject project) {
+  public GanttXMLSaver(IProject project) {
     this(project, null, null);
   }
 
-  public GanttXMLSaver(IGanttProject project, GanttGraphicArea area,
+  public GanttXMLSaver(IProject project, GanttGraphicArea area,
                        UIFacade uiFacade) {
     myArea = area;
     myProject = project;

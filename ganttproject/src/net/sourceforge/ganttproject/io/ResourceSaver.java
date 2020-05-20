@@ -22,6 +22,7 @@ import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.IGanttProject;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -32,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 class ResourceSaver extends SaverBase {
-  void save(IGanttProject project, TransformerHandler handler) throws SAXException {
+  void save(IProject project, TransformerHandler handler) throws SAXException {
     final AttributesImpl attrs = new AttributesImpl();
     startElement("resources", handler);
     saveCustomColumnDefinitions(project, handler);
@@ -47,7 +48,7 @@ class ResourceSaver extends SaverBase {
       startElement("resource", attrs, handler);
       {
         saveRates(p, handler);
-        saveCustomProperties(project, p, handler);
+        saveCustomProperties(p, handler);
       }
       endElement("resource", handler);
     }
@@ -63,7 +64,7 @@ class ResourceSaver extends SaverBase {
     }
   }
 
-  private void saveCustomProperties(IGanttProject project, HumanResource resource, TransformerHandler handler)
+  private void saveCustomProperties(HumanResource resource, TransformerHandler handler)
       throws SAXException {
     // CustomPropertyManager customPropsManager =
     // project.getHumanResourceManager().getCustomPropertyManager();
@@ -83,7 +84,7 @@ class ResourceSaver extends SaverBase {
     }
   }
 
-  private void saveCustomColumnDefinitions(IGanttProject project, TransformerHandler handler) throws SAXException {
+  private void saveCustomColumnDefinitions(IProject project, TransformerHandler handler) throws SAXException {
     CustomPropertyManager customPropsManager = project.getHumanResourceManager().getCustomPropertyManager();
     List<CustomPropertyDefinition> definitions = customPropsManager.getDefinitions();
     // HumanResourceManager hrManager = (HumanResourceManager)

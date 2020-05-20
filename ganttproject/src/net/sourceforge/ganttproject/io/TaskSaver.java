@@ -23,7 +23,6 @@ import com.google.common.base.Charsets;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.CustomColumnsValues;
 import net.sourceforge.ganttproject.task.Task;

@@ -23,7 +23,6 @@ import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GPVersion;
 import net.sourceforge.ganttproject.GanttGraphicArea;
 import net.sourceforge.ganttproject.GanttPreviousState;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.project.IProject;
@@ -53,7 +52,7 @@ public class GanttXMLSaver extends SaverBase implements GPSaver {
 
   private final UIFacade myUIFacade;
 
-  private GanttGraphicArea myArea;
+  private final GanttGraphicArea myArea;
 
   public GanttXMLSaver(IProject project) {
     this(project, null, null);

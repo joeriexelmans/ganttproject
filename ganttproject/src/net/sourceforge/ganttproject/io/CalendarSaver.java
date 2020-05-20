@@ -26,7 +26,6 @@ import java.util.Locale;
 
 import javax.xml.transform.sax.TransformerHandler;
 
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.util.ColorConvertion;
 

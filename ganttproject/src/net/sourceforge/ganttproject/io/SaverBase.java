@@ -92,6 +92,6 @@ public class SaverBase {
 
   }
 
-  private static AttributesImpl ourEmptyAttributes = new AttributesImpl();
+  private static final AttributesImpl ourEmptyAttributes = new AttributesImpl();
 
 }

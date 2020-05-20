@@ -4,7 +4,6 @@ import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import junit.framework.TestCase;
 import net.sourceforge.ganttproject.TestSetupHelper;
-import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
 import net.sourceforge.ganttproject.parser.*;
 import net.sourceforge.ganttproject.project.IProject;

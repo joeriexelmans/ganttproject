@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.xml.transform.sax.TransformerHandler;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -31,7 +32,7 @@ import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 
 class AssignmentSaver extends SaverBase {
-  void save(IGanttProject project, TransformerHandler handler) throws SAXException {
+  void save(IProject project, TransformerHandler handler) throws SAXException {
     startElement("allocations", handler);
     List<HumanResource> resources = project.getHumanResourceManager().getResources();
     for (int i = 0; i < resources.size(); i++) {

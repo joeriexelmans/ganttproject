@@ -33,18 +33,15 @@ import java.awt.event.ActionEvent;
 public class ResourceDeleteAction extends ResourceAction {
   private final UIFacade myUIFacade;
 
-  private final GanttProject myProject;
-
-  public ResourceDeleteAction(HumanResourceManager hrManager, ResourceContext context, GanttProject project,
+  public ResourceDeleteAction(HumanResourceManager hrManager, ResourceContext context,
                               UIFacade uiFacade) {
-    this(hrManager, context, project, uiFacade, IconSize.TOOLBAR_SMALL);
+    this(hrManager, context, uiFacade, IconSize.TOOLBAR_SMALL);
   }
 
-  private ResourceDeleteAction(HumanResourceManager hrManager, ResourceContext context, GanttProject project,
+  private ResourceDeleteAction(HumanResourceManager hrManager, ResourceContext context,
                                UIFacade uiFacade, IconSize size) {
     super("resource.delete", hrManager, context, size);
     myUIFacade = uiFacade;
-    myProject = project;
     setEnabled(hasResources());
   }
 
@@ -70,7 +67,7 @@ public class ResourceDeleteAction extends ResourceAction {
 
   @Override
   public ResourceDeleteAction asToolbarAction() {
-    ResourceDeleteAction result = new ResourceDeleteAction(getManager(), getContext(), myProject, myUIFacade);
+    ResourceDeleteAction result = new ResourceDeleteAction(getManager(), getContext(), myUIFacade);
     result.setFontAwesomeLabel(UIUtil.getFontawesomeLabel(result));
     return result;
   }

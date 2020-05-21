@@ -150,7 +150,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, UIF
   /** Boolean to know if the file has been modify */
   public boolean askForSave = false;
   /** Is the application only for viewer. */
-  public boolean isOnlyViewer;
+  private final boolean isOnlyViewer;
   private final ResourceActionSet myResourceActions;
   private final ZoomActionSet myZoomActions;
   private final TaskManager myTaskManager;

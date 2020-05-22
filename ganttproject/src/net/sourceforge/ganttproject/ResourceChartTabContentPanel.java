@@ -4,6 +4,7 @@
 package net.sourceforge.ganttproject;
 
 import net.sourceforge.ganttproject.chart.Chart;
+import net.sourceforge.ganttproject.chart.ResourceChart;
 import net.sourceforge.ganttproject.chart.overview.GPToolbar;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.UIFacade;
@@ -17,9 +18,9 @@ class ResourceChartTabContentPanel extends ChartTabContentPanel implements GPVie
   private Component myResourceChart;
   private JComponent myTabContentPanel;
 
-  ResourceChartTabContentPanel(IGanttProject project, UIFacade workbenchFacade, TreeTableContainer resourceTree,
+  ResourceChartTabContentPanel(GanttProject project, UIFacade workbenchFacade, TreeTableContainer resourceTree,
       Component resourceChart) {
-    super(project, workbenchFacade, workbenchFacade.getResourceChart());
+    super(project, workbenchFacade, project.getResourceChart());
     myTreeFacade = resourceTree;
     myResourceChart = resourceChart;
     addTableResizeListeners(resourceTree.getTreeComponent(), myTreeFacade.getTreeTable().getScrollPane().getViewport());
@@ -52,11 +53,6 @@ class ResourceChartTabContentPanel extends ChartTabContentPanel implements GPVie
   @Override
   protected Component getTreeComponent() {
     return myTreeFacade.getTreeComponent();
-  }
-
-  @Override
-  public Chart getChart() {
-    return getUiFacade().getResourceChart();
   }
 
   @Override

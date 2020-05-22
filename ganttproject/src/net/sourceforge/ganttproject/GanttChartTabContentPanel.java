@@ -22,6 +22,7 @@ import com.google.common.base.Function;
 import net.sourceforge.ganttproject.action.BaselineDialogAction;
 import net.sourceforge.ganttproject.action.CalculateCriticalPathAction;
 import net.sourceforge.ganttproject.chart.Chart;
+import net.sourceforge.ganttproject.chart.GanttChart;
 import net.sourceforge.ganttproject.chart.overview.GPToolbar;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
@@ -34,30 +35,30 @@ import java.awt.*;
 
 class GanttChartTabContentPanel extends ChartTabContentPanel implements GPView {
   private final Container myTaskTree;
-  private final JComponent myGanttChart;
+  private final GanttChart myGanttChart;
+  private final JComponent myChartComponent;
   private final TreeTableContainer myTreeFacade;
-  private final UIFacade myWorkbenchFacade;
   private final CalculateCriticalPathAction myCriticalPathAction;
   private final BaselineDialogAction myBaselineAction;
   private JComponent myComponent;
 
-  GanttChartTabContentPanel(IGanttProject project, UIFacade workbenchFacade, TreeTableContainer treeFacade,
-      JComponent ganttChart, UIConfiguration uiConfiguration) {
-    super(project, workbenchFacade, workbenchFacade.getGanttChart());
-    myWorkbenchFacade = workbenchFacade;
+  GanttChartTabContentPanel(GanttProject project, UIFacade uiFacade, TreeTableContainer treeFacade,
+      JComponent chartComponent, UIConfiguration uiConfiguration) {
+    super(project, uiFacade, project.getGanttChart());
+    myGanttChart = project.getGanttChart();
     myTreeFacade = treeFacade;
     myTaskTree = (Container) treeFacade.getTreeComponent();
-    myGanttChart = ganttChart;
+    myChartComponent = chartComponent;
     // FIXME KeyStrokes of these 2 actions are not working...
-    myCriticalPathAction = new CalculateCriticalPathAction(project.getTaskManager(), uiConfiguration, workbenchFacade);
-    myBaselineAction = new BaselineDialogAction(project, workbenchFacade);
+    myCriticalPathAction = new CalculateCriticalPathAction(project.getTaskManager(), uiConfiguration, uiFacade);
+    myBaselineAction = new BaselineDialogAction(project, uiFacade);
     addChartPanel(createSchedulePanel());
     addTableResizeListeners(myTaskTree, myTreeFacade.getTreeTable().getScrollPane().getViewport());
   }
 
   private Component createSchedulePanel() {
     return new ToolbarBuilder()
-        .withDpiOption(myWorkbenchFacade.getDpiOption())
+        .withDpiOption(myUiFacade.getDpiOption())
         .withLafOption(getUiFacade().getLafOption(), new Function<String, Float>() {
           @Override
           public Float apply(@Nullable String s) {
@@ -65,7 +66,7 @@ class GanttChartTabContentPanel extends ChartTabContentPanel implements GPView {
           }
         })
         .withGapFactory(ToolbarBuilder.Gaps.VDASH)
-        .withBackground(myWorkbenchFacade.getGanttChart().getStyle().getSpanningHeaderBackgroundColor())
+        .withBackground(myGanttChart.getStyle().getSpanningHeaderBackgroundColor())
         .withHeight(24)
         .addButton(myCriticalPathAction)
         .addButton(myBaselineAction)
@@ -85,8 +86,8 @@ class GanttChartTabContentPanel extends ChartTabContentPanel implements GPView {
     ToolbarBuilder builder = new ToolbarBuilder()
         .withHeight(24)
         .withSquareButtons()
-        .withDpiOption(myWorkbenchFacade.getDpiOption())
-        .withLafOption(myWorkbenchFacade.getLafOption(), new Function<String, Float>() {
+        .withDpiOption(myUiFacade.getDpiOption())
+        .withLafOption(myUiFacade.getLafOption(), new Function<String, Float>() {
           @Override
           public Float apply(@Nullable String s) {
             return (s.indexOf("nimbus") >= 0) ? 2f : 1f;
@@ -99,7 +100,7 @@ class GanttChartTabContentPanel extends ChartTabContentPanel implements GPView {
 
   @Override
   protected Component getChartComponent() {
-    return myGanttChart;
+    return myChartComponent;
   }
 
   @Override
@@ -115,11 +116,6 @@ class GanttChartTabContentPanel extends ChartTabContentPanel implements GPView {
       myTaskTree.requestFocus();
       myTreeFacade.getNewAction().updateAction();
     }
-  }
-
-  @Override
-  public Chart getChart() {
-    return myWorkbenchFacade.getGanttChart();
   }
 
   @Override

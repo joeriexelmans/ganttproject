@@ -22,6 +22,7 @@ import biz.ganttproject.core.option.ChangeValueEvent;
 import biz.ganttproject.core.option.ChangeValueListener;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
+import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.TimelineChart;
 import net.sourceforge.ganttproject.chart.overview.NavigationPanel;
 import net.sourceforge.ganttproject.chart.overview.ZoomingPanel;
@@ -40,20 +41,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 abstract class ChartTabContentPanel {
-  private final TimelineChart myChart;
+  protected final TimelineChart myChart;
   private JSplitPane mySplitPane;
   private final List<Component> myPanels = new ArrayList<>();
-  private final UIFacade myUiFacade;
+  protected final UIFacade myUiFacade;
   private int myImageHeight;
   private Supplier<Integer> myHeaderHeight;
   private GanttImagePanel myImagePanel;
 
-  ChartTabContentPanel(IGanttProject project, UIFacade workbenchFacade, TimelineChart chart) {
-    NavigationPanel navigationPanel = new NavigationPanel(project, chart, workbenchFacade);
-    ZoomingPanel zoomingPanel = new ZoomingPanel(workbenchFacade, chart);
+  ChartTabContentPanel(IGanttProject project, UIFacade uiFacade, TimelineChart chart) {
+    NavigationPanel navigationPanel = new NavigationPanel(project, chart, uiFacade);
+    ZoomingPanel zoomingPanel = new ZoomingPanel(uiFacade, chart);
     addChartPanel(zoomingPanel.getComponent());
     addChartPanel(navigationPanel.getComponent());
-    myUiFacade = workbenchFacade;
+    myUiFacade = uiFacade;
     myChart = Preconditions.checkNotNull(chart);
     myUiFacade.getMainFrame().addWindowListener(new WindowAdapter() {
       @Override
@@ -223,5 +224,9 @@ abstract class ChartTabContentPanel {
       getTreeComponent().requestFocus();
       updateTimelineHeight();
     }
+  }
+
+  public Chart getChart() {
+    return myChart;
   }
 }

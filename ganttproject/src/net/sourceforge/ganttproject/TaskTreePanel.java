@@ -66,7 +66,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * Class that generate the JTree
+ *
  */
 public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> implements
     /*DragSourceListener, DragGestureListener,*/ TaskTreeUIFacade {

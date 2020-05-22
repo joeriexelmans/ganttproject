@@ -159,13 +159,13 @@ public class DocumentCreator implements DocumentManager {
   @Override
   public Document getDocument(String path) {
     Document physicalDocument = createDocument(path);
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, getParserFactory());
+    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, myParserFactory);
     return proxyDocument;
   }
 
   @Override
   public Document getProxyDocument(Document physicalDocument) {
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, getParserFactory());
+    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, myParserFactory);
     return proxyDocument;
   }
 
@@ -305,10 +305,6 @@ public class DocumentCreator implements DocumentManager {
 
   protected ColumnList getResourceVisibleFields() {
     return null;
-  }
-
-  protected ParserFactory getParserFactory() {
-    return myParserFactory;
   }
 
   String createTemporaryFile() throws IOException {

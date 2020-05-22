@@ -137,7 +137,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final GanttStatusBar statusBar;
   private final GanttTabbedPane myTabPane;
   private TaskTreePanel tree;
-  private GanttGraphicArea area;
   private ResourceTreePanel resp;
   private final EditMenu myEditMenu;
   private final ProjectMenu myProjectMenu;
@@ -245,7 +244,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       final DefaultColorOption myDefaultColorOption = new GanttProjectImpl.DefaultTaskColorOption();
       @Override
       public Color getDefaultColor() {
-        return area.getTaskDefaultColorOption().getValue();
+        return tree.area.getTaskDefaultColorOption().getValue();
       }
       @Override
       public ColorOption getDefaultColorOption() {
@@ -292,10 +291,9 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     tree = new TaskTreePanel(this, myTaskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);
     this.addProjectEventListener(myFacadeInvalidator);
-    area = new GanttGraphicArea(this, tree, myTaskManager, myUIFacade.getZoomManager(), myUndoManager);
     tree.init();
     options.addOptionGroups(myUIFacade.getOptions());
-    options.addOptionGroups(area.getOptionGroups());
+    options.addOptionGroups(tree.area.getOptionGroups());
     options.addOptionGroups(resp.area.getOptionGroups());
     options.addOptionGroups(myProjectUIFacade.getOptionGroups());
     options.addOptionGroups(myDocumentManager.getNetworkOptionGroups());
@@ -306,7 +304,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     System.err.println("2. loading options");
     initOptions();
     // Not a joke. This takes value from the option and applies it to the UI.
-    tree.setGraphicArea(area);
     myUIFacade.setLookAndFeel(myUIFacade.getLookAndFeel());
     myRowHeightAligners.add(tree.getRowHeightAligner());
     myUIFacade.getAppFontOption().addChangeValueListener(new ChangeValueListener() {
@@ -318,10 +315,10 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       }
     });
 
-    myUIFacade.getZoomManager().addZoomListener(area.getZoomListener());
+    myUIFacade.getZoomManager().addZoomListener(tree.area.getZoomListener());
 
     ScrollingManager scrollingManager = myUIFacade.getScrollingManager();
-    scrollingManager.addScrollingListener(area.getViewState());
+    scrollingManager.addScrollingListener(tree.area.getViewState());
     scrollingManager.addScrollingListener(resp.area.getViewState());
 
     System.err.println("3. creating menus...");
@@ -364,7 +361,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     bar.add(helpMenu.createMenu());
 
     System.err.println("4. creating views...");
-    myGanttChartTabContent = new GanttChartTabContentPanel(this, myUIFacade, tree, area.getJComponent(),
+    myGanttChartTabContent = new GanttChartTabContentPanel(this, myUIFacade, tree, tree.area.getJComponent(),
         myUIConfiguration);
     myViewManager.createView(myGanttChartTabContent, new ImageIcon(getClass().getResource("/icons/tasks_16.gif")));
     myViewManager.toggleVisible(myGanttChartTabContent);
@@ -380,7 +377,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
         SwingUtilities.invokeLater(new Runnable() {
           @Override
           public void run() {
-            area.reset();
+            tree.area.reset();
             getResourceChart().reset();
             // This will clear any modifications which might be caused by
             // adjusting widths of table columns during initial layout process.
@@ -445,7 +442,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
             });
           }
         });
-        area.reset();
+        tree.area.reset();
         getResourceChart().reset();
         // This will clear any modifications which might be caused by
         // adjusting widths of table columns during initial layout process.
@@ -574,7 +571,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   @Override
   public void languageChanged(Event event) {
     applyComponentOrientation(language.getComponentOrientation());
-    area.repaint();
+    tree.area.repaint();
     resp.area.repaint();
 
     CustomColumnsStorage.changeLanguage(language);
@@ -869,7 +866,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   }
 
   public GanttGraphicArea getArea() {
-    return area;
+    return tree.area;
   }
 
   public TaskTreePanel getTree() {
@@ -1135,7 +1132,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   // UIFacade
 
   public GanttChart getGanttChart() {
-    return area;
+    return tree.area;
   }
 
   public TimelineChart getResourceChart() {
@@ -1169,7 +1166,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private class ParserFactoryImpl implements ParserFactory {
     @Override
     public GPSaver newSaver() {
-      return new GanttXMLSaver(GanttProject.this, area, myUIFacade);
+      return new GanttXMLSaver(GanttProject.this, tree.area, myUIFacade);
     }
   }
 

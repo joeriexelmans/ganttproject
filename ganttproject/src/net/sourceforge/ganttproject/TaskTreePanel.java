@@ -73,8 +73,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
   private GanttProject.RowHeightAligner myRowHeightAligner;
   private UIFacade myUIFacade;
 
-  /** Pointer on graphic area */
-  private ChartComponentBase area = null;
+  public final GanttGraphicArea area;
 
   // TODO Replace with IGanttProject and facade classes
   /** Pointer of application */
@@ -174,6 +173,9 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
     getTreeTable().setupActionMaps(myLinkTasksAction, myUnlinkTasksAction, myMoveUpAction, myMoveDownAction,
             myIndentAction, myUnindentAction, newAction, myProject.getCutAction(), myProject.getCopyAction(),
             myProject.getPasteAction(), propertiesAction, deleteAction);
+
+    area = new GanttGraphicArea(project, this, myTaskManager, myUIFacade.getZoomManager(), project.getUndoManager());
+    myRowHeightAligner = new GanttProject.RowHeightAligner(this, this.area.getChartModel());
   }
 
   @Override
@@ -341,12 +343,6 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
         y - vbar.getValue() + getTreeTable().getTable().getTableHeader().getHeight());
   }
 
-  /** Change graphic part */
-  public void setGraphicArea(ChartComponentBase area) {
-    this.area = area;
-    myRowHeightAligner = new GanttProject.RowHeightAligner(this, this.area.getChartModel());
-  }
-
   @Override
   public void applyPreservingExpansionState(Task rootTask, Predicate<Task> callable) {
     MutableTreeTableNode rootNode = getNode(rootTask);
@@ -474,9 +470,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
   private class GanttTreeExpansionListener implements TreeExpansionListener {
     @Override
     public void treeExpanded(TreeExpansionEvent e) {
-      if (area != null) {
-        area.repaint();
-      }
+      area.repaint();
       DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) (e.getPath().getLastPathComponent());
       Task task = (Task) node.getUserObject();
       task.setExpand(true);
@@ -485,9 +479,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
 
     @Override
     public void treeCollapsed(TreeExpansionEvent e) {
-      if (area != null) {
-        area.repaint();
-      }
+      area.repaint();
 
       DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) (e.getPath().getLastPathComponent());
       Task task = (Task) node.getUserObject();

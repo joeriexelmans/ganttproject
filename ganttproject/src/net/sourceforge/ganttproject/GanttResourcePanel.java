@@ -63,11 +63,12 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
 
   private final UIFacade myUIFacade;
 
-  private static Pair<ResourceTreeTable, ResourceTreeTableModel> createTreeTable(IGanttProject project,
+  private static Pair<ResourceTreeTable, ResourceTreeTableModel> createTreeTable(GanttProject project,
                                                                                  UIFacade uiFacade) {
     ResourceTreeTableModel model = new ResourceTreeTableModel(project.getHumanResourceManager(),
         project.getTaskManager(), project.getResourceCustomPropertyManager());
-    return Pair.create(new ResourceTreeTable(project, model, uiFacade), model);
+    ResourceTreeTable table = new ResourceTreeTable(project, model, uiFacade);
+    return Pair.create(table, model);
   }
 
   public GanttResourcePanel(final GanttProject prj, final UIFacade uiFacade) {

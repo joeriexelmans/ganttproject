@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.action.task;
 
-import net.sourceforge.ganttproject.GanttTree2;
+import net.sourceforge.ganttproject.TaskTreePanel;
 import net.sourceforge.ganttproject.action.ActionDelegate;
 import net.sourceforge.ganttproject.action.ActionStateChangedListener;
 import net.sourceforge.ganttproject.action.GPAction;
@@ -41,16 +41,16 @@ public abstract class TaskActionBase extends GPAction implements TaskSelectionMa
   private final TaskManager myTaskManager;
   private final UIFacade myUIFacade;
   private final TaskSelectionManager mySelectionManager;
-  private final GanttTree2 myTree;
+  private final TaskTreePanel myTree;
   private List<Task> mySelection;
 
   protected TaskActionBase(String name, TaskManager taskManager, TaskSelectionManager selectionManager,
-      UIFacade uiFacade, GanttTree2 tree) {
+      UIFacade uiFacade, TaskTreePanel tree) {
     this(name, taskManager, selectionManager, uiFacade, tree, IconSize.MENU);
   }
 
   protected TaskActionBase(String name, TaskManager taskManager, TaskSelectionManager selectionManager,
-      UIFacade uiFacade, GanttTree2 tree, IconSize size) {
+                           UIFacade uiFacade, TaskTreePanel tree, IconSize size) {
     super(name, size);
     myTaskManager = taskManager;
     mySelectionManager = selectionManager;
@@ -132,7 +132,7 @@ public abstract class TaskActionBase extends GPAction implements TaskSelectionMa
     return myUIFacade;
   }
 
-  protected GanttTree2 getTree() {
+  protected TaskTreePanel getTree() {
     return myTree;
   }
 

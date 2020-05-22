@@ -229,11 +229,11 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
   }
 
   static class ResourceChartSelection extends AbstractChartImplementation.ChartSelectionImpl implements ClipboardOwner {
-    private final GanttResourcePanel myResourcePanel;
+    private final ResourceTreePanel myResourcePanel;
     private final IGanttProject myProject;
     private ClipboardContents myClipboardContents;
 
-    ResourceChartSelection(IGanttProject project, GanttResourcePanel resourcePanel) {
+    ResourceChartSelection(IGanttProject project, ResourceTreePanel resourcePanel) {
       myProject = project;
       myResourcePanel = resourcePanel;
     }

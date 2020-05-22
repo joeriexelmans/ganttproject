@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.action.task;
 
 import com.google.common.base.Predicate;
-import net.sourceforge.ganttproject.GanttTree2;
+import net.sourceforge.ganttproject.TaskTreePanel;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.task.Task;
@@ -37,7 +37,7 @@ import java.util.List;
 public class TaskMoveUpAction extends TaskActionBase {
 
   public TaskMoveUpAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade,
-      GanttTree2 tree) {
+      TaskTreePanel tree) {
     super("task.move.up", taskManager, selectionManager, uiFacade, tree);
   }
 

@@ -40,18 +40,18 @@ import net.sourceforge.ganttproject.task.BlankLineNode;
 import net.sourceforge.ganttproject.task.Task;
 
 class TaskTreeImageGenerator {
-  private GanttTree2 myTreeView;
+  private TaskTreePanel myTreeView;
   private UIConfiguration myUIConfiguration;
   private int myWidth;
   private final Image myLogo;
 
-  TaskTreeImageGenerator(GanttTree2 treeView, UIConfiguration uiConfiguration, Image logo) {
+  TaskTreeImageGenerator(TaskTreePanel treeView, UIConfiguration uiConfiguration, Image logo) {
     myTreeView = treeView;
     myUIConfiguration = uiConfiguration;
     myLogo = logo;
   }
 
-  protected GanttTree2 getTree() {
+  protected TaskTreePanel getTree() {
     return myTreeView;
   }
 

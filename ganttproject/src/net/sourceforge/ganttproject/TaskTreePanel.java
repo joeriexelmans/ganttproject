@@ -68,7 +68,7 @@ import java.util.logging.Level;
 /**
  * Class that generate the JTree
  */
-public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> implements
+public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> implements
     /*DragSourceListener, DragGestureListener,*/ TaskTreeUIFacade {
   private GanttProject.RowHeightAligner myRowHeightAligner;
   private UIFacade myUIFacade;
@@ -116,8 +116,8 @@ public class GanttTree2 extends TreeTableContainer<Task, GanttTreeTable, GanttTr
     return Pair.create(table, tableModel);
   }
 
-  public GanttTree2(final GanttProject project, TaskManager taskManager, TaskSelectionManager selectionManager,
-      final UIFacade uiFacade) {
+  public TaskTreePanel(final GanttProject project, TaskManager taskManager, TaskSelectionManager selectionManager,
+                       final UIFacade uiFacade) {
     super(createTreeTable(project, createDirtyfier(project), uiFacade));
     myUIFacade = uiFacade;
     myProject = project;

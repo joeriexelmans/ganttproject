@@ -49,7 +49,7 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 
-public class GanttResourcePanel extends TreeTableContainer<HumanResource, ResourceTreeTable, ResourceTreeTableModel>
+public class ResourceTreePanel extends TreeTableContainer<HumanResource, ResourceTreeTable, ResourceTreeTableModel>
     implements ResourceView, ResourceContext, AssignmentContext, ResourceTreeUIFacade {
 
   public final GanttProject appli;
@@ -71,7 +71,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
     return Pair.create(table, model);
   }
 
-  public GanttResourcePanel(final GanttProject prj, final UIFacade uiFacade) {
+  public ResourceTreePanel(final GanttProject prj, final UIFacade uiFacade) {
     super(createTreeTable(prj, uiFacade));
     appli = prj;
     myUIFacade = uiFacade;

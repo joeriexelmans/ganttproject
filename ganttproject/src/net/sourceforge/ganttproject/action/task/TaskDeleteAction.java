@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.action.task;
 
 import com.google.common.collect.Lists;
-import net.sourceforge.ganttproject.GanttTree2;
+import net.sourceforge.ganttproject.TaskTreePanel;
 import net.sourceforge.ganttproject.TreeUtil;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
@@ -39,12 +39,12 @@ import java.util.TreeMap;
 public class TaskDeleteAction extends TaskActionBase {
 
   public TaskDeleteAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade,
-      GanttTree2 tree) {
+      TaskTreePanel tree) {
     super("task.delete", taskManager, selectionManager, uiFacade, tree);
   }
 
   private TaskDeleteAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade,
-      GanttTree2 tree, IconSize size) {
+                           TaskTreePanel tree, IconSize size) {
     super("task.delete", taskManager, selectionManager, uiFacade, tree, size);
   }
 

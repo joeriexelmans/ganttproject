@@ -27,7 +27,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 import net.sourceforge.ganttproject.ChartComponentBase;
-import net.sourceforge.ganttproject.GanttTree2;
+import net.sourceforge.ganttproject.TaskTreePanel;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.chart.ChartModelImpl;
 import net.sourceforge.ganttproject.chart.item.ChartItem;
@@ -50,13 +50,13 @@ class MouseListenerImpl extends MouseListenerBase {
   };
   private static final RetainRootsAlgorithm<Task> ourRetainRootsAlgorithm = new RetainRootsAlgorithm<Task>();
 
-  private final GanttTree2 myTree;
+  private final TaskTreePanel myTree;
   private final GanttChartController myChartImplementation;
   private final UIFacade myUiFacade;
   private final ChartComponentBase myChartComponent;
 
   public MouseListenerImpl(GanttChartController chartImplementation, ChartModelImpl chartModel, UIFacade uiFacade,
-      ChartComponentBase chartComponent, GanttTree2 tree) {
+      ChartComponentBase chartComponent, TaskTreePanel tree) {
     super(uiFacade, chartComponent, chartImplementation);
     myUiFacade = uiFacade;
     myTree = tree;

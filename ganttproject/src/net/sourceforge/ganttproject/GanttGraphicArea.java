@@ -83,7 +83,7 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   private GanttChartController myChartComponentImpl;
 
-  private final GanttTree2 tree;
+  private final TaskTreePanel tree;
 
   private final ChartModelImpl myChartModel;
 
@@ -99,8 +99,8 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   private final ChartOptionGroup myStateDiffOptions;
 
-  public GanttGraphicArea(GanttProject app, GanttTree2 ttree, TaskManager taskManager, ZoomManager zoomManager,
-      GPUndoManager undoManager) {
+  public GanttGraphicArea(GanttProject app, TaskTreePanel ttree, TaskManager taskManager, ZoomManager zoomManager,
+                          GPUndoManager undoManager) {
     super(app, app.getUIFacade(), zoomManager);
     this.setBackground(Color.WHITE);
     myTaskManager = taskManager;

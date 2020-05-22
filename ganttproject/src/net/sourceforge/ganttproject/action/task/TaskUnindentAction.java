@@ -21,7 +21,7 @@ package net.sourceforge.ganttproject.action.task;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
-import net.sourceforge.ganttproject.GanttTree2;
+import net.sourceforge.ganttproject.TaskTreePanel;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.task.Task;
@@ -49,7 +49,7 @@ public class TaskUnindentAction extends TaskActionBase {
   private static final RetainRootsAlgorithm<Task> ourRetainRootsAlgorithm = new RetainRootsAlgorithm<>();
 
   public TaskUnindentAction(TaskManager taskManager, TaskSelectionManager selectionManager, UIFacade uiFacade,
-                            GanttTree2 tree) {
+                            TaskTreePanel tree) {
     super("task.unindent", taskManager, selectionManager, uiFacade, tree);
   }
 

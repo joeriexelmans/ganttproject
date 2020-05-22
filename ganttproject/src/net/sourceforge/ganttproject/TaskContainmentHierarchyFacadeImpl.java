@@ -51,9 +51,9 @@ class TaskContainmentHierarchyFacadeImpl implements TaskContainmentHierarchyFaca
 
   private List<Task> myPathBuffer = new ArrayList<Task>();
 
-  private GanttTree2 myTree;
+  private TaskTreePanel myTree;
 
-  public TaskContainmentHierarchyFacadeImpl(GanttTree2 tree) {
+  public TaskContainmentHierarchyFacadeImpl(TaskTreePanel tree) {
     List<MutableTreeTableNode> allTasks = tree.getAllTasks();
     for (int i = 0; i < allTasks.size(); i++) {
       MutableTreeTableNode treeNode = allTasks.get(i);

@@ -69,14 +69,11 @@ import net.sourceforge.ganttproject.gui.scrolling.ScrollingManager;
 import net.sourceforge.ganttproject.gui.view.GPViewManager;
 import net.sourceforge.ganttproject.gui.view.ViewManagerImpl;
 import net.sourceforge.ganttproject.gui.window.ContentPaneBuilder;
-import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.importer.Importer;
 import net.sourceforge.ganttproject.io.GPSaver;
-import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.GanttLanguage.Event;
-import net.sourceforge.ganttproject.parser.GPParser;
 import net.sourceforge.ganttproject.parser.ParserFactory;
 import net.sourceforge.ganttproject.plugins.PluginManager;
 import net.sourceforge.ganttproject.print.PrintManager;
@@ -109,9 +106,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.AccessControlException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -141,9 +136,9 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   // Graphical layout and controls
   private final GanttStatusBar statusBar;
   private final GanttTabbedPane myTabPane;
-  private GanttTree2 tree;
+  private TaskTreePanel tree;
   private GanttGraphicArea area;
-  private GanttResourcePanel resp;
+  private ResourceTreePanel resp;
   private final EditMenu myEditMenu;
   private final ProjectMenu myProjectMenu;
   private final ResourceActionSet myResourceActions;
@@ -289,12 +284,12 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
 
-    resp = new GanttResourcePanel(this, myUIFacade);
+    resp = new ResourceTreePanel(this, myUIFacade);
     resp.init();
     myRowHeightAligners.add(resp.getRowHeightAligner());
     myHumanResourceManager.addView(resp);
 
-    tree = new GanttTree2(this, myTaskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
+    tree = new TaskTreePanel(this, myTaskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);
     this.addProjectEventListener(myFacadeInvalidator);
     area = new GanttGraphicArea(this, tree, myTaskManager, myUIFacade.getZoomManager(), myUndoManager);
@@ -869,7 +864,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     }
   }
 
-  public GanttResourcePanel getResourcePanel() {
+  public ResourceTreePanel getResourcePanel() {
     return resp;
   }
 
@@ -877,7 +872,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     return area;
   }
 
-  public GanttTree2 getTree() {
+  public TaskTreePanel getTree() {
     return tree;
   }
 

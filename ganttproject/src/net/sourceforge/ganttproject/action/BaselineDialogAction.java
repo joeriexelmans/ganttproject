@@ -32,6 +32,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.CancelAction;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.action.OkAction;
+import net.sourceforge.ganttproject.chart.GanttChart;
 import net.sourceforge.ganttproject.gui.AbstractTableAndActionsComponent;
 import net.sourceforge.ganttproject.gui.EditableList;
 import net.sourceforge.ganttproject.gui.UIFacade;
@@ -40,13 +41,15 @@ import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 public class BaselineDialogAction extends GPAction {
   private final IGanttProject myProject;
   private final UIFacade myUiFacade;
+  private final GanttChart myGanttChart;
   private List<GanttPreviousState> myBaselines;
   private List<GanttPreviousState> myTrash = new ArrayList<GanttPreviousState>();
 
-  public BaselineDialogAction(IGanttProject project, UIFacade uiFacade) {
+  public BaselineDialogAction(IGanttProject project, UIFacade uiFacade, GanttChart ganttChart) {
     super("baseline.dialog");
     myProject = project;
     myUiFacade = uiFacade;
+    myGanttChart = ganttChart;
   }
 
   @Override
@@ -101,8 +104,8 @@ public class BaselineDialogAction extends GPAction {
     };
     list.setUndefinedValueLabel(getI18n("baseline.dialog.undefinedValueLabel"));
     list.getTableAndActions().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    if (myUiFacade.getGanttChart().getBaseline() != null) {
-      int index = myBaselines.indexOf(myUiFacade.getGanttChart().getBaseline());
+    if (myGanttChart.getBaseline() != null) {
+      int index = myBaselines.indexOf(myGanttChart.getBaseline());
       list.getTableAndActions().setSelection(index);
     }
     list.getTableAndActions().addSelectionListener(
@@ -111,11 +114,11 @@ public class BaselineDialogAction extends GPAction {
           @Override
           public void selectionChanged(List<GanttPreviousState> selection) {
             if (selection.isEmpty()) {
-              myUiFacade.getGanttChart().setBaseline(null);
+              myGanttChart.setBaseline(null);
             } else {
-              myUiFacade.getGanttChart().setBaseline(selection.get(0));
+              myGanttChart.setBaseline(selection.get(0));
             }
-            myUiFacade.getGanttChart().reset();
+            myGanttChart.reset();
           }
         });
     list.getTableAndActions().addAction(new GPAction("baseline.dialog.hide") {
@@ -142,7 +145,7 @@ public class BaselineDialogAction extends GPAction {
     optionsBuilder.setUiFacade(myUiFacade);
     JPanel contentPanel = new JPanel(new BorderLayout());
     contentPanel.add(list.createDefaultComponent(), BorderLayout.CENTER);
-    contentPanel.add(optionsBuilder.createGroupComponent(myUiFacade.getGanttChart().getBaselineColorOptions()), BorderLayout.SOUTH);
+    contentPanel.add(optionsBuilder.createGroupComponent(myGanttChart.getBaselineColorOptions()), BorderLayout.SOUTH);
     myUiFacade.createDialog(contentPanel, actions, getI18n("baseline.dialog.title")).show();
   }
 }

@@ -101,7 +101,6 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
   private final ScrollingManager myScrollingManager;
   private final ZoomManager myZoomManager;
   private final GanttStatusBar myStatusBar;
-  private final UIFacade myFallbackDelegate;
   private final TaskSelectionManager myTaskSelectionManager;
   private final List<GPOptionGroup> myOptionGroups = Lists.newArrayList();
   private final GPOptionGroup myOptions;
@@ -151,11 +150,11 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   private ChangeValueListener myAppFontValueListener;
   private final LanguageOption myLanguageOption;
-  private final IGanttProject myProject;
+  private final GanttProject myProject;
   private FontSpec myLastFontSpec;
 
   UIFacadeImpl(JFrame mainFrame, GanttStatusBar statusBar, NotificationManagerImpl notificationManager,
-               final IGanttProject project, UIFacade fallbackDelegate) {
+               final GanttProject project) {
     myMainFrame = mainFrame;
     myProject = project;
     myDialogBuilder = new DialogBuilder(mainFrame);
@@ -163,7 +162,6 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
     myZoomManager = new ZoomManager(project.getTimeUnitStack());
     myStatusBar = statusBar;
     myStatusBar.setNotificationManager(notificationManager);
-    myFallbackDelegate = fallbackDelegate;
     Job.getJobManager().setProgressProvider(this);
     myTaskSelectionManager = new TaskSelectionManager(Suppliers.memoize(new Supplier<TaskManager>() {
       public TaskManager get() {
@@ -269,12 +267,12 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public GPUndoManager getUndoManager() {
-    return myFallbackDelegate.getUndoManager();
+    return myProject.getUndoManager();
   }
 
   @Override
   public ZoomActionSet getZoomActionSet() {
-    return myFallbackDelegate.getZoomActionSet();
+    return myProject.getZoomActionSet();
   }
 
   @Override
@@ -449,52 +447,52 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public GanttChart getGanttChart() {
-    return myFallbackDelegate.getGanttChart();
+    return myProject.getGanttChart();
   }
 
   @Override
   public TimelineChart getResourceChart() {
-    return myFallbackDelegate.getResourceChart();
+    return myProject.getResourceChart();
   }
 
   @Override
   public Chart getActiveChart() {
-    return myFallbackDelegate.getActiveChart();
+    return myProject.getActiveChart();
   }
 
   @Override
   public int getViewIndex() {
-    return myFallbackDelegate.getViewIndex();
+    return myProject.getViewIndex();
   }
 
   @Override
   public void setViewIndex(int viewIndex) {
-    myFallbackDelegate.setViewIndex(viewIndex);
+    myProject.setViewIndex(viewIndex);
   }
 
   @Override
   public int getGanttDividerLocation() {
-    return myFallbackDelegate.getGanttDividerLocation();
+    return myProject.getGanttDividerLocation();
   }
 
   @Override
   public void setGanttDividerLocation(int location) {
-    myFallbackDelegate.setGanttDividerLocation(location);
+    myProject.setGanttDividerLocation(location);
   }
 
   @Override
   public int getResourceDividerLocation() {
-    return myFallbackDelegate.getResourceDividerLocation();
+    return myProject.getResourceDividerLocation();
   }
 
   @Override
   public void setResourceDividerLocation(int location) {
-    myFallbackDelegate.setResourceDividerLocation(location);
+    myProject.setResourceDividerLocation(location);
   }
 
   @Override
   public void refresh() {
-    myFallbackDelegate.refresh();
+    myProject.refresh();
   }
 
   @Override
@@ -552,12 +550,12 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public TaskTreeUIFacade getTaskTree() {
-    return myFallbackDelegate.getTaskTree();
+    return myProject.getTaskTree();
   }
 
   @Override
   public ResourceTreeUIFacade getResourceTree() {
-    return myFallbackDelegate.getResourceTree();
+    return myProject.getResourceTree();
   }
 
   @Override
@@ -634,8 +632,8 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
         for (Runnable r : myOnUpdateComponentTreeUiCallbacks) {
           r.run();
         }
-        getGanttChart().reset();
-        getResourceChart().reset();
+        myProject.getGanttChart().reset();
+        myProject.getResourceChart().reset();
       }
     });
   }

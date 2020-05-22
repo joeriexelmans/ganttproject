@@ -101,7 +101,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
     getTreeTable().setRowHeight(20);
 
     getTreeTable().insertWithLeftyScrollBar(this);
-    area = new ResourceLoadGraphicArea(prj, prj.getZoomManager(), this) {
+    area = new ResourceLoadGraphicArea(prj, myUIFacade.getZoomManager(), this) {
       @Override
       public boolean isExpanded(HumanResource hr) {
         return getResourceTreeTable().isExpanded(hr);
@@ -112,7 +112,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
         return getTreeTable().getRowHeight();
       }
     };
-    prj.getZoomManager().addZoomListener(area.getZoomListener());
+    myUIFacade.getZoomManager().addZoomListener(area.getZoomListener());
     area.getChartModel().setRowHeight(getTreeTable().getRowHeight());
 
     this.setBackground(new Color(0.0f, 0.0f, 0.0f));
@@ -177,7 +177,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
         getTaskSelectionManager().clear();
         getTaskSelectionManager().addTask(assignmentNode.getTask());
         Point popupPoint = getPopupMenuPoint(e);
-        getUIFacade().showPopupMenu(this,
+        myUIFacade.showPopupMenu(this,
             new Action[]{myTaskPropertiesAction, myResourceActionSet.getAssignmentDelete()}, popupPoint.x,
             popupPoint.y);
       } else {
@@ -415,12 +415,8 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
     getTreeTable().addActionWithAccelleratorKey(action);
   }
 
-  private UIFacade getUIFacade() {
-    return myUIFacade;
-  }
-
   private TaskSelectionManager getTaskSelectionManager() {
-    return getUIFacade().getTaskSelectionManager();
+    return myUIFacade.getTaskSelectionManager();
   }
 
   @Override

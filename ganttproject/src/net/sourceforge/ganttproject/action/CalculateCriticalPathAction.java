@@ -20,11 +20,14 @@ package net.sourceforge.ganttproject.action;
 
 import java.awt.event.ActionEvent;
 
+import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.task.TaskManager;
 
 public class CalculateCriticalPathAction extends GPAction {
+  private final GanttProject myProject;
+
   private final TaskManager myTaskManager;
 
   private final static String ICON_PREFIX_ON = "criticalPathOn_";
@@ -35,8 +38,9 @@ public class CalculateCriticalPathAction extends GPAction {
 
   private final UIFacade myUiFacade;
 
-  public CalculateCriticalPathAction(TaskManager taskManager, UIConfiguration uiConfiguration, UIFacade uiFacade) {
+  public CalculateCriticalPathAction(GanttProject project, TaskManager taskManager, UIConfiguration uiConfiguration, UIFacade uiFacade) {
     super("criticalPath.toggle");
+    myProject = project;
     myTaskManager = taskManager;
     myUIConfiguration = uiConfiguration;
     myUiFacade = uiFacade;
@@ -54,7 +58,7 @@ public class CalculateCriticalPathAction extends GPAction {
     if (isOn()) {
       myTaskManager.processCriticalPath(myTaskManager.getRootTask());
     }
-    myUiFacade.refresh();
+    myProject.refresh();
   }
 
   private void setOn(boolean on) {

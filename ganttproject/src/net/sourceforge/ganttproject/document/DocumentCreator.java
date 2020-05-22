@@ -50,8 +50,6 @@ import java.util.logging.Logger;
 public class DocumentCreator implements DocumentManager {
   private final IGanttProject myProject;
 
-  private final PrjInfos myPrjInfos;
-
   private final UIFacade myUIFacade;
 
   private final ParserFactory myParserFactory;
@@ -65,9 +63,8 @@ public class DocumentCreator implements DocumentManager {
   private final Logger myLogger = GPLogger.getLogger(DocumentManager.class);
   private final File myDocumentsFolder;
 
-  public DocumentCreator(IGanttProject project, PrjInfos prjInfos, UIFacade uiFacade, ParserFactory parserFactory) {
+  public DocumentCreator(IGanttProject project, UIFacade uiFacade, ParserFactory parserFactory) {
     myProject = project;
-    myPrjInfos = prjInfos;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myWebDavStorage = new WebDavStorageImpl(project, uiFacade);

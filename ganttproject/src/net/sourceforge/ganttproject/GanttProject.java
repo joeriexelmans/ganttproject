@@ -178,7 +178,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
     myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, this);
     GPLogger.setUIFacade(myUIFacade);
-    myDocumentManager = new DocumentCreator(this, prjInfos, myUIFacade, null) {
+    myDocumentManager = new DocumentCreator(this, myUIFacade, null) {
       @Override
       protected ParserFactory getParserFactory() {
         return myParserFactory;

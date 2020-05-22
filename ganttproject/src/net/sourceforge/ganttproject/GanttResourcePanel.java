@@ -57,7 +57,7 @@ public class GanttResourcePanel extends TreeTableContainer<HumanResource, Resour
   private final ResourceActionSet myResourceActionSet;
   private final GanttProject.RowHeightAligner myRowHeightAligner;
 
-  public ResourceLoadGraphicArea area;
+  public final ResourceLoadGraphicArea area;
 
   private GPAction myTaskPropertiesAction;
 

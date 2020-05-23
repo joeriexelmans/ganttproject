@@ -34,6 +34,7 @@ import biz.ganttproject.storage.cloud.GPCloudStatusBar;
 import com.bardsoftware.eclipsito.update.Updater;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -110,19 +111,15 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Main frame of the project
+ * God class representing
+ *  <li> All the data from the 'current project' </li>
+ *  <li> The main application frame and its layout, consisting of individual view classes </li>
+ *  <li> The logical state of the main application (path of currently opened document, dirty/clean, ...) </li>
+ *  <li> Ownership of other global interests (DocumentManager, UndoManager, DocumentsMRU, ...) </li>
  */
 public class GanttProject extends JFrame implements IGanttProject, IProject, ResourceView, GanttLanguage.Listener {
+  // Static members
   private final static GanttLanguage language = GanttLanguage.getInstance();
-
-  private final ViewManagerImpl myViewManager;
-  private final List<ProjectEventListener> myModifiedStateChangeListeners = new ArrayList<ProjectEventListener>();
-  private final UIFacadeImpl myUIFacade;
-  private final ProjectUIFacadeImpl myProjectUIFacade;
-  private final GPUndoManager myUndoManager;
-  private final RssFeedChecker myRssChecker;
-  private final ContentPaneBuilder myContentPaneBuilder;
-  private Updater myUpdater;
 
   // Current project:
   private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
@@ -134,6 +131,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private ArrayList<GanttPreviousState> myPreviousStates = new ArrayList<GanttPreviousState>();
 
   // Graphical layout and controls
+  private final UIFacadeImpl myUIFacade;
   private final GanttStatusBar statusBar;
   private final GanttTabbedPane myTabPane;
   private TaskTreePanel tree;
@@ -142,8 +140,20 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final ProjectMenu myProjectMenu;
   private final ResourceActionSet myResourceActions;
   private final ZoomActionSet myZoomActions;
-  private final FacadeInvalidator myFacadeInvalidator;
   private MouseListener myStopEditingMouseListener = null;
+  private GanttChartTabContentPanel myGanttChartTabContent;
+  private ResourceChartTabContentPanel myResourceChartTabContent;
+  private List<RowHeightAligner> myRowHeightAligners = Lists.newArrayList();
+  private FXSearchUi mySearchUi;
+  private final ViewManagerImpl myViewManager;
+  private final ContentPaneBuilder myContentPaneBuilder;
+
+  // Used by TaskManagerImpl
+  private TaskContainmentHierarchyFacadeImpl myCachedFacade;
+  private final FacadeInvalidator myFacadeInvalidator;
+
+  private final RssFeedChecker myRssChecker;
+  private Updater myUpdater;
 
   // Main app state
   public boolean askForSave = false;
@@ -151,23 +161,20 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final boolean isOnlyViewer;
   private UIConfiguration myUIConfiguration;
   private final GanttOptions options;
-
-  // Logic
-  private final TimeUnitStack myTimeUnitStack;
-  private final DocumentManager myDocumentManager;
-
-
-  private TaskContainmentHierarchyFacadeImpl myCachedFacade;
-  private GanttChartTabContentPanel myGanttChartTabContent;
-  private ResourceChartTabContentPanel myResourceChartTabContent;
-  private List<RowHeightAligner> myRowHeightAligners = Lists.newArrayList();
-  private ParserFactory myParserFactory = new ParserFactoryImpl();
-  private static Runnable ourQuitCallback;
-  private FXSearchUi mySearchUi;
+  private final List<ProjectEventListener> myModifiedStateChangeListeners = new ArrayList<ProjectEventListener>();
   private final DocumentsMRU myMRU;
 
+  // Both does graphical stuff (shows dialog windows) and has logic for opening/saving in it
+  private final ProjectUIFacadeImpl myProjectUIFacade;
+
+  // Other 'global' stuff, non-UI
+  private final TimeUnitStack myTimeUnitStack;
+  private final DocumentManager myDocumentManager;
+  private final GPUndoManager myUndoManager;
+  private ParserFactory myParserFactory = new ParserFactoryImpl();
+  private static Runnable ourQuitCallback;
+
   public GanttProject(boolean isOnlyViewer) {
-    //// Begin GanttProjectBase constructor ///////////////////////////////
     super("GanttProject");
 
     statusBar = new GanttStatusBar(this);
@@ -199,7 +206,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myMRU, myUndoManager);
     myRssChecker = new RssFeedChecker((GPTimeUnitStack) getTimeUnitStack(), myUIFacade);
     myUIFacade.addOptions(myRssChecker.getUiOptions());
-    //// End GanttProjectBase constructor ///////////////////////////////
 
     System.err.println("Creating main frame...");
     ToolTipManager.sharedInstance().setInitialDelay(200);

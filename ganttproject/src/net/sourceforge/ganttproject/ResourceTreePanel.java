@@ -35,7 +35,7 @@ import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.ResourceContext;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceNode;
-import net.sourceforge.ganttproject.resource.ResourceView;
+import net.sourceforge.ganttproject.resource.ResourceListener;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
@@ -50,7 +50,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ResourceTreePanel extends TreeTableContainer<HumanResource, ResourceTreeTable, ResourceTreeTableModel>
-    implements ResourceView, ResourceContext, AssignmentContext, ResourceTreeUIFacade {
+    implements ResourceListener, ResourceContext, AssignmentContext, ResourceTreeUIFacade {
 
   public final GanttProject appli;
 

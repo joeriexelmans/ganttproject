@@ -85,7 +85,7 @@ public class HumanResourceManager {
     public abstract HumanResource build();
   }
 
-  private List<ResourceView> myViews = new ArrayList<ResourceView>();
+  private List<ResourceListener> myListener = new ArrayList<ResourceListener>();
 
   private List<HumanResource> resources = new ArrayList<HumanResource>();
 
@@ -201,38 +201,38 @@ public class HumanResourceManager {
     resources.clear();
   }
 
-  public void addView(ResourceView view) {
-    myViews.add(view);
+  public void addListener(ResourceListener listener) {
+    myListener.add(listener);
   }
 
   private void fireResourceAdded(HumanResource resource) {
     ResourceEvent e = new ResourceEvent(this, resource);
-    for (Iterator<ResourceView> i = myViews.iterator(); i.hasNext();) {
-      ResourceView nextView = i.next();
+    for (Iterator<ResourceListener> i = myListener.iterator(); i.hasNext();) {
+      ResourceListener nextView = i.next();
       nextView.resourceAdded(e);
     }
   }
 
   void fireResourceChanged(HumanResource resource) {
     ResourceEvent e = new ResourceEvent(this, resource);
-    for (Iterator<ResourceView> i = myViews.iterator(); i.hasNext();) {
-      ResourceView nextView = i.next();
+    for (Iterator<ResourceListener> i = myListener.iterator(); i.hasNext();) {
+      ResourceListener nextView = i.next();
       nextView.resourceChanged(e);
     }
   }
 
   private void fireResourcesRemoved(HumanResource[] resources) {
     ResourceEvent e = new ResourceEvent(this, resources);
-    for (int i = 0; i < myViews.size(); i++) {
-      ResourceView nextView = myViews.get(i);
+    for (int i = 0; i < myListener.size(); i++) {
+      ResourceListener nextView = myListener.get(i);
       nextView.resourcesRemoved(e);
     }
   }
 
   public void fireAssignmentsChanged(HumanResource resource) {
     ResourceEvent e = new ResourceEvent(this, resource);
-    for (Iterator<ResourceView> i = myViews.iterator(); i.hasNext();) {
-      ResourceView nextView = i.next();
+    for (Iterator<ResourceListener> i = myListener.iterator(); i.hasNext();) {
+      ResourceListener nextView = i.next();
       nextView.resourceAssignmentsChanged(e);
     }
   }

@@ -34,7 +34,6 @@ import biz.ganttproject.storage.cloud.GPCloudStatusBar;
 import com.bardsoftware.eclipsito.update.Updater;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -81,7 +80,7 @@ import net.sourceforge.ganttproject.print.PrintManager;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
-import net.sourceforge.ganttproject.resource.ResourceView;
+import net.sourceforge.ganttproject.resource.ResourceListener;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.*;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
@@ -117,7 +116,7 @@ import java.util.regex.Pattern;
  *  <li> The logical state of the main application (path of currently opened document, dirty/clean, ...) </li>
  *  <li> Ownership of other global interests (DocumentManager, UndoManager, DocumentsMRU, ...) </li>
  */
-public class GanttProject extends JFrame implements IGanttProject, IProject, ResourceView, GanttLanguage.Listener {
+public class GanttProject extends JFrame implements IGanttProject, IProject, ResourceListener, GanttLanguage.Listener {
   // Static members
   private final static GanttLanguage language = GanttLanguage.getInstance();
 
@@ -211,12 +210,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     ToolTipManager.sharedInstance().setInitialDelay(200);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
 
-    myCalendar.addListener(new GPCalendarListener() {
-      @Override
-      public void onCalendarChange() {
-        GanttProject.this.setModified();
-      }
-    });
     prjInfos.addListener(new InvalidationListener() {
       @Override
       public void invalidated(Observable observable) {
@@ -240,7 +233,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
     myHumanResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(),
             getResourceCustomPropertyManager());
-    myHumanResourceManager.addView(this);
+    myHumanResourceManager.addListener(this);
 
     class TaskManagerConfigImpl implements TaskManagerConfig {
       final DefaultColorOption myDefaultColorOption = new GanttProjectImpl.DefaultTaskColorOption();
@@ -266,6 +259,13 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
         return myUIFacade.getNotificationManager();
       }
     }
+
+    myCalendar.addListener(new GPCalendarListener() {
+      @Override
+      public void onCalendarChange() {
+        GanttProject.this.setModified();
+      }
+    });
     TaskManagerConfig taskConfig = new TaskManagerConfigImpl();
     myTaskManager = TaskManager.Access.newInstance(new TaskContainmentHierarchyFacade.Factory() {
       @Override
@@ -288,7 +288,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     resp = new ResourceTreePanel(this, myUIFacade);
     resp.init();
     myRowHeightAligners.add(resp.getRowHeightAligner());
-    myHumanResourceManager.addView(resp);
+    myHumanResourceManager.addListener(resp);
 
     tree = new TaskTreePanel(this, myTaskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);
@@ -1099,7 +1099,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   }
 
   // ///////////////////////////////////////////////////////////////
-  // ResourceView implementation
+  // ResourceListener implementation
   @Override
   public void resourceAdded(ResourceEvent event) {
     if (statusBar != null) {

@@ -8,7 +8,7 @@ import javafx.beans.Observable;
 import net.sourceforge.ganttproject.*;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
-import net.sourceforge.ganttproject.resource.ResourceView;
+import net.sourceforge.ganttproject.resource.ResourceListener;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RoleManagerImpl;
 import net.sourceforge.ganttproject.task.*;
@@ -59,7 +59,7 @@ public class Project extends ObservableImpl implements IProject {
             }
         });
 
-        hrManager.addView(new ResourceView() {
+        hrManager.addListener(new ResourceListener() {
             @Override
             public void resourceAdded(ResourceEvent event) {
                 notifyListeners();

@@ -21,7 +21,7 @@ package net.sourceforge.ganttproject.resource;
 /**
  * @author dbarashev
  */
-public interface ResourceView {
+public interface ResourceListener {
   /**
    * This method is called whenever new resource appears in the resource manager
    * 

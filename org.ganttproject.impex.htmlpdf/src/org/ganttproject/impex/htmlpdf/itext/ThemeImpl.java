@@ -155,10 +155,6 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
     return new GPOptionGroup[] { myDataOptions, myPageOptions };
   }
 
-  protected IGanttProject getProject() {
-    return myProject;
-  }
-
   private UIFacade getUIFacade() {
     return myUIFacade;
   }
@@ -275,9 +271,9 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
   private void writeTitlePage() throws DocumentException {
     Rectangle page = myDoc.getPageSize();
     PdfPTable head = new PdfPTable(1);
-    PdfPTable colontitleTable = createColontitleTable(getProject().getProjectName(),
-        GanttLanguage.getInstance().getMediumDateFormat().format(new Date()), getProject().getOrganization(),
-        getProject().getWebLink());
+    PdfPTable colontitleTable = createColontitleTable(myProject.getPrjInfos().getName(),
+        GanttLanguage.getInstance().getMediumDateFormat().format(new Date()), myProject.getPrjInfos().getOrganization(),
+        myProject.getPrjInfos().getWebLink());
 
     head.setTotalWidth(page.getWidth() - myDoc.leftMargin() - myDoc.rightMargin());
     {
@@ -291,16 +287,16 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
     attrs.put(i18n("label.dates"), buildProjectDatesString());
     attrs.put(" ", " ");
     attrs.put(i18n("label.completion"), buildProjectCompletionString());
-    attrs.put(i18n("label.tasks"), String.valueOf(getProject().getTaskManager().getTaskCount()));
-    attrs.put(i18n("label.resources"), String.valueOf(getProject().getHumanResourceManager().getResources().size()));
+    attrs.put(i18n("label.tasks"), String.valueOf(myProject.getTaskManager().getTaskCount()));
+    attrs.put(i18n("label.resources"), String.valueOf(myProject.getHumanResourceManager().getResources().size()));
     PdfPTable attrsTable = new PdfPTable(2);
     writeAttributes(attrsTable, attrs);
     PdfPCell attrsCell = new PdfPCell(attrsTable);
     attrsCell.setBorder(PdfPCell.NO_BORDER);
     head.addCell(attrsCell);
     addEmptyRow(head, 20);
-    if (getProject().getDescription().length() > 0) {
-      Paragraph p = new Paragraph(getProject().getDescription(), getSansRegular(12));
+    if (myProject.getPrjInfos().getDescription().length() > 0) {
+      Paragraph p = new Paragraph(myProject.getPrjInfos().getDescription(), getSansRegular(12));
       PdfPCell cell = new PdfPCell(p);
       cell.setBorder(PdfPCell.TOP | PdfPCell.BOTTOM);
       cell.setBorderColor(SORTAVALA_GREEN);
@@ -314,17 +310,17 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
   }
 
   private String buildProjectCompletionString() {
-    return String.valueOf(getProject().getTaskManager().getProjectCompletion()) + "%";
+    return String.valueOf(myProject.getTaskManager().getProjectCompletion()) + "%";
   }
 
   private String buildManagerString() {
-    Role managerRole = getProject().getRoleManager().getRole(myProperties.getProperty("manager-role"));
+    Role managerRole = myProject.getRoleManager().getRole(myProperties.getProperty("manager-role"));
     if (managerRole == null) {
       return "";
     }
     StringBuilder result = new StringBuilder();
     String delimiter = "";
-    List<HumanResource> resources = getProject().getHumanResourceManager().getResources();
+    List<HumanResource> resources = myProject.getHumanResourceManager().getResources();
     for (HumanResource resource : resources) {
       if (resource.getRole().equals(managerRole)) {
         result.append(delimiter).append(resource.getName());
@@ -338,13 +334,13 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
     DateFormat dateFormat = GanttLanguage.getInstance().getMediumDateFormat();
     return MessageFormat.format(
         "{0} - {1}\n",
-        dateFormat.format(getProject().getTaskManager().getProjectStart()),
-        dateFormat.format(getProject().getTaskManager().getProjectEnd()));
+        dateFormat.format(myProject.getTaskManager().getProjectStart()),
+        dateFormat.format(myProject.getTaskManager().getProjectEnd()));
   }
 
   private void writeGanttChart() {
     isColontitleEnabled = false;
-    writeColontitle(getProject().getProjectName(),
+    writeColontitle(myProject.getPrjInfos().getName(),
         GanttLanguage.getInstance().getMediumDateFormat().format(new Date()),
         GanttLanguage.getInstance().getText("ganttChart"), String.valueOf(myWriter.getPageNumber()));
     ChartWriter ganttChartWriter = new ChartWriter(myUIFacade.getGanttChart(), myWriter, myDoc,
@@ -354,7 +350,7 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
 
   private void writeResourceChart() {
     isColontitleEnabled = false;
-    writeColontitle(getProject().getProjectName(),
+    writeColontitle(myProject.getPrjInfos().getName(),
         GanttLanguage.getInstance().getMediumDateFormat().format(new Date()),
         GanttLanguage.getInstance().getText("resourcesChart"), String.valueOf(myWriter.getPageNumber()));
     ChartWriter resourceChartWriter = new ChartWriter(myUIFacade.getResourceChart(), myWriter, myDoc,
@@ -445,14 +441,14 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
       int myPreviousChildTaskCount = 0;
       int myPreviousChildlessTaskCount = 0;
 
-      PropertyFetcher myTaskProperty = new PropertyFetcher(getProject());
+      PropertyFetcher myTaskProperty = new PropertyFetcher(myProject);
 
       @Override
       protected String serializeTask(Task t, int depth) throws Exception {
         boolean addEmptyRow = false;
         if (depth == 0) {
           addEmptyRow = myPreviousChildTaskCount > 0;
-          boolean hasNested = getProject().getTaskManager().getTaskHierarchy().hasNestedTasks(t);
+          boolean hasNested = myProject.getTaskManager().getTaskHierarchy().hasNestedTasks(t);
           if (!addEmptyRow) {
             if (hasNested) {
               addEmptyRow = myPreviousChildlessTaskCount > 0;
@@ -506,7 +502,7 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
         return table;
       }
     };
-    taskVisitor.visit(getProject().getTaskManager());
+    taskVisitor.visit(myProject.getTaskManager());
     myDoc.add(table);
   }
 
@@ -514,9 +510,9 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
     ColumnList visibleFields = getUIFacade().getResourceTree().getVisibleFields();
     final ArrayList<Column> orderedColumns = new ArrayList<>();
     final PdfPTable table = createTableHeader(visibleFields, orderedColumns);
-    List<HumanResource> resources = getProject().getHumanResourceManager().getResources();
+    List<HumanResource> resources = myProject.getHumanResourceManager().getResources();
 
-    PropertyFetcher propFetcher = new PropertyFetcher(getProject());
+    PropertyFetcher propFetcher = new PropertyFetcher(myProject);
     for (HumanResource resource : resources) {
       HashMap<String, String> id2value = new HashMap<>();
       propFetcher.getResourceAttributes(resource, id2value);
@@ -617,7 +613,7 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
   @Override
   public void onEndPage(PdfWriter writer, Document document) {
     if (isColontitleEnabled) {
-      writeColontitle(getProject().getProjectName(),
+      writeColontitle(myProject.getPrjInfos().getName(),
           GanttLanguage.getInstance().getMediumDateFormat().format(new Date()), myLeftSubcolontitle,
           String.valueOf(writer.getPageNumber()));
     }

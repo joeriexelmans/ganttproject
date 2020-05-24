@@ -29,7 +29,7 @@ public class ProjectNamePage implements WizardPage {
   private final ProjectSettingsPanel myProjectSettingsPanel;
 
   public ProjectNamePage(IGanttProject project, I18N i18n) {
-    myProjectSettingsPanel = new ProjectSettingsPanel(project);
+    myProjectSettingsPanel = new ProjectSettingsPanel(project.getPrjInfos());
     myProjectSettingsPanel.initialize();
     myI18N = i18n;
   }

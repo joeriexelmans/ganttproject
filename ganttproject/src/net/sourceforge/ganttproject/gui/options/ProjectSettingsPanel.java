@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.IGanttProject;
+import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.gui.GanttDialogInfo;
 import net.sourceforge.ganttproject.gui.TestGanttRolloverButton;
 import net.sourceforge.ganttproject.language.GanttLanguage;
@@ -54,14 +55,14 @@ public class ProjectSettingsPanel {
 
   private final JTextArea taDescr;
 
-  private final IGanttProject myProject;
+  private final PrjInfos myPrjInfos;
 
   private JPanel myComponent;
 
   private static final GanttLanguage language = GanttLanguage.getInstance();
 
-  public ProjectSettingsPanel(IGanttProject project) {
-    myProject = project;
+  public ProjectSettingsPanel(PrjInfos prjInfos) {
+    myPrjInfos = prjInfos;
     Box vbproject = Box.createVerticalBox();
 
     JPanel namePanel = new JPanel(new BorderLayout());
@@ -115,27 +116,27 @@ public class ProjectSettingsPanel {
 
   public boolean applyChanges(boolean askForApply) {
     boolean hasChange;
-    if (myProject.getProjectName().equals(tfName.getText())
-        && myProject.getOrganization().equals(tfOrganization.getText())
-        && myProject.getWebLink().equals(tfWebLink.getText()) && myProject.getDescription().equals(taDescr.getText())) {
+    if (myPrjInfos.getName().equals(tfName.getText())
+        && myPrjInfos.getOrganization().equals(tfOrganization.getText())
+        && myPrjInfos.getWebLink().equals(tfWebLink.getText()) && myPrjInfos.getDescription().equals(taDescr.getText())) {
       hasChange = false;
     } else {
       hasChange = true;
       // apply changes if user clicked apply (or warn about pending changes and
       // ask whether to apply or not)
-      myProject.setProjectName(getProjectName());
-      myProject.setDescription(getProjectDescription());
-      myProject.setOrganization(getProjectOrganization());
-      myProject.setWebLink(getWebLink());
+      myPrjInfos.setName(getProjectName());
+      myPrjInfos.setDescription(getProjectDescription());
+      myPrjInfos.setOrganization(getProjectOrganization());
+      myPrjInfos.setWebLink(getWebLink());
     }
     return hasChange;
   }
 
   public void initialize() {
-    tfName.setText(myProject.getProjectName());
-    tfOrganization.setText(myProject.getOrganization());
-    tfWebLink.setText(myProject.getWebLink());
-    taDescr.setText(myProject.getDescription());
+    tfName.setText(myPrjInfos.getName());
+    tfOrganization.setText(myPrjInfos.getOrganization());
+    tfWebLink.setText(myPrjInfos.getWebLink());
+    taDescr.setText(myPrjInfos.getDescription());
   }
 
   /** @return the selected project name */

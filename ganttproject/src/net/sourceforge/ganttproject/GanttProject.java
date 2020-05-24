@@ -126,7 +126,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final CustomColumnsManager myResourceCustomPropertyManager = new CustomColumnsManager();
   private HumanResourceManager myHumanResourceManager;
   private final TaskManager myTaskManager;
-  public PrjInfos prjInfos = new PrjInfos();
+  public PrjInfos prjInfos;
   private ArrayList<GanttPreviousState> myPreviousStates = new ArrayList<GanttPreviousState>();
 
   // Graphical layout and controls
@@ -210,6 +210,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     ToolTipManager.sharedInstance().setInitialDelay(200);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
 
+    prjInfos = new PrjInfos();
     prjInfos.addListener(new InvalidationListener() {
       @Override
       public void invalidated(Observable observable) {
@@ -968,46 +969,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   // ///////////////////////////////////////////////////////
   // IGanttProject implementation
-  @Override
-  public String getProjectName() {
-    return prjInfos.getName();
-  }
-
-  @Override
-  public void setProjectName(String projectName) {
-    prjInfos.setName(projectName);
-  }
-
-  @Override
-  public String getDescription() {
-    return prjInfos.getDescription();
-  }
-
-  @Override
-  public void setDescription(String description) {
-    prjInfos.setDescription(description);
-  }
-
-  @Override
-  public String getOrganization() {
-    return prjInfos.getOrganization();
-  }
-
-  @Override
-  public void setOrganization(String organization) {
-    prjInfos.setOrganization(organization);
-  }
-
-  @Override
-  public String getWebLink() {
-    return prjInfos.getWebLink();
-  }
-
-  @Override
-  public void setWebLink(String webLink) {
-    prjInfos.setWebLink(webLink);
-  }
-
   @Override
   public HumanResourceManager getHumanResourceManager() {
     return myHumanResourceManager;

@@ -159,13 +159,13 @@ class FileChooserPage extends FileChooserPageBase {
       } else {
         File directory = localFile.getParentFile();
         if (directory.exists()) {
-          result = new File(directory, project.getProjectName() + "." + proposedExtension);
+          result = new File(directory, project.getPrjInfos().getName() + "." + proposedExtension);
         }
       }
     }
     if (result == null) {
       File userHome = new File(System.getProperty("user.home"));
-      result = new File(userHome, project.getProjectName() + "." + proposedExtension);
+      result = new File(userHome, project.getPrjInfos().getName() + "." + proposedExtension);
     }
     return result;
   }

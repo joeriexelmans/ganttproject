@@ -35,22 +35,6 @@ import net.sourceforge.ganttproject.project.IProject;
  */
 public interface IGanttProject extends IProject {
 
-  String getProjectName();
-
-  void setProjectName(String projectName);
-
-  String getDescription();
-
-  void setDescription(String description);
-
-  String getOrganization();
-
-  void setOrganization(String organization);
-
-  String getWebLink();
-
-  void setWebLink(String webLink);
-
   TimeUnitStack getTimeUnitStack();
 
   // Get the currently opened project

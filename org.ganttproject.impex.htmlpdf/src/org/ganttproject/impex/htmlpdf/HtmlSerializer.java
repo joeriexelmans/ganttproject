@@ -68,13 +68,13 @@ public class HtmlSerializer extends XmlSerializer {
 
     startElement("project", attrs, handler);
     addAttribute("title", i18n("project"), attrs);
-    textElement("name", attrs, getProject().getProjectName(), handler);
+    textElement("name", attrs, getProject().getPrjInfos().getName(), handler);
     addAttribute("title", i18n("organization"), attrs);
-    textElement("organization", attrs, getProject().getOrganization(), handler);
+    textElement("organization", attrs, getProject().getPrjInfos().getOrganization(), handler);
     addAttribute("title", i18n("webLink"), attrs);
-    textElement("webLink", attrs, getProject().getWebLink(), handler);
+    textElement("webLink", attrs, getProject().getPrjInfos().getWebLink(), handler);
     addAttribute("title", i18n("shortDescription"), attrs);
-    textElement("description", attrs, getProject().getDescription(), handler);
+    textElement("description", attrs, getProject().getPrjInfos().getDescription(), handler);
     endElement("project", handler);
 
     // TODO: [dbarashev, 10.09.2005] introduce output files grouping structure

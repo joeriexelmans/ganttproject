@@ -73,47 +73,7 @@ public class GanttProjectImpl implements IGanttProject {
       }
     });
   }
-
-  @Override
-  public String getProjectName() {
-    return myPrjInfos.getName();
-  }
-
-  @Override
-  public void setProjectName(String projectName) {
-    myPrjInfos.setName(projectName);
-  }
-
-  @Override
-  public String getDescription() {
-    return myPrjInfos.getDescription();
-  }
-
-  @Override
-  public void setDescription(String description) {
-    myPrjInfos.setDescription(description);
-  }
-
-  @Override
-  public String getOrganization() {
-    return myPrjInfos.getOrganization();
-  }
-
-  @Override
-  public void setOrganization(String organization) {
-    myPrjInfos.setOrganization(organization);
-  }
-
-  @Override
-  public String getWebLink() {
-    return myPrjInfos.getWebLink();
-  }
-
-  @Override
-  public void setWebLink(String webLink) {
-    myPrjInfos.setWebLink(webLink);
-  }
-
+  
   public Task newTask() {
     Task result = getTaskManager().createTask();
     getTaskManager().getTaskHierarchy().move(result, getTaskManager().getRootTask());

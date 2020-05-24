@@ -1,11 +1,10 @@
-package net.sourceforge.ganttproject.test.parser;
+package net.sourceforge.ganttproject.parser;
 
 import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import junit.framework.TestCase;
 import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
-import net.sourceforge.ganttproject.parser.*;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.project.ProjectFactory;
@@ -22,7 +21,7 @@ import java.util.Locale;
  *
  * @author joeriexelmans
   */
-public class TestParser extends TestCase {
+public class ParserTest extends TestCase {
     private static final String projectFile =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<project name=\"Untitled Gantt Project\" company=\"\" webLink=\"http://\" view-date=\"2020-04-22\" view-index=\"1\" gantt-divider-location=\"300\" resource-divider-location=\"400\" version=\"3.0\" locale=\"en\">\n" +

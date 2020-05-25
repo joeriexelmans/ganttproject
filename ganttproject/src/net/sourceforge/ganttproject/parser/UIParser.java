@@ -37,13 +37,13 @@ public class UIParser extends Parser {
 
         // These handlers make sure the above tag handlers are only enabled if we are within a <view> tag.
         // Without them, the above tag handlers/listeners would do nothing.
-        parser.addTagHandler(new ViewTagHandler("gantt-chart", myUIFacade, pilsenTaskDisplayHandler));
-        parser.addTagHandler(new ViewTagHandler("resource-table", myUIFacade, resourceFieldsHandler));
+        parser.addTagHandler(new ViewTagHandler("gantt-chart", myUIFacade.getZoomManager(), pilsenTaskDisplayHandler));
+        parser.addTagHandler(new ViewTagHandler("resource-table", myUIFacade.getZoomManager(), resourceFieldsHandler));
 
-        // This handler does only one thing: expanding all tasks in the view when parsing is finished
+        // Expands tasks in the task tree view when parsing is finished
         parser.addParsingListener(new TaskParsingListener(taskManager, myUIFacade.getTaskTree()));
 
-        // Handles view attributes of <project> tag
+        // Handles view attributes of <project> (root tag)
         ProjectViewAttrsTagHandler projectViewAttrsTagHandler = new ProjectViewAttrsTagHandler(myUIFacade);
         parser.addTagHandler(projectViewAttrsTagHandler);
         parser.addParsingListener(projectViewAttrsTagHandler);

@@ -130,32 +130,37 @@ public class ImporterFromGanttFile extends ImporterBase {
     return new FileDocument(selectedFile);
   }
 
-  public static Map<Task, Task> importBufferProject(IProject targetProject, BufferProject bufferProject, UIFacade uiFacade, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
-    targetProject.getRoleManager().importData(bufferProject.getRoleManager());
+  public static Map<Task, Task> importProject(IProject targetProject, IProject sourceProject, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
+    targetProject.getRoleManager().importData(sourceProject.getRoleManager());
     if (importCalendarOption != null) {
-      targetProject.getActiveCalendar().importCalendar(bufferProject.getActiveCalendar(), importCalendarOption);
+      targetProject.getActiveCalendar().importCalendar(sourceProject.getActiveCalendar(), importCalendarOption);
     }
     {
       CustomPropertyManager targetResCustomPropertyMgr = targetProject.getResourceCustomPropertyManager();
-      targetResCustomPropertyMgr.importData(bufferProject.getResourceCustomPropertyManager());
+      targetResCustomPropertyMgr.importData(sourceProject.getResourceCustomPropertyManager());
     }
     Map<HumanResource, HumanResource> original2ImportedResource = targetProject.getHumanResourceManager().importData(
-        bufferProject.getHumanResourceManager(), new OverwritingMerger(mergeOption));
+            sourceProject.getHumanResourceManager(), new OverwritingMerger(mergeOption));
 
     Map<Task, Task> result = null;
     {
       CustomPropertyManager targetCustomColumnStorage = targetProject.getTaskCustomPropertyManager();
-      Map<CustomPropertyDefinition, CustomPropertyDefinition> that2thisCustomDefs = targetCustomColumnStorage.importData(bufferProject.getTaskCustomPropertyManager());
+      Map<CustomPropertyDefinition, CustomPropertyDefinition> that2thisCustomDefs = targetCustomColumnStorage.importData(sourceProject.getTaskCustomPropertyManager());
       TaskManagerImpl origTaskManager = (TaskManagerImpl) targetProject.getTaskManager();
       try {
         origTaskManager.setEventsEnabled(false);
-        result = origTaskManager.importData(bufferProject.getTaskManager(), that2thisCustomDefs);
-        origTaskManager.importAssignments(bufferProject.getTaskManager(), targetProject.getHumanResourceManager(),
-            result, original2ImportedResource);
+        result = origTaskManager.importData(sourceProject.getTaskManager(), that2thisCustomDefs);
+        origTaskManager.importAssignments(sourceProject.getTaskManager(), targetProject.getHumanResourceManager(),
+                result, original2ImportedResource);
       } finally {
         origTaskManager.setEventsEnabled(true);
       }
     }
+    return result;
+  }
+
+  public static Map<Task, Task> importBufferProject(IProject targetProject, BufferProject bufferProject, UIFacade uiFacade, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
+    Map<Task,Task> result = importProject(targetProject, bufferProject, mergeOption, importCalendarOption);
     uiFacade.refresh();
     uiFacade.getTaskTree().getVisibleFields().importData(bufferProject.getTaskVisibleFields());
     uiFacade.getResourceTree().getVisibleFields().importData(bufferProject.getResourceVisibleFields());

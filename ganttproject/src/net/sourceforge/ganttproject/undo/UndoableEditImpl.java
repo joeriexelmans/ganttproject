@@ -95,7 +95,7 @@ class UndoableEditImpl extends AbstractUndoableEdit {
       algs.getScheduler().setEnabled(false);
       algs.getRecalculateTaskScheduleAlgorithm().setEnabled(false);
       algs.getAdjustTaskBoundsAlgorithm().setEnabled(false);
-      document.read();
+      document.read(myManager.getProject());
     } finally {
       algs.getRecalculateTaskScheduleAlgorithm().setEnabled(true);
       algs.getAdjustTaskBoundsAlgorithm().setEnabled(true);

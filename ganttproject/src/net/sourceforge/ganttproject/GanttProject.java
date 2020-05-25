@@ -722,7 +722,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   @Override
   public void open(Document document) throws IOException, DocumentException {
-    document.read();
+    document.read(this);
     myMRU.add(document.getPath(), true);
     myObservableDocument.set(document);
     setTitle(language.getText("appliTitle") + " [" + document.getFileName() + "]");

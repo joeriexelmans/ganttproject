@@ -45,14 +45,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GanttProjectImpl implements IGanttProject {
+public class GanttProjectImpl implements IProject {
   private static final GanttLanguage language = GanttLanguage.getInstance();
-  private PrjInfos myPrjInfos;
+  private final PrjInfos myPrjInfos = new PrjInfos();
   private final TaskManager myTaskManager;
   private final HumanResourceManager myResourceManager;
   private final TaskManagerConfigImpl myTaskManagerConfig;
   private Document myDocument;
-  private final List<ProjectEventListener> myListeners = new ArrayList<ProjectEventListener>();
   private UIConfiguration myUIConfiguration;
   private final CustomColumnsManager myTaskCustomColumnManager;
   private final ArrayList<GanttPreviousState> myBaselines = new ArrayList<GanttPreviousState>();
@@ -66,14 +65,8 @@ public class GanttProjectImpl implements IGanttProject {
     myTaskManager = TaskManager.Access.newInstance(null, myResourceManager, myCalendar, myTimeUnitStack, myTaskManagerConfig);
     myUIConfiguration = new UIConfiguration(Color.BLUE, true);
     myTaskCustomColumnManager = new CustomColumnsManager();
-    myCalendar.addListener(new GPCalendarListener() {
-      @Override
-      public void onCalendarChange() {
-        setModified();
-      }
-    });
   }
-  
+
   public Task newTask() {
     Task result = getTaskManager().createTask();
     getTaskManager().getTaskHierarchy().move(result, getTaskManager().getRootTask());
@@ -84,7 +77,6 @@ public class GanttProjectImpl implements IGanttProject {
     return language;
   }
 
-  @Override
   public UIConfiguration getUIConfiguration() {
     return myUIConfiguration;
   }
@@ -115,76 +107,26 @@ public class GanttProjectImpl implements IGanttProject {
   }
 
   @Override
-  public IProject getCurrentProject() { return this; }
-
-  @Override
   public GPCalendarCalc getActiveCalendar() {
     return myCalendar;
   }
 
-  @Override
   public TimeUnitStack getTimeUnitStack() {
     return myTimeUnitStack;
   }
 
-  @Override
-  public void setModified() {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
-  public void setModified(boolean modified) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
-  public void close() {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
   public Document getDocument() {
     return myDocument;
   }
 
-  @Override
   public void setDocument(Document document) {
     myDocument = document;
-  }
-
-  @Override
-  public void addProjectEventListener(ProjectEventListener listener) {
-    myListeners.add(listener);
-  }
-
-  @Override
-  public void removeProjectEventListener(ProjectEventListener listener) {
-    myListeners.remove(listener);
-  }
-
-  @Override
-  public boolean isModified() {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public void open(Document document) throws IOException {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
-  public DocumentManager getDocumentManager() {
-    // TODO Auto-generated method stub
-    return null;
   }
 
   @Override
   public CustomPropertyManager getResourceCustomPropertyManager() {
     return myResourceManager.getCustomPropertyManager();
   }
-
-  ;
 
   private static Color DEFAULT_TASK_COLOR = new Color(140, 182, 206);
 
@@ -220,11 +162,6 @@ public class GanttProjectImpl implements IGanttProject {
   public ArrayList<GanttPreviousState> getBaselines() {
     return myBaselines;
   }
-
-  public void repaintResourcePanel() {
-    // TODO Auto-generated method stub
-  }
-
 
   static class DefaultTaskColorOption extends DefaultColorOption implements GP1XOptionConverter {
     DefaultTaskColorOption() {

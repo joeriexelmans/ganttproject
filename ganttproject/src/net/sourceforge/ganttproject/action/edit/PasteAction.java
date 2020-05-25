@@ -100,8 +100,8 @@ public class PasteAction extends GPAction {
       File tmpFile = File.createTempFile("ganttPaste", "");
       Files.write(tmpFile.toPath(), bytes);
 
-      Document document = bufferProject.getDocumentManager().getDocument(tmpFile.getAbsolutePath());
-      document.read();
+      Document document = myProject.getDocumentManager().getDocument(tmpFile.getAbsolutePath());
+      document.read(bufferProject);
       tmpFile.delete();
 
       HumanResourceMerger.MergeResourcesOption mergeOption = new HumanResourceMerger.MergeResourcesOption();

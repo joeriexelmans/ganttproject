@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import net.sourceforge.ganttproject.chart.gantt.ClipboardContents;
 import net.sourceforge.ganttproject.chart.gantt.ClipboardTaskProcessor;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -75,7 +76,7 @@ public class GPTransferable implements Transferable {
   }
 
   private InputStream createDocumentFlavor() {
-    IGanttProject bufferProject = new GanttProjectImpl();
+    IProject bufferProject = new GanttProjectImpl();
     final TaskManager taskMgr = bufferProject.getTaskManager();
     ClipboardTaskProcessor processor = new ClipboardTaskProcessor(taskMgr);
     // In intra-document copy+paste we do copy so-called external dependencies (those where one of the tasks is not in

@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.document;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.eclipse.core.runtime.IStatus;
 
 import java.io.IOException;
@@ -135,7 +136,7 @@ public interface Document {
    */
   public String getLastError();
 
-  public void read() throws IOException, DocumentException;
+  public void read(IProject target) throws IOException, DocumentException;
 
   public void write() throws IOException;
 

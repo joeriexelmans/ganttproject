@@ -30,6 +30,7 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
 import net.sourceforge.ganttproject.document.FileDocument;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger.MergeResourcesOption;
@@ -87,7 +88,7 @@ public class ImporterFromGanttFile extends ImporterBase {
   @Override
   public void run() {
     final File selectedFile = getFile();
-    final IGanttProject targetProject = getProject();
+    final IProject targetProject = getProject();
     final BufferProject bufferProject = createBufferProject(targetProject, getUiFacade());
     getUiFacade().getUndoManager().undoableEdit("Import", new Runnable() {
       @Override
@@ -97,15 +98,16 @@ public class ImporterFromGanttFile extends ImporterBase {
     });
   }
 
-  private void run(File selectedFile, IGanttProject targetProject, BufferProject bufferProject) {
+  private void run(File selectedFile, IProject targetProject, BufferProject bufferProject) {
     try {
-      Document document = bufferProject.getDocumentManager().getDocument(selectedFile.getAbsolutePath());
+      Document document = getProject().getDocumentManager().getDocument(selectedFile.getAbsolutePath());
+//      Document document = bufferProject.getDocumentManager().getDocument(selectedFile.getAbsolutePath());
       AlgorithmCollection algs = getProject().getTaskManager().getAlgorithmCollection();
       try {
         algs.getScheduler().setEnabled(false);
         algs.getRecalculateTaskScheduleAlgorithm().setEnabled(false);
         algs.getAdjustTaskBoundsAlgorithm().setEnabled(false);
-        document.read();
+        document.read(bufferProject);
       } finally {
         algs.getRecalculateTaskScheduleAlgorithm().setEnabled(true);
         algs.getAdjustTaskBoundsAlgorithm().setEnabled(true);
@@ -120,7 +122,7 @@ public class ImporterFromGanttFile extends ImporterBase {
     }
   }
 
-  private BufferProject createBufferProject(final IGanttProject targetProject, final UIFacade uiFacade) {
+  private BufferProject createBufferProject(final IProject targetProject, final UIFacade uiFacade) {
     return new BufferProject(targetProject, uiFacade);
   }
 
@@ -128,7 +130,7 @@ public class ImporterFromGanttFile extends ImporterBase {
     return new FileDocument(selectedFile);
   }
 
-  public static Map<Task, Task> importBufferProject(IGanttProject targetProject, BufferProject bufferProject, UIFacade uiFacade, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
+  public static Map<Task, Task> importBufferProject(IProject targetProject, BufferProject bufferProject, UIFacade uiFacade, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
     targetProject.getRoleManager().importData(bufferProject.getRoleManager());
     if (importCalendarOption != null) {
       targetProject.getActiveCalendar().importCalendar(bufferProject.getActiveCalendar(), importCalendarOption);
@@ -156,7 +158,7 @@ public class ImporterFromGanttFile extends ImporterBase {
     }
     uiFacade.refresh();
     uiFacade.getTaskTree().getVisibleFields().importData(bufferProject.getTaskVisibleFields());
-    uiFacade.getResourceTree().getVisibleFields().importData(bufferProject.myResourceVisibleFields);
+    uiFacade.getResourceTree().getVisibleFields().importData(bufferProject.getResourceVisibleFields());
     return result;
   }
 }

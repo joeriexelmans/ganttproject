@@ -21,13 +21,13 @@ package net.sourceforge.ganttproject.importer;
 import biz.ganttproject.core.table.ColumnList;
 import net.sourceforge.ganttproject.GanttProjectImpl;
 import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.document.DocumentCreator;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.io.GPSaver;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
 import net.sourceforge.ganttproject.parser.ParserFactory;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.CustomColumnsManager;
@@ -43,25 +43,11 @@ import java.util.List;
  * @author dbarashev
  */
 public class BufferProject extends GanttProjectImpl implements ParserFactory {
-  PrjInfos myProjectInfo = new PrjInfos();
-  final DocumentManager myDocumentManager;
-  final UIFacade myUIfacade;
   private final ColumnList myTaskVisibleFields = new VisibleFieldsImpl();
-  final ColumnList myResourceVisibleFields = new VisibleFieldsImpl();
+  private final ColumnList myResourceVisibleFields = new VisibleFieldsImpl();
   private final HumanResourceManager myBufferResourceManager;
 
-  public BufferProject(IGanttProject targetProject, UIFacade uiFacade) {
-    myDocumentManager = new DocumentCreator(this, uiFacade, this) {
-      @Override
-      protected ColumnList getTaskVisibleFields() {
-        return myTaskVisibleFields;
-      }
-      @Override
-      protected ColumnList getResourceVisibleFields() {
-        return myResourceVisibleFields;
-      }
-    };
-    myUIfacade = uiFacade;
+  public BufferProject(IProject targetProject, UIFacade uiFacade) {
     getTaskManager().getDependencyHardnessOption().setValue(targetProject.getTaskManager().getDependencyHardnessOption().getValue());
     myBufferResourceManager = new HumanResourceManager(RoleManager.Access.getInstance().getDefaultRole(),
         new CustomColumnsManager(), targetProject.getRoleManager());
@@ -71,14 +57,13 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
     return myTaskVisibleFields;
   }
 
-  @Override
-  public GPSaver newSaver() {
-    return new GanttXMLSaver(this);
+  public ColumnList getResourceVisibleFields() {
+    return myResourceVisibleFields;
   }
 
   @Override
-  public DocumentManager getDocumentManager() {
-    return myDocumentManager;
+  public GPSaver newSaver() {
+    return new GanttXMLSaver(this);
   }
 
   @Override

@@ -48,7 +48,6 @@ import java.util.logging.Logger;
  * @author Michael Haeusler (michael at akatose.de)
  */
 public class DocumentCreator implements DocumentManager {
-  private final IGanttProject myProject;
 
   private final UIFacade myUIFacade;
 
@@ -64,7 +63,6 @@ public class DocumentCreator implements DocumentManager {
   private final File myDocumentsFolder;
 
   public DocumentCreator(IGanttProject project, UIFacade uiFacade, ParserFactory parserFactory) {
-    myProject = project;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myWebDavStorage = new WebDavStorageImpl(project, uiFacade);
@@ -159,13 +157,13 @@ public class DocumentCreator implements DocumentManager {
   @Override
   public Document getDocument(String path) {
     Document physicalDocument = createDocument(path);
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, myParserFactory);
+    Document proxyDocument = new ProxyDocument(this, physicalDocument, myUIFacade, myParserFactory);
     return proxyDocument;
   }
 
   @Override
   public Document getProxyDocument(Document physicalDocument) {
-    Document proxyDocument = new ProxyDocument(this, physicalDocument, myProject, myUIFacade, myParserFactory);
+    Document proxyDocument = new ProxyDocument(this, physicalDocument, myUIFacade, myParserFactory);
     return proxyDocument;
   }
 

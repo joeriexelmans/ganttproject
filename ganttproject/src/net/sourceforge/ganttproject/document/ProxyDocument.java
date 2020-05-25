@@ -49,17 +49,14 @@ import java.net.URI;
 public class ProxyDocument implements Document {
   private Document myPhysicalDocument;
 
-  private IProject myProject;
-
   private UIFacade myUIFacade;
 
   private final ParserFactory myParserFactory;
 
   private final DocumentCreator myCreator;
 
-  ProxyDocument(DocumentCreator creator, Document physicalDocument, IProject project, UIFacade uiFacade, ParserFactory parserFactory) {
+  ProxyDocument(DocumentCreator creator, Document physicalDocument, UIFacade uiFacade, ParserFactory parserFactory) {
     myPhysicalDocument = physicalDocument;
-    myProject = project;
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myCreator = creator;
@@ -147,13 +144,13 @@ public class ProxyDocument implements Document {
   }
 
   @Override
-  public void read() throws IOException, DocumentException {
+  public void read(IProject project) throws IOException, DocumentException {
     try {
-      ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(false);
+      ((TaskManagerImpl) project.getTaskManager()).setEventsEnabled(false);
       UIParser parser = new UIParser(myCreator, myUIFacade);
-      parser.parse(myProject, getInputStream());
+      parser.parse(project, getInputStream());
     } finally {
-      ((TaskManagerImpl) myProject.getTaskManager()).setEventsEnabled(true);
+      ((TaskManagerImpl) project.getTaskManager()).setEventsEnabled(true);
     }
   }
 

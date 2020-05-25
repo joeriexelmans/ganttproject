@@ -59,6 +59,7 @@ import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.CustomColumnsException;
 import net.sourceforge.ganttproject.task.Task.Priority;
@@ -100,7 +101,8 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 class ProjectFileImporter {
-  private final IGanttProject myNativeProject;
+  private final GPTimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
+  private final IProject myTargetProject;
   private final ProjectReader myReader;
   private final File myForeignFile;
   private Map<ResourceField, CustomPropertyDefinition> myResourceCustomPropertyMapping;
@@ -134,12 +136,12 @@ class ProjectFileImporter {
     void addYearlyHoliday(Date date, Optional<String> title);
   }
 
-  ProjectFileImporter(IGanttProject nativeProject, TaskTreeUIFacade taskTreeUIFacade, File foreignProjectFile) {
+  ProjectFileImporter(IProject nativeProject, TaskTreeUIFacade taskTreeUIFacade, File foreignProjectFile) {
     this(nativeProject, taskTreeUIFacade.getVisibleFields(), foreignProjectFile);
   }
 
-  public ProjectFileImporter(IGanttProject nativeProject, ColumnList taskFields, File foreignProjectFile) {
-    myNativeProject = nativeProject;
+  public ProjectFileImporter(IProject nativeProject, ColumnList taskFields, File foreignProjectFile) {
+    myTargetProject = nativeProject;
     myTaskFields = taskFields;
     myReader = ProjectFileImporter.createReader(foreignProjectFile);
     myForeignFile = foreignProjectFile;
@@ -147,7 +149,7 @@ class ProjectFileImporter {
 
 
   private TaskManager getTaskManager() {
-    return myNativeProject.getTaskManager();
+    return myTargetProject.getTaskManager();
   }
 
   private static InputStream createPatchedStream(final File inputFile) throws TransformerConfigurationException,
@@ -214,7 +216,7 @@ class ProjectFileImporter {
         leafTasks.add(task);
       }
     }
-    myNativeProject.getTaskManager().getAlgorithmCollection().getAdjustTaskBoundsAlgorithm().run(leafTasks);
+    myTargetProject.getTaskManager().getAlgorithmCollection().getAdjustTaskBoundsAlgorithm().run(leafTasks);
     importResourceAssignments(pf, foreignId2nativeTask, foreignId2nativeResource);
   }
 
@@ -290,7 +292,7 @@ class ProjectFileImporter {
   }
 
   private GPCalendarCalc getNativeCalendar() {
-    return myNativeProject.getActiveCalendar();
+    return myTargetProject.getActiveCalendar();
   }
 
   private void importHolidays(ProjectCalendarException e, HolidayAdder adder) {
@@ -352,7 +354,7 @@ class ProjectFileImporter {
   private void importResources(ProjectFile pf, Map<Integer, HumanResource> foreignId2humanResource) {
     myResourceCustomPropertyMapping = new HashMap<ResourceField, CustomPropertyDefinition>();
     for (Resource r : pf.getAllResources()) {
-      HumanResource nativeResource = myNativeProject.getHumanResourceManager().newHumanResource();
+      HumanResource nativeResource = myTargetProject.getHumanResourceManager().newHumanResource();
       nativeResource.setId(r.getUniqueID());
       nativeResource.setName(r.getName());
       nativeResource.setMail(r.getEmailAddress());
@@ -360,7 +362,7 @@ class ProjectFileImporter {
       if (standardRate != null && standardRate.getAmount() != 0.0 && r.getStandardRateUnits() == TimeUnit.DAYS) {
         nativeResource.setStandardPayRate(new BigDecimal(standardRate.getAmount()));
       }
-      myNativeProject.getHumanResourceManager().add(nativeResource);
+      myTargetProject.getHumanResourceManager().add(nativeResource);
       importDaysOff(r, nativeResource);
       importCustomProperties(r, nativeResource);
       foreignId2humanResource.put(r.getUniqueID(), nativeResource);
@@ -379,7 +381,7 @@ class ProjectFileImporter {
         if (name == null) {
           name = rf.getName();
         }
-        def = myNativeProject.getResourceCustomPropertyManager().createDefinition(typeAsString, name, null);
+        def = myTargetProject.getResourceCustomPropertyManager().createDefinition(typeAsString, name, null);
         def.getAttributes().put(CustomPropertyMapping.MSPROJECT_TYPE, rf.name());
         myResourceCustomPropertyMapping.put(rf, def);
       }
@@ -473,8 +475,8 @@ class ProjectFileImporter {
 
       TimeDuration workingDuration = durations.first();
       TimeDuration nonWorkingDuration = durations.second();
-      TimeDuration defaultDuration = myNativeProject.getTaskManager().createLength(
-          myNativeProject.getTimeUnitStack().getDefaultTimeUnit(), 1.0f);
+      TimeDuration defaultDuration = myTargetProject.getTaskManager().createLength(
+          myTimeUnitStack.getDefaultTimeUnit(), 1.0f);
 
       if (!t.getMilestone()) {
         if (workingDuration.getLength() > 0) {
@@ -512,7 +514,7 @@ class ProjectFileImporter {
   }
 
   private Date convertStartTime(Date start) {
-    return myNativeProject.getTimeUnitStack().getDefaultTimeUnit().adjustLeft(start);
+    return myTimeUnitStack.getDefaultTimeUnit().adjustLeft(start);
   }
 
   private void importCustomFields(Task t, GanttTask nativeTask) {
@@ -529,7 +531,7 @@ class ProjectFileImporter {
           name = tf.getName();
         }
 
-        def = myNativeProject.getTaskCustomPropertyManager().createDefinition(typeAsString, name, null);
+        def = myTargetProject.getTaskCustomPropertyManager().createDefinition(typeAsString, name, null);
         def.getAttributes().put(CustomPropertyMapping.MSPROJECT_TYPE, tf.name());
         myTaskCustomPropertyMapping.put(tf, def);
       }
@@ -635,7 +637,7 @@ class ProjectFileImporter {
 
   private Pair<TimeDuration, TimeDuration> getDurations(Date start, Date end) {
     WorkingUnitCounter unitCounter = new WorkingUnitCounter(getNativeCalendar(),
-        myNativeProject.getTimeUnitStack().getDefaultTimeUnit());
+        myTimeUnitStack.getDefaultTimeUnit());
     TimeDuration workingDuration = unitCounter.run(start, end);
     TimeDuration nonWorkingDuration = unitCounter.getNonWorkingTime();
     return Pair.create(workingDuration, nonWorkingDuration);
@@ -649,7 +651,7 @@ class ProjectFileImporter {
           if (t.getMilestone()) {
             return Pair.create(getTaskManager().createLength(1), null);
           }
-          return getDurations(t.getStart(), myNativeProject.getTimeUnitStack().getDefaultTimeUnit().adjustRight(t.getFinish()));
+          return getDurations(t.getStart(), myTimeUnitStack.getDefaultTimeUnit().adjustRight(t.getFinish()));
         }
       };
 

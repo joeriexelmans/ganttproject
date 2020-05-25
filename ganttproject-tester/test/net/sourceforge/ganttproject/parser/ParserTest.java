@@ -8,6 +8,7 @@ import net.sourceforge.ganttproject.io.GanttXMLSaver;
 import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.project.ProjectFactory;
+import net.sourceforge.ganttproject.test.ProjectTestBase;
 import net.sourceforge.ganttproject.update.UpdateParserTest;
 import org.apache.commons.io.IOUtils;
 
@@ -23,39 +24,10 @@ import java.util.Locale;
  *
  * @author joeriexelmans
   */
-public class ParserTest extends TestCase {
-    // Apparently this is how one "sets up" the locale for the calendar...
-    static {
-        new CalendarFactory() {
-            {
-                setLocaleApi(new LocaleApi() {
-                    public Locale getLocale() {
-                        return Locale.US;
-                    }
-                    public DateFormat getShortDateFormat() {
-                        return DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
-                    }
-                });
-            }
-        };
-    }
-
-    private final static ProjectFactory factory = new ProjectFactory(){
-        public Project newProject() {
-            return new Project(
-                    new GPTimeUnitStack(),
-                    null,
-                    new TestSetupHelper.TaskManagerTestConfig());
-        }
-    };
-
-    private IProject project;
+public class ParserTest extends ProjectTestBase {
 
     public void testParser() throws IOException {
-        Parser parser = new Parser(null);
-        InputStream is = ParserTest.class.getResourceAsStream("/testproject.xml");
-        project = factory.newProject();
-        parser.parse(project, is);
+        Project project = getTestProject("/testproject.gan");
 
         // task and resource count
         assertEquals(5, project.getTaskManager().getTaskCount());
@@ -73,11 +45,7 @@ public class ParserTest extends TestCase {
     }
 
     public void testUnparser() throws IOException, InterruptedException {
-        // parse our project like in testParser
-        Parser parser = new Parser(null);
-        InputStream is = ParserTest.class.getResourceAsStream("/testproject.xml");
-        project = factory.newProject();
-        parser.parse(project, is);
+        Project project = getTestProject("/testproject.gan");
 
         // now serialize it
         GanttXMLSaver saver = new GanttXMLSaver(project);

@@ -25,7 +25,7 @@ import junit.framework.TestCase
 import net.sf.mpxj.ProjectFile
 import net.sourceforge.ganttproject.GanttProjectImpl
 import net.sourceforge.ganttproject.TestSetupHelper
-import net.sourceforge.ganttproject.importer.ImporterFromGanttFile
+import net.sourceforge.ganttproject.importer.BufferProject
 import java.awt.Color
 import java.io.File
 import java.text.DateFormat
@@ -73,7 +73,7 @@ class ProjectCalendarTest: TestCase() {
 
   fun testImportCalendarEvents() {
     val project = GanttProjectImpl()
-    val columns = ImporterFromGanttFile.VisibleFieldsImpl()
+    val columns = BufferProject.VisibleFieldsImpl()
     val fileUrl = ProjectCalendarTest::class.java.getResource("/issue1520.xml")
     assertNotNull(fileUrl)
     val importer = ProjectFileImporter(project, columns, File(fileUrl.toURI()))

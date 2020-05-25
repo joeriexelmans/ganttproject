@@ -25,15 +25,16 @@ import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.document.DocumentCreator;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.importer.ImporterFromGanttFile.VisibleFieldsImpl;
 import net.sourceforge.ganttproject.io.GPSaver;
-import net.sourceforge.ganttproject.io.GanttXMLOpen;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
-import net.sourceforge.ganttproject.parser.GPParser;
 import net.sourceforge.ganttproject.parser.ParserFactory;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.CustomColumnsManager;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Buffer project is a target for importing functions, and when it is filled with
@@ -83,5 +84,96 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   @Override
   public HumanResourceManager getHumanResourceManager() {
     return myBufferResourceManager;
+  }
+
+  private static class TaskFieldImpl implements ColumnList.Column {
+    private final String myID;
+    private final int myOrder;
+    private final int myWidth;
+
+    TaskFieldImpl(String id, int order, int width) {
+      myID = id;
+      myOrder = order;
+      myWidth = width;
+    }
+
+    @Override
+    public SortOrder getSort() {
+      return SortOrder.UNSORTED;
+    }
+
+    @Override
+    public void setSort(SortOrder sort) {
+
+    }
+
+    @Override
+    public String getID() {
+      return myID;
+    }
+
+    @Override
+    public int getOrder() {
+      return myOrder;
+    }
+
+    @Override
+    public int getWidth() {
+      return myWidth;
+    }
+
+    @Override
+    public boolean isVisible() {
+      return true;
+    }
+
+    @Override
+    public String getName() {
+      return null;
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+    }
+
+    @Override
+    public void setOrder(int order) {
+    }
+
+    @Override
+    public void setWidth(int width) {
+    }
+  }
+
+  public static class VisibleFieldsImpl implements ColumnList {
+    private final List<Column> myFields = new ArrayList<Column>();
+
+    @Override
+    public void add(String name, int order, int width) {
+      myFields.add(new TaskFieldImpl(name, order, width));
+    }
+
+    @Override
+    public void clear() {
+      myFields.clear();
+    }
+
+    @Override
+    public Column getField(int index) {
+      return myFields.get(index);
+    }
+
+    @Override
+    public int getSize() {
+      return myFields.size();
+    }
+
+    @Override
+    public void importData(ColumnList source) {
+      for (int i = 0; i < source.getSize(); i++) {
+        Column nextField = source.getField(i);
+        myFields.add(nextField);
+      }
+    }
   }
 }

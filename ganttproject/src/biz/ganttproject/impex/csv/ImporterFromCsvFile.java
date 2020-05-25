@@ -19,6 +19,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 package biz.ganttproject.impex.csv;
 
 import biz.ganttproject.core.option.GPOption;
+import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.importer.BufferProject;
@@ -67,7 +68,7 @@ public class ImporterFromCsvFile extends ImporterBase {
     BufferProject bufferProject = new BufferProject(getProject(), getUiFacade());
     GanttCSVOpen opener = new GanttCSVOpen(selectedFile, bufferProject.getTaskManager(),
         bufferProject.getHumanResourceManager(), bufferProject.getRoleManager(),
-        bufferProject.getTimeUnitStack());
+        new GPTimeUnitStack());
     opener.setOptions(((GanttProject)getProject()).getGanttOptions().getCSVOptions());
     try {
       List<Pair<Level, String>> errors = opener.load();

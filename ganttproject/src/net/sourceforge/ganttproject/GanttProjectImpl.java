@@ -18,114 +18,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject;
 
-import biz.ganttproject.core.calendar.GPCalendarCalc;
-import biz.ganttproject.core.calendar.GPCalendarListener;
-import biz.ganttproject.core.calendar.WeekendCalendarImpl;
 import biz.ganttproject.core.option.ColorOption;
 import biz.ganttproject.core.option.DefaultColorOption;
-import biz.ganttproject.core.time.TimeUnitStack;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
-import net.sourceforge.ganttproject.document.Document;
-import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.NotificationManager;
-import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.options.model.GP1XOptionConverter;
-import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
-import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.roles.RoleManager;
-import net.sourceforge.ganttproject.task.CustomColumnsManager;
-import net.sourceforge.ganttproject.task.Task;
-import net.sourceforge.ganttproject.task.TaskManager;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.TaskManagerConfig;
 
 import java.awt.*;
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
-public class GanttProjectImpl implements IProject {
-  private static final GanttLanguage language = GanttLanguage.getInstance();
-  private final PrjInfos myPrjInfos = new PrjInfos();
-  private final TaskManager myTaskManager;
-  private final HumanResourceManager myResourceManager;
-  private final TaskManagerConfigImpl myTaskManagerConfig;
-  private Document myDocument;
-  private UIConfiguration myUIConfiguration;
-  private final CustomColumnsManager myTaskCustomColumnManager;
-  private final ArrayList<GanttPreviousState> myBaselines = new ArrayList<GanttPreviousState>();
-  private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
-  private final GPTimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
-
+public class GanttProjectImpl extends Project {
   public GanttProjectImpl() {
-    myResourceManager = new HumanResourceManager(RoleManager.Access.getInstance().getDefaultRole(),
-        new CustomColumnsManager());
-    myTaskManagerConfig = new TaskManagerConfigImpl();
-    myTaskManager = TaskManager.Access.newInstance(null, myResourceManager, myCalendar, myTimeUnitStack, myTaskManagerConfig);
-    myUIConfiguration = new UIConfiguration(Color.BLUE, true);
-    myTaskCustomColumnManager = new CustomColumnsManager();
-  }
-
-  public Task newTask() {
-    Task result = getTaskManager().createTask();
-    getTaskManager().getTaskHierarchy().move(result, getTaskManager().getRootTask());
-    return result;
-  }
-
-  public GanttLanguage getLanguage() {
-    return language;
-  }
-
-  public UIConfiguration getUIConfiguration() {
-    return myUIConfiguration;
-  }
-
-  @Override
-  public HumanResourceManager getHumanResourceManager() {
-    return myResourceManager;
-  }
-
-  @Override
-  public RoleManager getRoleManager() {
-    return RoleManager.Access.getInstance();
-  }
-
-  @Override
-  public TaskManager getTaskManager() {
-    return myTaskManager;
-  }
-
-  @Override
-  public CustomPropertyManager getTaskCustomPropertyManager() {
-    return myTaskCustomColumnManager;
-  }
-
-  @Override
-  public PrjInfos getPrjInfos() {
-    return myPrjInfos;
-  }
-
-  @Override
-  public GPCalendarCalc getActiveCalendar() {
-    return myCalendar;
-  }
-
-  public TimeUnitStack getTimeUnitStack() {
-    return myTimeUnitStack;
-  }
-
-  public Document getDocument() {
-    return myDocument;
-  }
-
-  public void setDocument(Document document) {
-    myDocument = document;
-  }
-
-  @Override
-  public CustomPropertyManager getResourceCustomPropertyManager() {
-    return myResourceManager.getCustomPropertyManager();
+    super(new GPTimeUnitStack(), null, new TaskManagerConfigImpl());
   }
 
   private static Color DEFAULT_TASK_COLOR = new Color(140, 182, 206);
@@ -158,11 +64,6 @@ public class GanttProjectImpl implements IProject {
     }
   }
 
-  @Override
-  public ArrayList<GanttPreviousState> getBaselines() {
-    return myBaselines;
-  }
-
   static class DefaultTaskColorOption extends DefaultColorOption implements GP1XOptionConverter {
     DefaultTaskColorOption() {
       this(DEFAULT_TASK_COLOR);
@@ -188,6 +89,4 @@ public class GanttProjectImpl implements IProject {
       commit();
     }
   }
-
-
 }

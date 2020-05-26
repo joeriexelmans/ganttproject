@@ -30,6 +30,7 @@ import net.sourceforge.ganttproject.chart.VisibleNodesFilter;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.task.Task;
@@ -77,7 +78,10 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
 
   // TODO Replace with IGanttProject and facade classes
   /** Pointer of application */
-  private final GanttProject myProject;
+  private final GanttProject myApp;
+
+  /** The currently opened project */
+  private final IProject myProject;
 
   private final TaskManager myTaskManager;
   private final TaskSelectionManager mySelectionManager;
@@ -98,12 +102,11 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
 
   private Highlighter myDragHighlighter;
 
-  private static Runnable createDirtyfier(final GanttProject project) {
+  private static Runnable createDirtyfier(final IGanttProject project) {
     return new Runnable() {
       @Override
       public void run() {
         project.setModified();
-
       }
     };
   }
@@ -119,6 +122,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
                        final UIFacade uiFacade) {
     super(createTreeTable(project, createDirtyfier(project), uiFacade));
     myUIFacade = uiFacade;
+    myApp = project;
     myProject = project;
     myTaskManager = taskManager;
     mySelectionManager = selectionManager;
@@ -171,8 +175,8 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
     myMoveUpAction = new TaskMoveUpAction(taskManager, selectionManager, uiFacade, this);
     myMoveDownAction = new TaskMoveDownAction(taskManager, selectionManager, uiFacade, this);
     getTreeTable().setupActionMaps(myLinkTasksAction, myUnlinkTasksAction, myMoveUpAction, myMoveDownAction,
-            myIndentAction, myUnindentAction, newAction, myProject.getCutAction(), myProject.getCopyAction(),
-            myProject.getPasteAction(), propertiesAction, deleteAction);
+            myIndentAction, myUnindentAction, newAction, myApp.getCutAction(), myApp.getCopyAction(),
+            myApp.getPasteAction(), propertiesAction, deleteAction);
 
     area = new GanttGraphicArea(project, this, myTaskManager, myUIFacade.getZoomManager(), project.getUndoManager());
     myRowHeightAligner = new GanttProject.RowHeightAligner(this, this.area.getChartModel());
@@ -298,9 +302,9 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
         actions.add(a);
       }
       actions.add(null);
-      actions.add(myProject.getCutAction());
-      actions.add(myProject.getCopyAction());
-      actions.add(myProject.getPasteAction());
+      actions.add(myApp.getCutAction());
+      actions.add(myApp.getCopyAction());
+      actions.add(myApp.getPasteAction());
       actions.add(getDeleteAction());
       actions.add(null);
       actions.add(getTreeTable().getManageColumnsAction());
@@ -368,7 +372,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
     }
 
     getTreeModel().insertNodeInto(childNode, parent, parent.getChildCount());
-    myProject.refreshProjectInformation();
+    myApp.refreshProjectInformation();
 
     return childNode;
   }
@@ -474,7 +478,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
       DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) (e.getPath().getLastPathComponent());
       Task task = (Task) node.getUserObject();
       task.setExpand(true);
-      myProject.setModified(true);
+      myApp.setModified(true);
     }
 
     @Override
@@ -485,7 +489,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
       Task task = (Task) node.getUserObject();
 
       task.setExpand(false);
-      myProject.setModified(true);
+      myApp.setModified(true);
     }
   }
 

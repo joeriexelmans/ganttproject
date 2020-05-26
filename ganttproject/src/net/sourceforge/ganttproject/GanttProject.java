@@ -214,7 +214,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     prjInfos.addListener(new InvalidationListener() {
       @Override
       public void invalidated(Observable observable) {
-        setAskForSave(true);
+        setModified(true);
       }
     });
     Mediator.registerTaskSelectionManager(myUIFacade.getTaskSelectionManager());
@@ -839,31 +839,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       myQuitEntered = false;
     }
   }
-
-  public void setAskForSave(boolean afs) {
-    if (isOnlyViewer) {
-      return;
-    }
-    fireProjectModified(afs);
-    String title = getTitle();
-    askForSave = afs;
-    try {
-      if (System.getProperty("mrj.version") != null) {
-        rootPane.putClientProperty("windowModified", Boolean.valueOf(afs));
-        // see http://developer.apple.com/qa/qa2001/qa1146.html
-      } else {
-        if (askForSave) {
-          if (!title.endsWith(" *")) {
-            setTitle(title + " *");
-          }
-        }
-      }
-    } catch (AccessControlException e) {
-      // This can happen when running in a sandbox (Java WebStart)
-      System.err.println(e + ": " + e.getMessage());
-    }
-  }
-
+  
   public ResourceTreePanel getResourcePanel() {
     return resp;
   }
@@ -1017,14 +993,34 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   @Override
   public void setModified() {
-    setAskForSave(true);
+    setModified(true);
   }
 
   @Override
   public void setModified(boolean modified) {
-    setAskForSave(modified);
-
+    if (isOnlyViewer) {
+      return;
+    }
+    fireProjectModified(modified);
     String title = getTitle();
+    askForSave = modified;
+    try {
+      if (System.getProperty("mrj.version") != null) {
+        rootPane.putClientProperty("windowModified", Boolean.valueOf(modified));
+        // see http://developer.apple.com/qa/qa2001/qa1146.html
+      } else {
+        if (askForSave) {
+          if (!title.endsWith(" *")) {
+            setTitle(title + " *");
+          }
+        }
+      }
+    } catch (AccessControlException e) {
+      // This can happen when running in a sandbox (Java WebStart)
+      System.err.println(e + ": " + e.getMessage());
+    }
+
+    title = getTitle();
     if (modified == false && title.endsWith(" *")) {
       // Remove * from title
       setTitle(title.substring(0, title.length() - 2));
@@ -1043,7 +1039,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     prjInfos.addListener(new InvalidationListener() {
       @Override
       public void invalidated(Observable observable) {
-        setAskForSave(true);
+        setModified(true);
       }
     });
     myRoleManager.clear();
@@ -1070,7 +1066,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
         description = language.getCorrectedLabel("resource.new");
       }
       myUIFacade.setStatusText(description);
-      setAskForSave(true);
+      setModified(true);
       refreshProjectInformation();
     }
   }
@@ -1078,17 +1074,17 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   @Override
   public void resourcesRemoved(ResourceEvent event) {
     refreshProjectInformation();
-    setAskForSave(true);
+    setModified(true);
   }
 
   @Override
   public void resourceChanged(ResourceEvent e) {
-    setAskForSave(true);
+    setModified(true);
   }
 
   @Override
   public void resourceAssignmentsChanged(ResourceEvent e) {
-    setAskForSave(true);
+    setModified(true);
   }
 
   // ///////////////////////////////////////////////////////////////

@@ -474,7 +474,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
       DefaultMutableTreeTableNode node = (DefaultMutableTreeTableNode) (e.getPath().getLastPathComponent());
       Task task = (Task) node.getUserObject();
       task.setExpand(true);
-      myProject.setAskForSave(true);
+      myProject.setModified(true);
     }
 
     @Override
@@ -485,7 +485,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
       Task task = (Task) node.getUserObject();
 
       task.setExpand(false);
-      myProject.setAskForSave(true);
+      myProject.setModified(true);
     }
   }
 

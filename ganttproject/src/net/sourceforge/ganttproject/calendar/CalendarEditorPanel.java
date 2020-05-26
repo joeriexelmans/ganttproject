@@ -192,7 +192,7 @@ public class CalendarEditorPanel {
         }
       }
     };
-    GPDateCellEditor dateEditor = new GPDateCellEditor(null, true, decorator, formatSupplier);
+    GPDateCellEditor dateEditor = new GPDateCellEditor(true, decorator, formatSupplier);
     return Pair.create(hintLabel, dateEditor);
   }
 

@@ -470,14 +470,14 @@ public abstract class UIUtil {
     return htmlPane;
   }
 
-  public static TableCellEditor newDateCellEditor(IGanttProject project, boolean showDatePicker) {
+  public static TableCellEditor newDateCellEditor(boolean showDatePicker) {
     Supplier<List<DateFormat>> supplier = new Supplier<List<DateFormat>>() {
       @Override
       public List<DateFormat> get() {
         return Collections.<DateFormat>singletonList(GanttLanguage.getInstance().getShortDateFormat());
       }
     };
-    return new GPDateCellEditor(project, showDatePicker, null, supplier);
+    return new GPDateCellEditor(showDatePicker, null, supplier);
   }
 
   public static class GPDateCellEditor extends DefaultCellEditor implements ActionListener, GanttLanguage.Listener {
@@ -486,7 +486,7 @@ public abstract class UIUtil {
     private final boolean myShowDatePicker;
     private DatePickerEditCommiter myCommitter;
 
-    public GPDateCellEditor(IGanttProject project, boolean showDatePicker, ValueValidator<Date> parseValidator, Supplier<List<DateFormat>> dateFormats) {
+    public GPDateCellEditor(boolean showDatePicker, ValueValidator<Date> parseValidator, Supplier<List<DateFormat>> dateFormats) {
       super(new JTextField());
       myDatePicker = UIUtil.createDatePicker(dateFormats.get().toArray(new DateFormat[0]));
       myShowDatePicker = showDatePicker;

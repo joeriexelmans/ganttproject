@@ -78,6 +78,8 @@ import net.sourceforge.ganttproject.parser.ParserFactory;
 import net.sourceforge.ganttproject.plugins.PluginManager;
 import net.sourceforge.ganttproject.print.PrintManager;
 import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
+import net.sourceforge.ganttproject.project.ProjectFactory;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceListener;
@@ -121,13 +123,14 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final static GanttLanguage language = GanttLanguage.getInstance();
 
   // Current project:
-  private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
-  private RoleManager myRoleManager = RoleManager.Access.getInstance();
-  private final CustomColumnsManager myResourceCustomPropertyManager = new CustomColumnsManager();
-  private HumanResourceManager myHumanResourceManager;
-  private final TaskManager myTaskManager;
-  public PrjInfos prjInfos;
-  private ArrayList<GanttPreviousState> myPreviousStates = new ArrayList<GanttPreviousState>();
+  private Project currentProject = null;
+//  private final WeekendCalendarImpl myCalendar;
+//  private final RoleManager myRoleManager = RoleManager.Access.getInstance();
+//  private final CustomColumnsManager myResourceCustomPropertyManager = new CustomColumnsManager();
+//  private HumanResourceManager myHumanResourceManager;
+//  private final TaskManager myTaskManager;
+//  public PrjInfos prjInfos;
+//  private ArrayList<GanttPreviousState> myPreviousStates = new ArrayList<GanttPreviousState>();
 
   // Graphical layout and controls
   private final UIFacadeImpl myUIFacade;
@@ -167,7 +170,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final ProjectUIFacadeImpl myProjectUIFacade;
 
   // Other 'global' stuff, non-UI
-  private final TimeUnitStack myTimeUnitStack;
+  private final TimeUnitStack myTimeUnitStack = GPTimeUnitStack.getInstance();
   private final DocumentManager myDocumentManager;
   private final GPUndoManager myUndoManager;
   private ParserFactory myParserFactory = new ParserFactoryImpl();
@@ -180,7 +183,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     myTabPane = new GanttTabbedPane();
     myContentPaneBuilder = new ContentPaneBuilder(myTabPane, statusBar);
 
-    myTimeUnitStack = GPTimeUnitStack.getInstance();
     NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
     myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, this);
     GPLogger.setUIFacade(myUIFacade);
@@ -209,16 +211,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     System.err.println("Creating main frame...");
     ToolTipManager.sharedInstance().setInitialDelay(200);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
-
-    prjInfos = new PrjInfos();
-    prjInfos.addListener(new InvalidationListener() {
-      @Override
-      public void invalidated(Observable observable) {
-        setAskForSave(true);
-      }
-    });
-    Mediator.registerTaskSelectionManager(myUIFacade.getTaskSelectionManager());
-
     this.isOnlyViewer = isOnlyViewer;
     if (!isOnlyViewer) {
       setTitle(language.getText("appliTitle"));
@@ -226,70 +218,73 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       setTitle("GanttViewer");
     }
     setFocusable(true);
+
+    Mediator.registerTaskSelectionManager(myUIFacade.getTaskSelectionManager());
+
     System.err.println("1. loading look'n'feels");
     options = new GanttOptions(myRoleManager, myMRU);
     myUIConfiguration = options.getUIConfiguration();
     myUIConfiguration.setChartFontOption(myUIFacade.getChartFontOption());
     myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
 
-    myHumanResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(),
-            getResourceCustomPropertyManager());
-    myHumanResourceManager.addListener(this);
 
-    class TaskManagerConfigImpl implements TaskManagerConfig {
-      final DefaultColorOption myDefaultColorOption = new ProjectStub.DefaultTaskColorOption();
-      @Override
-      public Color getDefaultColor() {
-        return tree.area.getTaskDefaultColorOption().getValue();
-      }
-      @Override
-      public ColorOption getDefaultColorOption() {
-        return myDefaultColorOption;
-      }
-      @Override
-      public URL getProjectDocumentURL() {
-        try {
-          return myObservableDocument.get().getURI().toURL();
-        } catch (MalformedURLException e) {
-          e.printStackTrace();
-          return null;
-        }
-      }
-      @Override
-      public NotificationManager getNotificationManager() {
-        return myUIFacade.getNotificationManager();
-      }
-    }
+    // Project domain logic
 
-    myCalendar.addListener(new GPCalendarListener() {
+    ProjectFactory f = new ProjectFactory() {
       @Override
-      public void onCalendarChange() {
-        GanttProject.this.setModified();
+      public Project newProject() {
+        TaskManagerConfig taskConfig = new TaskManagerConfig() {
+          final DefaultColorOption myDefaultColorOption = new ProjectStub.DefaultTaskColorOption();
+          @Override
+          public Color getDefaultColor() {
+            return tree.area.getTaskDefaultColorOption().getValue();
+          }
+          @Override
+          public ColorOption getDefaultColorOption() {
+            return myDefaultColorOption;
+          }
+          @Override
+          public URL getProjectDocumentURL() {
+            try {
+              return myObservableDocument.get().getURI().toURL();
+            } catch (MalformedURLException e) {
+              e.printStackTrace();
+              return null;
+            }
+          }
+          @Override
+          public NotificationManager getNotificationManager() {
+            return myUIFacade.getNotificationManager();
+          }
+        };
+        TaskContainmentHierarchyFacade.Factory facadeFactory = () -> {
+          if (myFacadeInvalidator == null) {
+            return TaskContainmentHierarchyFacade.STUB;
+          }
+          if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
+            myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
+            myFacadeInvalidator.reset();
+          }
+          return myCachedFacade;
+        };
+        Project p = new Project(facadeFactory, taskConfig);
+        p.prjinfos.addListener(observable -> setAskForSave(true));
+        p.hrManager.addListener(GanttProject.this);
+        p.calendar.addListener(() -> GanttProject.this.setModified());
+        p.calendar.addListener(p.taskManager.getCalendarListener());
+        addProjectEventListener(p.taskManager.getProjectListener());
+        p.hrManager.addListener(resp);
+
+        return p;
       }
-    });
-    TaskManagerConfig taskConfig = new TaskManagerConfigImpl();
-    myTaskManager = TaskManager.Access.newInstance(new TaskContainmentHierarchyFacade.Factory() {
-      @Override
-      public TaskContainmentHierarchyFacade createFacade() {
-        if (myFacadeInvalidator == null) {
-          return TaskContainmentHierarchyFacade.STUB;
-        }
-        if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
-          myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
-          myFacadeInvalidator.reset();
-        }
-        return myCachedFacade;
-      }
-    }, myHumanResourceManager, myCalendar, myTimeUnitStack, taskConfig);
-    addProjectEventListener(myTaskManager.getProjectListener());
-    myCalendar.addListener(myTaskManager.getCalendarListener());
+    };
+
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
 
     resp = new ResourceTreePanel(this, myUIFacade);
     resp.init();
     myRowHeightAligners.add(resp.getRowHeightAligner());
-    myHumanResourceManager.addListener(resp);
 
     tree = new TaskTreePanel(this, myTaskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);

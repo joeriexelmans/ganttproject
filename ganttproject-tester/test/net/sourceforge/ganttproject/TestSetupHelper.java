@@ -2,14 +2,10 @@ package net.sourceforge.ganttproject;
 
 import biz.ganttproject.core.calendar.AlwaysWorkingTimeCalendarImpl;
 import biz.ganttproject.core.calendar.GPCalendarCalc;
-import biz.ganttproject.core.option.ColorOption;
-import biz.ganttproject.core.option.DefaultColorOption;
 import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeUnitStack;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
-import net.sourceforge.ganttproject.gui.NotificationManager;
-import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RoleManagerImpl;
@@ -17,36 +13,9 @@ import net.sourceforge.ganttproject.task.CustomColumnsManager;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskManagerConfig;
 
-import java.awt.*;
-import java.net.URL;
-
 public class TestSetupHelper {
-    public static class TaskManagerTestConfig implements TaskManagerConfig {
-        static private final DefaultColorOption DEFAULT_COLOR_OPTION = new DefaultColorOption("taskcolor", Color.CYAN);
-
-        @Override
-        public Color getDefaultColor() {
-            return DEFAULT_COLOR_OPTION.getValue();
-        }
-
-        @Override
-        public ColorOption getDefaultColorOption() {
-            return DEFAULT_COLOR_OPTION;
-        }
-
-        @Override
-        public URL getProjectDocumentURL() {
-            return null;
-        }
-
-        @Override
-        public NotificationManager getNotificationManager() {
-            return null;
-        }
-    }
-
     public static class TaskManagerBuilder {
-        private TaskManagerTestConfig myConfig = new TaskManagerTestConfig();
+        private ProjectStub.TaskManagerConfigStub myConfig = new ProjectStub.TaskManagerConfigStub();
         private GPCalendarCalc myGPCalendar = new AlwaysWorkingTimeCalendarImpl();
         private TimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
         private RoleManager myRoleManager = new RoleManagerImpl();
@@ -65,7 +34,7 @@ public class TestSetupHelper {
             return myTimeUnitStack;
         }
 
-        public TaskManagerTestConfig getConfig() {
+        public TaskManagerConfig getConfig() {
             return myConfig;
         }
 

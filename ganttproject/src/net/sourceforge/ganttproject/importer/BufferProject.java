@@ -19,18 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.importer;
 
 import biz.ganttproject.core.table.ColumnList;
-import net.sourceforge.ganttproject.GanttProjectImpl;
-import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.document.DocumentCreator;
-import net.sourceforge.ganttproject.document.DocumentManager;
-import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.io.GPSaver;
-import net.sourceforge.ganttproject.io.GanttXMLSaver;
-import net.sourceforge.ganttproject.parser.ParserFactory;
+import net.sourceforge.ganttproject.ProjectStub;
 import net.sourceforge.ganttproject.project.IProject;
-import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.roles.RoleManager;
-import net.sourceforge.ganttproject.task.CustomColumnsManager;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -42,15 +32,12 @@ import java.util.List;
  *
  * @author dbarashev
  */
-public class BufferProject extends GanttProjectImpl implements ParserFactory {
+public class BufferProject extends ProjectStub {
   private final ColumnList myTaskVisibleFields = new VisibleFieldsImpl();
   private final ColumnList myResourceVisibleFields = new VisibleFieldsImpl();
-  private final HumanResourceManager myBufferResourceManager;
 
   public BufferProject(IProject targetProject) {
     getTaskManager().getDependencyHardnessOption().setValue(targetProject.getTaskManager().getDependencyHardnessOption().getValue());
-    myBufferResourceManager = new HumanResourceManager(RoleManager.Access.getInstance().getDefaultRole(),
-        new CustomColumnsManager(), targetProject.getRoleManager());
   }
 
   public ColumnList getTaskVisibleFields() {
@@ -59,16 +46,6 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
 
   public ColumnList getResourceVisibleFields() {
     return myResourceVisibleFields;
-  }
-
-  @Override
-  public GPSaver newSaver() {
-    return new GanttXMLSaver(this);
-  }
-
-  @Override
-  public HumanResourceManager getHumanResourceManager() {
-    return myBufferResourceManager;
   }
 
   private static class TaskFieldImpl implements ColumnList.Column {

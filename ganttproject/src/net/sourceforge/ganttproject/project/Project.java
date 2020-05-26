@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class Project extends ObservableImpl implements IProject {
     public final WeekendCalendarImpl calendar;
-    public final RoleManagerImpl roleManager;
+    public final RoleManager roleManager;
     public final CustomColumnsManager hrCustomPropertyManager;
     public final HumanResourceManager hrManager;
     public final TaskManager taskManager;
@@ -35,7 +35,7 @@ public class Project extends ObservableImpl implements IProject {
      */
     public Project(TimeUnitStack timeUnitStack, TaskContainmentHierarchyFacade.Factory facadeFactory, TaskManagerConfig tmConfig) {
         calendar = new WeekendCalendarImpl();
-        roleManager = new RoleManagerImpl();
+        roleManager = RoleManager.Access.getInstance();
         hrCustomPropertyManager = new CustomColumnsManager();
         hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
         taskManager = TaskManager.Access.newInstance(facadeFactory, hrManager, calendar, timeUnitStack, tmConfig);
@@ -148,7 +148,7 @@ public class Project extends ObservableImpl implements IProject {
         return calendar;
     }
     @Override
-    public RoleManagerImpl getRoleManager() {
+    public RoleManager getRoleManager() {
         return roleManager;
     }
     @Override

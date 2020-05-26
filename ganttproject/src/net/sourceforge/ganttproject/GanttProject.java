@@ -237,7 +237,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     myHumanResourceManager.addListener(this);
 
     class TaskManagerConfigImpl implements TaskManagerConfig {
-      final DefaultColorOption myDefaultColorOption = new GanttProjectImpl.DefaultTaskColorOption();
+      final DefaultColorOption myDefaultColorOption = new ProjectStub.DefaultTaskColorOption();
       @Override
       public Color getDefaultColor() {
         return tree.area.getTaskDefaultColorOption().getValue();

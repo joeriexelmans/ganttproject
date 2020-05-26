@@ -29,17 +29,17 @@ import net.sourceforge.ganttproject.task.TaskManagerConfig;
 import java.awt.*;
 import java.net.URL;
 
-public class GanttProjectImpl extends Project {
-  public GanttProjectImpl() {
-    super(new GPTimeUnitStack(), null, new TaskManagerConfigImpl());
+public class ProjectStub extends Project {
+  public ProjectStub() {
+    super(new GPTimeUnitStack(), null, new TaskManagerConfigStub());
   }
 
   private static Color DEFAULT_TASK_COLOR = new Color(140, 182, 206);
 
-  private static class TaskManagerConfigImpl implements TaskManagerConfig {
+  public static class TaskManagerConfigStub implements TaskManagerConfig {
     private final ColorOption myDefaultTaskColorOption;
 
-    private TaskManagerConfigImpl() {
+    TaskManagerConfigStub() {
       myDefaultTaskColorOption = new DefaultTaskColorOption(DEFAULT_TASK_COLOR);
     }
 
@@ -55,11 +55,13 @@ public class GanttProjectImpl extends Project {
 
     @Override
     public URL getProjectDocumentURL() {
+      // STUB
       return null;
     }
 
     @Override
     public NotificationManager getNotificationManager() {
+      // STUB
       return null;
     }
   }

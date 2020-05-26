@@ -76,7 +76,7 @@ public class GPTransferable implements Transferable {
   }
 
   private InputStream createDocumentFlavor() {
-    IProject bufferProject = new GanttProjectImpl();
+    IProject bufferProject = new ProjectStub();
     final TaskManager taskMgr = bufferProject.getTaskManager();
     ClipboardTaskProcessor processor = new ClipboardTaskProcessor(taskMgr);
     // In intra-document copy+paste we do copy so-called external dependencies (those where one of the tasks is not in

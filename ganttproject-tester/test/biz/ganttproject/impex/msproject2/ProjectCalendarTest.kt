@@ -23,7 +23,7 @@ import biz.ganttproject.core.calendar.WeekendCalendarImpl
 import biz.ganttproject.core.time.CalendarFactory
 import junit.framework.TestCase
 import net.sf.mpxj.ProjectFile
-import net.sourceforge.ganttproject.GanttProjectImpl
+import net.sourceforge.ganttproject.ProjectStub
 import net.sourceforge.ganttproject.TestSetupHelper
 import net.sourceforge.ganttproject.importer.BufferProject
 import java.awt.Color
@@ -72,7 +72,7 @@ class ProjectCalendarTest: TestCase() {
   }
 
   fun testImportCalendarEvents() {
-    val project = GanttProjectImpl()
+    val project = ProjectStub()
     val columns = BufferProject.VisibleFieldsImpl()
     val fileUrl = ProjectCalendarTest::class.java.getResource("/issue1520.xml")
     assertNotNull(fileUrl)

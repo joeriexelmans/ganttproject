@@ -37,6 +37,8 @@ import com.google.common.collect.Sets;
 
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.ProjectOpenedState;
 import net.sourceforge.ganttproject.task.CustomColumnsException;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.task.Task;
@@ -72,7 +74,8 @@ import java.util.Comparator;
  *
  * @author bbaranne (Benoit Baranne)
  */
-public class GanttTreeTableModel extends DefaultTreeTableModel implements TableColumnModelListener {
+public class GanttTreeTableModel extends DefaultTreeTableModel implements TableColumnModelListener, ProjectOpenedState {
+
   private static class Icons {
     static ImageIcon ALERT_TASK_INPROGRESS = new ImageIcon(GanttTreeTableModel.class.getResource("/icons/alert1_16.gif"));
     static ImageIcon ALERT_TASK_OUTDATED = new ImageIcon(GanttTreeTableModel.class.getResource("/icons/alert2_16.gif"));
@@ -99,7 +102,9 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
     });
   }
 
-  private final CustomPropertyManager myCustomColumnsManager;
+  private IProject myProject = null;
+
+//  private final CustomPropertyManager myCustomColumnsManager;
 
   private final UIFacade myUiFacade;
 
@@ -109,14 +114,11 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
   /**
    * Creates an instance of GanttTreeTableModel with a root.
    *
-   * @param root
-   *          The root.
-   * @param customColumnsManager
    * @param dirtyfier
    */
-  public GanttTreeTableModel(
-      TaskManager taskManager, CustomPropertyManager customColumnsManager, UIFacade uiFacade, Runnable dirtyfier) {
-    super(new TaskNode(taskManager.getRootTask()));
+  public GanttTreeTableModel(UIFacade uiFacade, Runnable dirtyfier) {
+//    super(new TaskNode(taskManager.getRootTask()));
+    super();
     TaskDefaultColumn.BEGIN_DATE.setIsEditablePredicate(NOT_SUPERTASK);
     TaskDefaultColumn.BEGIN_DATE.setSortComparator(new BeginDateComparator());
     TaskDefaultColumn.END_DATE.setIsEditablePredicate(Predicates.and(NOT_SUPERTASK, NOT_MILESTONE));
@@ -124,7 +126,19 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
     TaskDefaultColumn.DURATION.setIsEditablePredicate(Predicates.and(NOT_SUPERTASK, NOT_MILESTONE));
     myUiFacade = uiFacade;
     myDirtyfier = dirtyfier;
-    myCustomColumnsManager = customColumnsManager;
+//    myCustomColumnsManager = customColumnsManager;
+  }
+
+  @Override
+  public void openProject(IProject project) {
+    myProject = project;
+    super.setRoot(new TaskNode(myProject.getTaskManager().getRootTask()));
+  }
+
+  @Override
+  public void closeProject() {
+    super.setRoot(null);
+    myProject = null;
   }
 
   private static class BeginDateComparator implements Comparator<Task> {
@@ -144,7 +158,11 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
 
   @Override
   public int getColumnCount() {
-    return STANDARD_COLUMN_COUNT + myCustomColumnsManager.getDefinitions().size();
+    if (myProject == null) {
+      return STANDARD_COLUMN_COUNT;
+    } else {
+      return STANDARD_COLUMN_COUNT + myProject.getTaskCustomPropertyManager().getDefinitions().size();
+    }
   }
 
   /**
@@ -215,7 +233,7 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
   private CustomPropertyDefinition getCustomProperty(int columnIndex) {
     assert columnIndex >= STANDARD_COLUMN_COUNT : "We have " + STANDARD_COLUMN_COUNT + " default properties, and custom property index starts at " + STANDARD_COLUMN_COUNT + ". I've got index #"
         + columnIndex + ". Something must be wrong here";
-    List<CustomPropertyDefinition> definitions = myCustomColumnsManager.getDefinitions();
+    List<CustomPropertyDefinition> definitions = myProject.getTaskCustomPropertyManager().getDefinitions();
     columnIndex -= STANDARD_COLUMN_COUNT;
     return columnIndex < definitions.size() ? definitions.get(columnIndex) : null;
   }

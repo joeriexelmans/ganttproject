@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject;
 
 import biz.ganttproject.core.table.ColumnList;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -31,6 +32,7 @@ import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.ProjectOpenedState;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.task.Task;
@@ -70,7 +72,7 @@ import java.util.logging.Level;
  *
  */
 public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> implements
-    /*DragSourceListener, DragGestureListener,*/ TaskTreeUIFacade {
+    /*DragSourceListener, DragGestureListener,*/ TaskTreeUIFacade, ProjectOpenedState {
   private GanttProject.RowHeightAligner myRowHeightAligner;
   private UIFacade myUIFacade;
 
@@ -78,12 +80,12 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
 
   // TODO Replace with IGanttProject and facade classes
   /** Pointer of application */
-  private final GanttProject myApp;
+  private final IMainApp myApp;
 
   /** The currently opened project */
-  private final IProject myProject;
+  private IProject myProject;
 
-  private final TaskManager myTaskManager;
+//  private final TaskManager myTaskManager;
   private final TaskSelectionManager mySelectionManager;
 
   private final GPAction myIndentAction;
@@ -112,45 +114,20 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
   }
   private static Pair<GanttTreeTable, GanttTreeTableModel> createTreeTable(
       IGanttProject project, Runnable dirtyfier, UIFacade uiFacade) {
-    GanttTreeTableModel tableModel = new GanttTreeTableModel(project.getTaskManager(),
-        project.getTaskManager().getCustomPropertyManager(), uiFacade, dirtyfier);
+    GanttTreeTableModel tableModel = new GanttTreeTableModel(uiFacade, dirtyfier);
     GanttTreeTable table = new GanttTreeTable(project, uiFacade, tableModel);
     return Pair.create(table, tableModel);
   }
 
-  public TaskTreePanel(final GanttProject project, TaskManager taskManager, TaskSelectionManager selectionManager,
+  public TaskTreePanel(final GanttProject project, TaskSelectionManager selectionManager,
                        final UIFacade uiFacade) {
     super(createTreeTable(project, createDirtyfier(project), uiFacade));
     myUIFacade = uiFacade;
     myApp = project;
     myProject = project;
-    myTaskManager = taskManager;
+//    myTaskManager = taskManager;
     mySelectionManager = selectionManager;
 
-    myTaskManager.addTaskListener(new TaskListenerAdapter() {
-      @Override
-      public void taskModelReset() {
-        clearTree();
-      }
-
-      @Override
-      public void taskRemoved(TaskHierarchyEvent e) {
-        MutableTreeTableNode node = getNode(e.getTask());
-        if (node == null) {
-          return;
-        }
-        TreeNode parent = node.getParent();
-        if (parent != null) {
-          getTreeModel().removeNodeFromParent(node);
-        }
-      }
-
-      @Override
-      public void taskPropertiesChanged(TaskPropertyEvent e) {
-        // Otherwise task name cell may be cropped and will appear with ellipsis at the end.
-        getTreeTable().updateUI();
-      }
-    });
     mySelectionManager.addSelectionListener(new TaskSelectionManager.Listener() {
       @Override
       public void userInputConsumerChanged(Object newConsumer) {
@@ -183,11 +160,48 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
   }
 
   @Override
+  public void openProject(IProject project) {
+    Preconditions.checkState(myProject == null);
+    myProject = project;
+    getTreeModel().openProject(myProject);
+    myProject.getTaskManager().addTaskListener(new TaskListenerAdapter() {
+      @Override
+      public void taskModelReset() {
+        clearTree();
+      }
+
+      @Override
+      public void taskRemoved(TaskHierarchyEvent e) {
+        MutableTreeTableNode node = getNode(e.getTask());
+        if (node == null) {
+          return;
+        }
+        TreeNode parent = node.getParent();
+        if (parent != null) {
+          getTreeModel().removeNodeFromParent(node);
+        }
+      }
+
+      @Override
+      public void taskPropertiesChanged(TaskPropertyEvent e) {
+        // Otherwise task name cell may be cropped and will appear with ellipsis at the end.
+        getTreeTable().updateUI();
+      }
+    });
+  }
+
+  @Override
+  public void closeProject() {
+    Preconditions.checkState(myProject != null);
+    getTreeModel().closeProject();
+    myProject = null;
+  }
+
+  @Override
   protected void init() {
     getTreeTable().initTreeTable();
     // Create the root node
     initRootNode();
-
 
     getTreeTable().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
         KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.ALT_DOWN_MASK), "cutTask");

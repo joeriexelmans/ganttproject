@@ -28,33 +28,8 @@ import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.project.IProject;
 
 /**
- * This interface represents a project as a logical business entity, without any
- * UI (except some configuration options :)
- *
- * @author bard
+ * Sum of main app logic and project domain model.
+ * This interface is here for compatibility and should (hopefully) be removed.
  */
-public interface IGanttProject extends IProject {
-
-  TimeUnitStack getTimeUnitStack();
-
-  // Get the currently opened project
-  public IProject getCurrentProject();
-
-  // main app logic
-  void open(Document document) throws IOException, DocumentException;
-  void close();
-  void setModified();
-  void setModified(boolean modified);
-  boolean isModified();
-
-  // low level hacks?
-  Document getDocument();
-  void setDocument(Document document); // used by UndoableEditImpl
-  DocumentManager getDocumentManager();
-
-  void addProjectEventListener(ProjectEventListener listener);
-  void removeProjectEventListener(ProjectEventListener listener);
-
-  // UI
-  UIConfiguration getUIConfiguration();
+public interface IGanttProject extends IMainApp, IProject {
 }

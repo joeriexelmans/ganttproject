@@ -69,7 +69,7 @@ public class ImporterFromMsProjectFile extends ImporterBase implements Importer 
   public void run() {
     try {
       File selectedFile = getFile();
-      BufferProject bufferProject = new BufferProject(getProject(), getUiFacade());
+      BufferProject bufferProject = new BufferProject(getProject());
       ProjectFileImporter importer = new ProjectFileImporter(bufferProject, getUiFacade().getTaskTree(), selectedFile);
       importer.run();
 

@@ -144,7 +144,7 @@ public class ProxyDocument implements Document {
   }
 
   @Override
-  public void read(IProject project) throws IOException, DocumentException {
+  public void read(IProject project) throws IOException {
     try {
       ((TaskManagerImpl) project.getTaskManager()).setEventsEnabled(false);
       UIParser parser = new UIParser(myCreator, myUIFacade);

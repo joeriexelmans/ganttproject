@@ -65,7 +65,7 @@ public class ImporterFromCsvFile extends ImporterBase {
   @Override
   public void run() {
     File selectedFile = getFile();
-    BufferProject bufferProject = new BufferProject(getProject(), getUiFacade());
+    BufferProject bufferProject = new BufferProject(getProject());
     GanttCSVOpen opener = new GanttCSVOpen(selectedFile, bufferProject.getTaskManager(),
         bufferProject.getHumanResourceManager(), bufferProject.getRoleManager(),
         new GPTimeUnitStack());

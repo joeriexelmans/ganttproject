@@ -96,7 +96,7 @@ public class PasteAction extends GPAction {
   private void pasteExternalDocument(InputStream data) {
     try {
       byte[] bytes = ByteStreams.toByteArray(data);
-      final BufferProject bufferProject = new BufferProject(myProject, myUiFacade);
+      final BufferProject bufferProject = new BufferProject(myProject);
       File tmpFile = File.createTempFile("ganttPaste", "");
       Files.write(tmpFile.toPath(), bytes);
 

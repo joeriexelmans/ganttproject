@@ -47,7 +47,7 @@ public class BufferProject extends GanttProjectImpl implements ParserFactory {
   private final ColumnList myResourceVisibleFields = new VisibleFieldsImpl();
   private final HumanResourceManager myBufferResourceManager;
 
-  public BufferProject(IProject targetProject, UIFacade uiFacade) {
+  public BufferProject(IProject targetProject) {
     getTaskManager().getDependencyHardnessOption().setValue(targetProject.getTaskManager().getDependencyHardnessOption().getValue());
     myBufferResourceManager = new HumanResourceManager(RoleManager.Access.getInstance().getDefaultRole(),
         new CustomColumnsManager(), targetProject.getRoleManager());

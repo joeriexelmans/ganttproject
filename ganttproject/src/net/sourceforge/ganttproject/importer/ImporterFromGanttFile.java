@@ -101,7 +101,6 @@ public class ImporterFromGanttFile extends ImporterBase {
   private void run(File selectedFile, IProject targetProject, BufferProject bufferProject) {
     try {
       Document document = getProject().getDocumentManager().getDocument(selectedFile.getAbsolutePath());
-//      Document document = bufferProject.getDocumentManager().getDocument(selectedFile.getAbsolutePath());
       AlgorithmCollection algs = getProject().getTaskManager().getAlgorithmCollection();
       try {
         algs.getScheduler().setEnabled(false);
@@ -123,7 +122,7 @@ public class ImporterFromGanttFile extends ImporterBase {
   }
 
   private BufferProject createBufferProject(final IProject targetProject, final UIFacade uiFacade) {
-    return new BufferProject(targetProject, uiFacade);
+    return new BufferProject(targetProject);
   }
 
   protected Document getDocument(File selectedFile) {

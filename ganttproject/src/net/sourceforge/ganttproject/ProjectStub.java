@@ -31,7 +31,7 @@ import java.net.URL;
 
 public class ProjectStub extends Project {
   public ProjectStub() {
-    super(new GPTimeUnitStack(), null, new TaskManagerConfigStub());
+    super(null, new TaskManagerConfigStub());
   }
 
   private static Color DEFAULT_TASK_COLOR = new Color(140, 182, 206);

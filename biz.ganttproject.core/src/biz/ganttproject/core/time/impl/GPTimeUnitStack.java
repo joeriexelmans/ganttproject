@@ -44,7 +44,7 @@ public class GPTimeUnitStack implements TimeUnitStack {
     YEAR = ourGraph.createTimeUnitFunctionOfDate("year", DAY, new FramerImpl(Calendar.YEAR));
   }
 
-  public GPTimeUnitStack() {
+  private GPTimeUnitStack() {
     myPairs = new TimeUnitPair[] { new TimeUnitPair(WEEK, DAY, this, 65), new TimeUnitPair(WEEK, DAY, this, 55),
         new TimeUnitPair(MONTH, DAY, this, 44), new TimeUnitPair(MONTH, DAY, this, 34),
         new TimeUnitPair(MONTH, WEEK, this, 24), new TimeUnitPair(MONTH, WEEK, this, 21),
@@ -54,6 +54,12 @@ public class GPTimeUnitStack implements TimeUnitStack {
      * The last pair is reused for the next steps, so it is needed only once.
      */
     /* new TimeUnitPair(YEAR, QUARTER, this, 1) */};
+  }
+
+  private static final GPTimeUnitStack instance = new GPTimeUnitStack();
+
+  public static GPTimeUnitStack getInstance() {
+    return instance;
   }
 
   @Override

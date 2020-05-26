@@ -3,6 +3,7 @@ package net.sourceforge.ganttproject.test;
 import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import junit.framework.TestCase;
+import net.sourceforge.ganttproject.ProjectStub;
 import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.parser.Parser;
 import net.sourceforge.ganttproject.parser.ParserTest;
@@ -33,10 +34,7 @@ public abstract class ProjectTestBase extends TestCase {
 
     protected final static ProjectFactory factory = new ProjectFactory(){
         public Project newProject() {
-            return new Project(
-                    new GPTimeUnitStack(),
-                    null,
-                    new TestSetupHelper.TaskManagerTestConfig());
+            return new ProjectStub();
         }
     };
 

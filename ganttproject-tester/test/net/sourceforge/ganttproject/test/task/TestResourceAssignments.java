@@ -159,7 +159,7 @@ public class TestResourceAssignments extends TestCase {
                 null,
                 myHumanResourceManager,
                 new AlwaysWorkingTimeCalendarImpl(),
-                new GPTimeUnitStack(),
+                GPTimeUnitStack.getInstance(),
                 new TaskManagerConfig() {
 
             @Override

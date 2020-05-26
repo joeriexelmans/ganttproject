@@ -68,7 +68,7 @@ public class ImporterFromCsvFile extends ImporterBase {
     BufferProject bufferProject = new BufferProject(getProject());
     GanttCSVOpen opener = new GanttCSVOpen(selectedFile, bufferProject.getTaskManager(),
         bufferProject.getHumanResourceManager(), bufferProject.getRoleManager(),
-        new GPTimeUnitStack());
+        GPTimeUnitStack.getInstance());
     opener.setOptions(((GanttProject)getProject()).getGanttOptions().getCSVOptions());
     try {
       List<Pair<Level, String>> errors = opener.load();

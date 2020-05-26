@@ -17,7 +17,7 @@ public class TestSetupHelper {
     public static class TaskManagerBuilder {
         private ProjectStub.TaskManagerConfigStub myConfig = new ProjectStub.TaskManagerConfigStub();
         private GPCalendarCalc myGPCalendar = new AlwaysWorkingTimeCalendarImpl();
-        private TimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
+        private TimeUnitStack myTimeUnitStack = GPTimeUnitStack.getInstance();
         private RoleManager myRoleManager = new RoleManagerImpl();
         private HumanResourceManager myResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(), new CustomColumnsManager(), myRoleManager);
 

@@ -3,6 +3,7 @@ package net.sourceforge.ganttproject.project;
 import biz.ganttproject.core.calendar.GPCalendarListener;
 import biz.ganttproject.core.calendar.WeekendCalendarImpl;
 import biz.ganttproject.core.time.TimeUnitStack;
+import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import net.sourceforge.ganttproject.*;
@@ -33,12 +34,12 @@ public class Project extends ObservableImpl implements IProject {
      * @param facadeFactory This is a "hack" to allow the view to be updated when anything changes to the task hierarchy. Can be set to null if there is no view.
      * @param tmConfig
      */
-    public Project(TimeUnitStack timeUnitStack, TaskContainmentHierarchyFacade.Factory facadeFactory, TaskManagerConfig tmConfig) {
+    public Project(TaskContainmentHierarchyFacade.Factory facadeFactory, TaskManagerConfig tmConfig) {
         calendar = new WeekendCalendarImpl();
         roleManager = RoleManager.Access.getInstance();
         hrCustomPropertyManager = new CustomColumnsManager();
         hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
-        taskManager = TaskManager.Access.newInstance(facadeFactory, hrManager, calendar, timeUnitStack, tmConfig);
+        taskManager = TaskManager.Access.newInstance(facadeFactory, hrManager, calendar, GPTimeUnitStack.getInstance(), tmConfig);
         prjinfos = new PrjInfos();
         baseLines = new ArrayList<GanttPreviousState>();
 

@@ -180,7 +180,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     myTabPane = new GanttTabbedPane();
     myContentPaneBuilder = new ContentPaneBuilder(myTabPane, statusBar);
 
-    myTimeUnitStack = new GPTimeUnitStack();
+    myTimeUnitStack = GPTimeUnitStack.getInstance();
     NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
     myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, this);
     GPLogger.setUIFacade(myUIFacade);

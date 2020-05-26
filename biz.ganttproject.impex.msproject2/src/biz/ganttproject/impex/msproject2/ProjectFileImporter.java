@@ -101,7 +101,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 class ProjectFileImporter {
-  private final GPTimeUnitStack myTimeUnitStack = new GPTimeUnitStack();
+  private final GPTimeUnitStack myTimeUnitStack = GPTimeUnitStack.getInstance();
   private final IProject myTargetProject;
   private final ProjectReader myReader;
   private final File myForeignFile;

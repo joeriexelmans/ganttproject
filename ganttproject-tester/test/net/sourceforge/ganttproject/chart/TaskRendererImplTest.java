@@ -169,7 +169,7 @@ public class TaskRendererImplTest extends TaskTestCase {
       UIConfiguration projectConfig = new UIConfiguration(Color.BLACK, false);
       projectConfig.setChartFontOption(new DefaultFontOption("foo", new FontSpec("Foo", FontSpec.Size.HUGE), Collections.<String>emptyList()));
       projectConfig.setDpiOption(new DefaultIntegerOption("bar", 96));
-      chartModel = new ChartModelImpl(getTaskManager(), new GPTimeUnitStack(), projectConfig);
+      chartModel = new ChartModelImpl(getTaskManager(), GPTimeUnitStack.getInstance(), projectConfig);
       chartModel.setStartDate(TestSetupHelper.newWendesday().getTime());
       chartModel.setVisibleTasks(Lists.newArrayList(t));
       chartModel.setBounds(new Dimension(200, 200));

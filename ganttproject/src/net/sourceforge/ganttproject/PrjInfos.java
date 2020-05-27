@@ -37,10 +37,7 @@ public class PrjInfos extends ObservableImpl {
   private String _sWebLink;
 
   public PrjInfos() {
-    this._sProjectName = "Untitled Gantt Project";
-    this._sDescription = "";
-    this._sOrganization = "";
-    this._sWebLink = "http://";
+    reset();
   }
 
   public PrjInfos(String sProjectName, String sDescription, String sOrganization, String sWebLink) {
@@ -48,6 +45,13 @@ public class PrjInfos extends ObservableImpl {
     this._sDescription = sDescription;
     this._sOrganization = sOrganization;
     this._sWebLink = sWebLink;
+  }
+
+  public void reset() {
+    this._sProjectName = "Untitled Gantt Project";
+    this._sDescription = "";
+    this._sOrganization = "";
+    this._sWebLink = "http://";
   }
 
   /** @return the name of the project. */

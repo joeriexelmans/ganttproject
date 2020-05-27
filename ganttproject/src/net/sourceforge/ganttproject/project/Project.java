@@ -26,11 +26,13 @@ public class Project extends ObservableImpl implements IProject {
     public final RoleManager roleManager;
     public final CustomColumnsManager hrCustomPropertyManager;
     public final HumanResourceManager hrManager;
-    public final TaskManager taskManager;
+    public final TaskManagerImpl taskManager;
     public final PrjInfos prjinfos;
     public final ArrayList<GanttPreviousState> baseLines;
 
     /**
+     * After construction, you will have a blank project.
+     *
      * @param facadeFactory This is a "hack" to allow the view to be updated when anything changes to the task hierarchy. Can be set to null if there is no view.
      * @param tmConfig
      */
@@ -39,9 +41,11 @@ public class Project extends ObservableImpl implements IProject {
         roleManager = RoleManager.Access.getInstance();
         hrCustomPropertyManager = new CustomColumnsManager();
         hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
-        taskManager = TaskManager.Access.newInstance(facadeFactory, hrManager, calendar, GPTimeUnitStack.getInstance(), tmConfig);
+        taskManager = (TaskManagerImpl) TaskManager.Access.newInstance(facadeFactory, hrManager, calendar, GPTimeUnitStack.getInstance(), tmConfig);
         prjinfos = new PrjInfos();
         baseLines = new ArrayList<GanttPreviousState>();
+
+        calendar.addListener(taskManager.getCalendarListener());
 
         // Each of the 'things' a project consists of defines its own listener type.
         // We subscribe to all of them.
@@ -140,6 +144,33 @@ public class Project extends ObservableImpl implements IProject {
                 notifyListeners();
             }
         });
+    }
+
+    /**
+     * Clear all project contents, turning it back into a blank project.
+     */
+    public void reset() {
+        taskManager.reset();
+//        fireProjectClosed();
+        prjinfos.reset();
+//        prjInfos = new PrjInfos();
+//        prjInfos.addListener(new InvalidationListener() {
+//            @Override
+//            public void invalidated(Observable observable) {
+//                setModified(true);
+//            }
+//        });
+        roleManager.clear();
+//        myObservableDocument.set(null);
+        taskManager.getCustomPropertyManager().reset();
+        hrCustomPropertyManager.reset();
+
+        for (int i = 0; i < baseLines.size(); i++) {
+            baseLines.get(i).remove();
+        }
+        baseLines.clear();
+        calendar.reset();
+//        myFacadeInvalidator.projectClosed();
     }
 
     // Implementation of IProject:

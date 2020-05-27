@@ -308,7 +308,7 @@ public class TaskManagerImpl implements TaskManager {
     return root;
   }
 
-  private void projectClosed() {
+  public void reset() {
     myDependencyGraph.clear();
     myTaskMap.clear();
     myMaxID.set(0);
@@ -317,7 +317,7 @@ public class TaskManagerImpl implements TaskManager {
     fireTaskModelReset();
   }
 
-  private void projectOpened() {
+  public void projectOpened() {
     processCriticalPath(getRootTask());
     myAlgorithmCollection.getRecalculateTaskCompletionPercentageAlgorithm().run();
   }
@@ -684,20 +684,6 @@ public class TaskManagerImpl implements TaskManager {
   @Override
   public GPCalendarCalc getCalendar() {
     return myCalendar;
-  }
-
-  public ProjectEventListener getProjectListener() {
-    return new ProjectEventListener.Stub() {
-      @Override
-      public void projectClosed() {
-        TaskManagerImpl.this.projectClosed();
-      }
-
-      @Override
-      public void projectOpened() {
-        TaskManagerImpl.this.projectOpened();
-      }
-    };
   }
 
   public GPCalendarListener getCalendarListener() {

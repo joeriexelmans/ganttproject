@@ -238,7 +238,5 @@ public interface TaskManager {
 
   DependencyGraph getDependencyGraph();
 
-  ProjectEventListener getProjectListener();
-
   GPCalendarListener getCalendarListener();
 }

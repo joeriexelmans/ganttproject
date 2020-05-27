@@ -78,6 +78,7 @@ import net.sourceforge.ganttproject.parser.ParserFactory;
 import net.sourceforge.ganttproject.plugins.PluginManager;
 import net.sourceforge.ganttproject.print.PrintManager;
 import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceListener;
@@ -121,13 +122,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private final static GanttLanguage language = GanttLanguage.getInstance();
 
   // Current project:
-  private final WeekendCalendarImpl myCalendar = new WeekendCalendarImpl();
-  private RoleManager myRoleManager = RoleManager.Access.getInstance();
-  private final CustomColumnsManager myResourceCustomPropertyManager = new CustomColumnsManager();
-  private HumanResourceManager myHumanResourceManager;
-  private final TaskManager myTaskManager;
-  public PrjInfos prjInfos;
-  private ArrayList<GanttPreviousState> myPreviousStates = new ArrayList<GanttPreviousState>();
+  private final Project myProject;
 
   // Graphical layout and controls
   private final UIFacadeImpl myUIFacade;
@@ -149,7 +144,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   // Used by TaskManagerImpl
   private TaskContainmentHierarchyFacadeImpl myCachedFacade;
-  private final FacadeInvalidator myFacadeInvalidator;
+  private FacadeInvalidator myFacadeInvalidator = null;
 
   private final RssFeedChecker myRssChecker;
   private Updater myUpdater;
@@ -210,33 +205,16 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     ToolTipManager.sharedInstance().setInitialDelay(200);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
 
-    prjInfos = new PrjInfos();
-    prjInfos.addListener(new InvalidationListener() {
-      @Override
-      public void invalidated(Observable observable) {
-        setModified(true);
+    myProject = new Project(() -> {
+      if (myFacadeInvalidator == null) {
+        return TaskContainmentHierarchyFacade.STUB;
       }
-    });
-    Mediator.registerTaskSelectionManager(myUIFacade.getTaskSelectionManager());
-
-    this.isOnlyViewer = isOnlyViewer;
-    if (!isOnlyViewer) {
-      setTitle(language.getText("appliTitle"));
-    } else {
-      setTitle("GanttViewer");
-    }
-    setFocusable(true);
-    System.err.println("1. loading look'n'feels");
-    options = new GanttOptions(myRoleManager, myMRU);
-    myUIConfiguration = options.getUIConfiguration();
-    myUIConfiguration.setChartFontOption(myUIFacade.getChartFontOption());
-    myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
-
-    myHumanResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(),
-            getResourceCustomPropertyManager());
-    myHumanResourceManager.addListener(this);
-
-    class TaskManagerConfigImpl implements TaskManagerConfig {
+      if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
+        myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
+        myFacadeInvalidator.reset();
+      }
+      return myCachedFacade;
+    }, new TaskManagerConfig() {
       final DefaultColorOption myDefaultColorOption = new ProjectStub.DefaultTaskColorOption();
       @Override
       public Color getDefaultColor() {
@@ -259,39 +237,47 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       public NotificationManager getNotificationManager() {
         return myUIFacade.getNotificationManager();
       }
-    }
+    });
 
-    myCalendar.addListener(new GPCalendarListener() {
+    myProject.prjinfos.addListener(new InvalidationListener() {
+      @Override
+      public void invalidated(Observable observable) {
+        setModified(true);
+      }
+    });
+    Mediator.registerTaskSelectionManager(myUIFacade.getTaskSelectionManager());
+
+    this.isOnlyViewer = isOnlyViewer;
+    if (!isOnlyViewer) {
+      setTitle(language.getText("appliTitle"));
+    } else {
+      setTitle("GanttViewer");
+    }
+    setFocusable(true);
+    System.err.println("1. loading look'n'feels");
+    options = new GanttOptions(myProject.roleManager, myMRU);
+    myUIConfiguration = options.getUIConfiguration();
+    myUIConfiguration.setChartFontOption(myUIFacade.getChartFontOption());
+    myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
+
+    myProject.hrManager.addListener(this);
+
+    myProject.calendar.addListener(new GPCalendarListener() {
       @Override
       public void onCalendarChange() {
         GanttProject.this.setModified();
       }
     });
-    TaskManagerConfig taskConfig = new TaskManagerConfigImpl();
-    myTaskManager = TaskManager.Access.newInstance(new TaskContainmentHierarchyFacade.Factory() {
-      @Override
-      public TaskContainmentHierarchyFacade createFacade() {
-        if (myFacadeInvalidator == null) {
-          return TaskContainmentHierarchyFacade.STUB;
-        }
-        if (!myFacadeInvalidator.isValid() || myCachedFacade == null) {
-          myCachedFacade = new TaskContainmentHierarchyFacadeImpl(tree);
-          myFacadeInvalidator.reset();
-        }
-        return myCachedFacade;
-      }
-    }, myHumanResourceManager, myCalendar, myTimeUnitStack, taskConfig);
-    addProjectEventListener(myTaskManager.getProjectListener());
-    myCalendar.addListener(myTaskManager.getCalendarListener());
+
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
 
     resp = new ResourceTreePanel(this, myUIFacade);
     resp.init();
     myRowHeightAligners.add(resp.getRowHeightAligner());
-    myHumanResourceManager.addListener(resp);
+    myProject.hrManager.addListener(resp);
 
-    tree = new TaskTreePanel(this, myTaskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
+    tree = new TaskTreePanel(this, myProject.taskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);
     this.addProjectEventListener(myFacadeInvalidator);
     tree.init();
@@ -456,7 +442,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     System.err.println("8. finalizing...");
     // applyComponentOrientation(GanttLanguage.getInstance()
     // .getComponentOrientation());
-    myTaskManager.addTaskListener(new TaskModelModificationListener(this, myUIFacade));
+    myProject.taskManager.addTaskListener(new TaskModelModificationListener(this, myUIFacade));
     addMouseListenerToAllContainer(this.getComponents());
 
     // Add globally available actions/key strokes
@@ -662,7 +648,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     mySearchUi = new FXSearchUi(this, myUIFacade);
     builder.addSearchBox(mySearchUi);
 
-    //return result;
     return builder.build();
   }
 
@@ -679,18 +664,18 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   @Override
   public ArrayList<GanttPreviousState> getBaselines() {
-    return myPreviousStates;
+    return myProject.baseLines;
   }
 
   /**
    * Refresh the information of the project on the status bar.
    */
   public void refreshProjectInformation() {
-    if (myTaskManager.getTaskCount() == 0 && resp.nbPeople() == 0) {
+    if (myProject.taskManager.getTaskCount() == 0 && resp.nbPeople() == 0) {
       statusBar.setSecondText("");
     } else {
       statusBar.setSecondText(
-          language.getCorrectedLabel("task") + " : " + myTaskManager.getTaskCount() + "  "
+          language.getCorrectedLabel("task") + " : " + myProject.taskManager.getTaskCount() + "  "
               + language.getCorrectedLabel("resources") + " : " + resp.nbPeople());
     }
   }
@@ -733,6 +718,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     // myDelayManager.fireDelayObservation(); // it is done in repaint2
     addMouseListenerToAllContainer(this.getComponents());
 
+    myProject.taskManager.projectOpened();
     fireProjectOpened();
   }
 
@@ -761,7 +747,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     for (Importer importer : importers) {
       if (Pattern.matches(".*(" + importer.getFileNamePattern() + ")$", document.getFilePath())) {
         try {
-          ((TaskManagerImpl) myTaskManager).setEventsEnabled(false);
+          myProject.taskManager.setEventsEnabled(false);
           importer.setContext(this, myUIFacade, options.getPluginPreferences());
           importer.setFile(new File(document.getFilePath()));
           importer.run();
@@ -772,7 +758,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
             e.printStackTrace(System.err);
           }
         } finally {
-          ((TaskManagerImpl) myTaskManager).setEventsEnabled(true);
+          myProject.taskManager.setEventsEnabled(true);
         }
       }
     }
@@ -947,27 +933,27 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   // IGanttProject implementation
   @Override
   public HumanResourceManager getHumanResourceManager() {
-    return myHumanResourceManager;
+    return myProject.hrManager;
   }
 
   @Override
   public TaskManager getTaskManager() {
-    return myTaskManager;
+    return myProject.taskManager;
   }
 
   @Override
   public RoleManager getRoleManager() {
-    return myRoleManager;
+    return myProject.roleManager;
   }
 
   @Override
   public PrjInfos getPrjInfos() {
-    return prjInfos;
+    return myProject.prjinfos;
   }
 
   @Override
   public CustomPropertyManager getTaskCustomPropertyManager() {
-    return myTaskManager.getCustomPropertyManager();
+    return myProject.taskManager.getCustomPropertyManager();
   }
 
   @Override
@@ -988,7 +974,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   @Override
   public GPCalendarCalc getActiveCalendar() {
-    return myCalendar;
+    return myProject.calendar;
   }
 
   @Override
@@ -1034,24 +1020,9 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   @Override
   public void close() {
+    myProject.reset();
     fireProjectClosed();
-    prjInfos = new PrjInfos();
-    prjInfos.addListener(new InvalidationListener() {
-      @Override
-      public void invalidated(Observable observable) {
-        setModified(true);
-      }
-    });
-    myRoleManager.clear();
     myObservableDocument.set(null);
-    getTaskCustomPropertyManager().reset();
-    getResourceCustomPropertyManager().reset();
-
-    for (int i = 0; i < myPreviousStates.size(); i++) {
-      myPreviousStates.get(i).remove();
-    }
-    myPreviousStates = new ArrayList<GanttPreviousState>();
-    myCalendar.reset();
     myFacadeInvalidator.projectClosed();
   }
 
@@ -1147,7 +1118,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   }
 
   public void refresh() {
-    myTaskManager.processCriticalPath(myTaskManager.getRootTask());
+    myProject.taskManager.processCriticalPath(myProject.taskManager.getRootTask());
     resp.getResourceTreeTableModel().updateResources();
     resp.getResourceTreeTable().setRowHeight(getResourceChart().getModel().calculateRowHeight());
     for (Chart chart : PluginManager.getCharts()) {
@@ -1266,7 +1237,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   @Override
   public CustomPropertyManager getResourceCustomPropertyManager() {
-    return myResourceCustomPropertyManager;
+    return myProject.hrCustomPropertyManager;
   }
 
   protected void setUpdater(Updater updater) {

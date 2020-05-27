@@ -21,7 +21,7 @@ import java.util.ArrayList;
  * Domain model class for everything that makes up a "project" in GanttProject, and nothing more.
  * Does not include or depend on any "view" or UI logic.
  */
-public class Project extends ObservableImpl implements IProject {
+public class Project implements IProject {
     public final WeekendCalendarImpl calendar;
     public final RoleManager roleManager;
     public final CustomColumnsManager hrCustomPropertyManager;
@@ -30,7 +30,8 @@ public class Project extends ObservableImpl implements IProject {
     public final PrjInfos prjinfos;
     public final ArrayList<GanttPreviousState> baseLines;
 
-    private final ArrayList<Runnable> onResetCallbacks = new ArrayList<>();
+    private final CallbackList onModifiedCallbacks = new CallbackList();
+    private final CallbackList onResetCallbacks = new CallbackList();
 
     /**
      * After construction, you will have a blank project.
@@ -52,100 +53,85 @@ public class Project extends ObservableImpl implements IProject {
         // Each of the 'things' a project consists of defines its own listener type.
         // We subscribe to all of them.
 
-        calendar.addListener(new GPCalendarListener() {
-            @Override
-            public void onCalendarChange() {
-                notifyListeners();
-            }
-        });
-
-        roleManager.addRoleListener(new RoleManager.Listener() {
-            @Override
-            public void rolesChanged(RoleManager.RoleEvent e) {
-                notifyListeners();
-            }
-        });
-
+        prjinfos.onModified(() -> { onModifiedCallbacks.runAll(); });
+        calendar.addListener(() -> onModifiedCallbacks.runAll());
+        roleManager.addRoleListener(e -> onModifiedCallbacks.runAll());
         hrManager.addListener(new ResourceListener() {
             @Override
             public void resourceAdded(ResourceEvent event) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void resourcesRemoved(ResourceEvent event) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void resourceChanged(ResourceEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void resourceAssignmentsChanged(ResourceEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
         });
-
         taskManager.addTaskListener(new TaskListener() {
             @Override
             public void taskScheduleChanged(TaskScheduleEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void dependencyAdded(TaskDependencyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void dependencyRemoved(TaskDependencyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void dependencyChanged(TaskDependencyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void taskAdded(TaskHierarchyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void taskRemoved(TaskHierarchyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void taskMoved(TaskHierarchyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void taskPropertiesChanged(TaskPropertyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void taskProgressChanged(TaskPropertyEvent e) {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
 
             @Override
             public void taskModelReset() {
-                notifyListeners();
+                onModifiedCallbacks.runAll();
             }
         });
+    }
 
-        prjinfos.addListener(new InvalidationListener() {
-            @Override
-            public void invalidated(Observable observable) {
-                notifyListeners();
-            }
-        });
+    public void onModified(Runnable callback) {
+        onModifiedCallbacks.add(callback);
     }
 
     public void onReset(Runnable callback) {
@@ -156,22 +142,11 @@ public class Project extends ObservableImpl implements IProject {
      * Clear all project contents, turning it back into a blank project.
      */
     public void reset() {
-        for (Runnable cb: onResetCallbacks) {
-            cb.run();
-        }
+        onResetCallbacks.runAll();
 
         taskManager.reset();
-//        fireProjectClosed();
         prjinfos.reset();
-//        prjInfos = new PrjInfos();
-//        prjInfos.addListener(new InvalidationListener() {
-//            @Override
-//            public void invalidated(Observable observable) {
-//                setModified(true);
-//            }
-//        });
         roleManager.clear();
-//        myObservableDocument.set(null);
         taskManager.getCustomPropertyManager().reset();
         hrCustomPropertyManager.reset();
 
@@ -180,7 +155,6 @@ public class Project extends ObservableImpl implements IProject {
         }
         baseLines.clear();
         calendar.reset();
-//        myFacadeInvalidator.projectClosed();
     }
 
     // Implementation of IProject:

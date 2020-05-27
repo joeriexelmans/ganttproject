@@ -204,6 +204,7 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
         return myUIFacade.getNotificationManager();
       }
     });
+    myProject.onModified(() -> { setModified(); });
     myProject.onReset(() -> { fireProjectClosed(); });
 
     statusBar = new GanttStatusBar(this);
@@ -235,12 +236,6 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
     ToolTipManager.sharedInstance().setInitialDelay(200);
     ToolTipManager.sharedInstance().setDismissDelay(60000);
 
-    myProject.prjinfos.addListener(new InvalidationListener() {
-      @Override
-      public void invalidated(Observable observable) {
-        setModified(true);
-      }
-    });
     Mediator.registerTaskSelectionManager(myUIFacade.getTaskSelectionManager());
 
     this.isOnlyViewer = isOnlyViewer;
@@ -257,13 +252,6 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
     myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
 
     myProject.hrManager.addListener(this);
-
-    myProject.calendar.addListener(new GPCalendarListener() {
-      @Override
-      public void onCalendarChange() {
-        GanttProject.this.setModified();
-      }
-    });
 
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
@@ -997,7 +985,6 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
         description = language.getCorrectedLabel("resource.new");
       }
       myUIFacade.setStatusText(description);
-      setModified(true);
       refreshProjectInformation();
     }
   }
@@ -1005,18 +992,13 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
   @Override
   public void resourcesRemoved(ResourceEvent event) {
     refreshProjectInformation();
-    setModified(true);
   }
 
   @Override
-  public void resourceChanged(ResourceEvent e) {
-    setModified(true);
-  }
+  public void resourceChanged(ResourceEvent e) {}
 
   @Override
-  public void resourceAssignmentsChanged(ResourceEvent e) {
-    setModified(true);
-  }
+  public void resourceAssignmentsChanged(ResourceEvent e) {}
 
   // ///////////////////////////////////////////////////////////////
   // UIFacade

@@ -23,7 +23,7 @@ package net.sourceforge.ganttproject;
  * 
  * @author athomas
  */
-public class PrjInfos extends ObservableImpl {
+public class PrjInfos {
   /** The name of the project */
   private String _sProjectName;
 
@@ -35,6 +35,8 @@ public class PrjInfos extends ObservableImpl {
 
   /** Web link for the project or for the company */
   private String _sWebLink;
+
+  private final CallbackList onModifiedCallbacks = new CallbackList();
 
   public PrjInfos() {
     reset();
@@ -62,7 +64,7 @@ public class PrjInfos extends ObservableImpl {
   /** sets the name of the project. */
   public void setName(String projectName) {
     _sProjectName = projectName;
-    notifyListeners();
+    onModifiedCallbacks.runAll();
   }
 
   /** @return the description of the project. */
@@ -73,7 +75,7 @@ public class PrjInfos extends ObservableImpl {
   /** sets the description of the project. */
   public void setDescription(String description) {
     _sDescription = description;
-    notifyListeners();
+    onModifiedCallbacks.runAll();
   }
 
   /** @return the organization of the project. */
@@ -84,7 +86,7 @@ public class PrjInfos extends ObservableImpl {
   /** sets the organization of the project. */
   public void setOrganization(String organization) {
     _sOrganization = organization;
-    notifyListeners();
+    onModifiedCallbacks.runAll();
   }
 
   /** @return the web link for the project or for the company. */
@@ -95,6 +97,10 @@ public class PrjInfos extends ObservableImpl {
   /** sets the web link for the project or for the company. */
   public void setWebLink(String webLink) {
     _sWebLink = webLink;
-    notifyListeners();
+    onModifiedCallbacks.runAll();
+  }
+
+  public void onModified(Runnable r) {
+    onModifiedCallbacks.add(r);
   }
 }

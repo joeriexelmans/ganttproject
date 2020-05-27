@@ -29,6 +29,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.ChartSelection;
 import net.sourceforge.ganttproject.chart.ChartSelectionListener;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.TaskManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -51,7 +52,7 @@ public abstract class PertChart extends JPanel implements Chart {
   }
 
   @Override
-  public void init(IGanttProject project, IntegerOption dpiOption, FontOption chartFontOption) {
+  public void init(IProject project, IntegerOption dpiOption, FontOption chartFontOption) {
     myTaskManager = project.getTaskManager();
     myDpi = Preconditions.checkNotNull(dpiOption);
     myChartFontOption = chartFontOption;

@@ -34,6 +34,8 @@ import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.GanttLanguage.Event;
 import net.sourceforge.ganttproject.parser.ParserFactory;
+import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 /**
  * UndoManager implementation, it manages the undoable edits in GanttProject
@@ -47,15 +49,12 @@ public class UndoManagerImpl implements GPUndoManager {
 
   private DocumentManager myDocumentManager;
 
-  private ParserFactory myParserFactory;
-
-  private IGanttProject myProject;
+  private Project myProject;
 
   private UndoableEditImpl swingEditImpl;
 
-  public UndoManagerImpl(IGanttProject project, ParserFactory parserFactory, DocumentManager documentManager) {
+  public UndoManagerImpl(Project project, DocumentManager documentManager) {
     myProject = project;
-    myParserFactory = parserFactory;
     myDocumentManager = documentManager;
     mySwingUndoManager = new UndoManager();
     myUndoEventDispatcher = new UndoableEditSupport();
@@ -96,11 +95,7 @@ public class UndoManagerImpl implements GPUndoManager {
     return myDocumentManager;
   }
 
-  protected ParserFactory getParserFactory() {
-    return myParserFactory;
-  }
-
-  IGanttProject getProject() {
+  Project getProject() {
     return myProject;
   }
 

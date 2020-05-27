@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.PluginPreferencesImpl;
 import net.sourceforge.ganttproject.plugins.PluginManager;
 import net.sourceforge.ganttproject.task.Task;
+import net.sourceforge.ganttproject.task.TaskManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.service.prefs.Preferences;
 import org.w3c.util.DateParser;
@@ -92,8 +93,8 @@ public class CommandLineExportApplication {
     if (exporter == null) {
       return false;
     }
-    GanttProject project = new GanttProject(false);
-    ConsoleUIFacade consoleUI = new ConsoleUIFacade(project.getUIFacade());
+    GanttProject app = new GanttProject(false);
+    ConsoleUIFacade consoleUI = new ConsoleUIFacade(app.getUIFacade());
     File inputFile = new File(mainArgs.file.get(0));
     if (false == inputFile.exists()) {
       consoleUI.showErrorDialog("File " + mainArgs.file + " does not exist.");
@@ -104,23 +105,26 @@ public class CommandLineExportApplication {
       return true;
     }
 
-    project.openStartupDocument(mainArgs.file.get(0));
+    app.openStartupDocument(mainArgs.file.get(0));
+
+    TaskManager taskManager = app.getCurrentProject().getTaskManager();
+
     if (myArgs.expandTasks) {
-      for (Task t : project.getTaskManager().getTasks()) {
-        project.getUIFacade().getTaskTree().setExpanded(t, true);
+      for (Task t : taskManager.getTasks()) {
+        app.getUIFacade().getTaskTree().setExpanded(t, true);
       }
     }
 
     Job.getJobManager().setProgressProvider(null);
-    File outputFile = myArgs.outputFile == null ? FileChooserPage.proposeOutputFile(project, exporter)
+    File outputFile = myArgs.outputFile == null ? FileChooserPage.proposeOutputFile(app, app.getCurrentProject(), exporter)
         : myArgs.outputFile;
 
     Preferences prefs = new PluginPreferencesImpl(null, "");
     prefs.putInt("zoom", myArgs.zooming);
     prefs.put(
         "exportRange",
-        DateParser.getIsoDate(project.getTaskManager().getProjectStart()) + " "
-            + DateParser.getIsoDate(project.getTaskManager().getProjectEnd()));
+        DateParser.getIsoDate(taskManager.getProjectStart()) + " "
+            + DateParser.getIsoDate(taskManager.getProjectEnd()));
     prefs.putBoolean("commandLine", true);
 
     // If chart to export is defined, then add a string to prefs
@@ -135,7 +139,7 @@ public class CommandLineExportApplication {
 
     prefs.putBoolean("expandResources", myArgs.expandResources);
 
-    exporter.setContext(project, consoleUI, prefs);
+    exporter.setContext(app.getCurrentProject(), consoleUI, prefs);
     final CountDownLatch latch = new CountDownLatch(1);
     try {
       ExportFinalizationJob finalizationJob = new ExportFinalizationJob() {

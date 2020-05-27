@@ -30,6 +30,8 @@ public class Project extends ObservableImpl implements IProject {
     public final PrjInfos prjinfos;
     public final ArrayList<GanttPreviousState> baseLines;
 
+    private final ArrayList<Runnable> onResetCallbacks = new ArrayList<>();
+
     /**
      * After construction, you will have a blank project.
      *
@@ -146,10 +148,18 @@ public class Project extends ObservableImpl implements IProject {
         });
     }
 
+    public void onReset(Runnable callback) {
+        onResetCallbacks.add(callback);
+    }
+
     /**
      * Clear all project contents, turning it back into a blank project.
      */
     public void reset() {
+        for (Runnable cb: onResetCallbacks) {
+            cb.run();
+        }
+
         taskManager.reset();
 //        fireProjectClosed();
         prjinfos.reset();

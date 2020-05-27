@@ -48,7 +48,7 @@ public class ExporterToHTML extends StylesheetExporterBase {
   static final String RESOURCE_CHART_FILE_EXTENSION = "res.png";
   private static final String PNG_FORMAT_NAME = "png";
   private HTMLStylesheet mySelectedStylesheet;
-  private final HtmlSerializer mySerializer = new HtmlSerializer(this);
+  private final HtmlSerializer mySerializer = new HtmlSerializer(getProject(), getUIFacade());
 
   @Override
   public String getFileTypeDescription() {

@@ -21,15 +21,18 @@ package net.sourceforge.ganttproject.action.project;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.options.SettingsDialog2;
+import net.sourceforge.ganttproject.project.IProject;
 
 import java.awt.event.ActionEvent;
 
 class ProjectPropertiesAction extends GPAction {
   private final GanttProject myMainFrame;
+  private final IProject myProject;
 
-  ProjectPropertiesAction(GanttProject mainFrame) {
+  ProjectPropertiesAction(GanttProject mainFrame, IProject project) {
     super("project.properties");
     myMainFrame = mainFrame;
+    myProject = project;
   }
 
   @Override
@@ -45,7 +48,7 @@ class ProjectPropertiesAction extends GPAction {
     myMainFrame.getUIFacade().getUndoManager().undoableEdit(getI18n(getID()), new Runnable() {
       @Override
       public void run() {
-        SettingsDialog2 settingsDialog = new SettingsDialog2(myMainFrame, myMainFrame.getUIFacade(),
+        SettingsDialog2 settingsDialog = new SettingsDialog2(myMainFrame, myProject, myMainFrame.getUIFacade(),
             "settings.project.pageOrder");
         settingsDialog.show();
       }

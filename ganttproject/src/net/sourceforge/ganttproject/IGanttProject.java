@@ -33,11 +33,17 @@ import net.sourceforge.ganttproject.project.IProject;
  *
  * @author bard
  */
-public interface IGanttProject extends IProject {
+public interface IGanttProject {
 
   TimeUnitStack getTimeUnitStack();
 
-  // Get the currently opened project
+  /**
+   * Get the currently opened project.
+   *
+   * Deprecated because any parts of the code that depend on a Project should just get that project as a parameter.
+   * This function was introduced to ease the refactoring of the GanttProject God class.
+   */
+  @Deprecated
   public IProject getCurrentProject();
 
   // main app logic

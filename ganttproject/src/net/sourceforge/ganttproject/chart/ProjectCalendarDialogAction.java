@@ -20,20 +20,18 @@ package net.sourceforge.ganttproject.chart;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.util.logging.Level;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
-import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.CancelAction;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.ProjectCalendarOptionPageProvider;
-import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
+import net.sourceforge.ganttproject.project.IProject;
 
 /**
  * This action shows a project calendar settings page.
@@ -42,12 +40,15 @@ import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
  */
 public class ProjectCalendarDialogAction extends GPAction {
 
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+
+  private final IProject myProject;
 
   private final UIFacade myUIFacade;
 
-  public ProjectCalendarDialogAction(IGanttProject project, UIFacade uiFacade) {
+  public ProjectCalendarDialogAction(IGanttProject app, IProject project, UIFacade uiFacade) {
     super("editPublicHolidays");
+    myApp = app;
     myProject = project;
     myUIFacade = uiFacade;
   }
@@ -55,7 +56,7 @@ public class ProjectCalendarDialogAction extends GPAction {
   @Override
   public void actionPerformed(ActionEvent arg0) {
     final ProjectCalendarOptionPageProvider configPage = new ProjectCalendarOptionPageProvider();
-    configPage.init(myProject, myUIFacade);
+    configPage.init(myApp, myProject, myUIFacade);
     JPanel panel = new JPanel(new BorderLayout());
     panel.add(configPage.buildPageComponent(), BorderLayout.CENTER);
     panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));

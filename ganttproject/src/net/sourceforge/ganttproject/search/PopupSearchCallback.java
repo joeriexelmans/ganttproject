@@ -21,6 +21,7 @@ package net.sourceforge.ganttproject.search;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
+import net.sourceforge.ganttproject.project.IProject;
 import org.jdesktop.swingx.JXList;
 
 import javax.swing.*;
@@ -43,7 +44,7 @@ public class PopupSearchCallback implements SearchDialog.SearchCallback {
   private Runnable onSelect;
   private Runnable onDismiss;
 
-  public PopupSearchCallback(IGanttProject project, UIFacade uiFacade, JComponent invoker, Rectangle searchBoxPosition) {
+  public PopupSearchCallback(IProject project, UIFacade uiFacade, JComponent invoker, Rectangle searchBoxPosition) {
     myDialog = new SearchDialog(project, uiFacade);
     myInvoker = invoker;
     mySearchBoxPosition = searchBoxPosition;

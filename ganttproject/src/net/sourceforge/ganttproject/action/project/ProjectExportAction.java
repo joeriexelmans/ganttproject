@@ -23,6 +23,7 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.export.ExportFileWizardImpl;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.projectwizard.WizardImpl;
+import net.sourceforge.ganttproject.project.IProject;
 import org.osgi.service.prefs.Preferences;
 
 import java.awt.event.ActionEvent;
@@ -31,14 +32,17 @@ import java.awt.event.ActionEvent;
  * @author bard
  */
 public class ProjectExportAction extends GPAction {
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+
+  private final IProject myProject;
 
   private final UIFacade myUIFacade;
 
   private Preferences myPluginPrerences;
 
-  public ProjectExportAction(UIFacade uiFacade, IGanttProject project, Preferences pluginPrerences) {
+  public ProjectExportAction(UIFacade uiFacade, IGanttProject app, IProject project, Preferences pluginPrerences) {
     super("project.export");
+    myApp = app;
     myProject = project;
     myUIFacade = uiFacade;
     myPluginPrerences = pluginPrerences;
@@ -54,7 +58,7 @@ public class ProjectExportAction extends GPAction {
     if (calledFromAppleScreenMenu(e)) {
       return;
     }
-    WizardImpl wizard = new ExportFileWizardImpl(myUIFacade, myProject, myPluginPrerences);
+    WizardImpl wizard = new ExportFileWizardImpl(myUIFacade, myApp, myProject, myPluginPrerences);
     wizard.show();
   }
 }

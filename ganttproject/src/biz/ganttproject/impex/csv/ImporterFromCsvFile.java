@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.importer.BufferProject;
 import net.sourceforge.ganttproject.importer.ImporterBase;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.util.collect.Pair;
 
@@ -65,14 +66,15 @@ public class ImporterFromCsvFile extends ImporterBase {
   @Override
   public void run() {
     File selectedFile = getFile();
-    BufferProject bufferProject = new BufferProject(getProject());
+    IProject currentProject = getApp().getCurrentProject();
+    BufferProject bufferProject = new BufferProject(currentProject);
     GanttCSVOpen opener = new GanttCSVOpen(selectedFile, bufferProject.getTaskManager(),
         bufferProject.getHumanResourceManager(), bufferProject.getRoleManager(),
         GPTimeUnitStack.getInstance());
-    opener.setOptions(((GanttProject)getProject()).getGanttOptions().getCSVOptions());
+    opener.setOptions(((GanttProject) getApp()).getGanttOptions().getCSVOptions());
     try {
       List<Pair<Level, String>> errors = opener.load();
-      ImporterFromGanttFile.importBufferProject(getProject(), bufferProject, getUiFacade(), myMergeResourcesOption, null);
+      ImporterFromGanttFile.importBufferProject(currentProject, bufferProject, getUiFacade(), myMergeResourcesOption, null);
       reportErrors(errors, "CSV");
     } catch (IOException e) {
       GPLogger.log(e);

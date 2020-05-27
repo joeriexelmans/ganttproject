@@ -32,6 +32,7 @@ import net.sourceforge.ganttproject.gui.projectwizard.WizardImpl;
 import net.sourceforge.ganttproject.gui.projectwizard.WizardPage;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.plugins.PluginManager;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.wizard.AbstractWizard;
 
 /**
@@ -42,11 +43,11 @@ public class ImportFileWizardImpl extends AbstractWizard {
 
   private static GanttLanguage i18n = GanttLanguage.getInstance();
 
-  public ImportFileWizardImpl(UIFacade uiFacade, IGanttProject project, GanttOptions options) {
+  public ImportFileWizardImpl(UIFacade uiFacade, IGanttProject app, IProject project, GanttOptions options) {
     super(uiFacade, i18n.getText("importWizard.dialog.title"),
         new ImporterChooserPage(ourImporters, uiFacade, options.getPluginPreferences().node("/instance/net.sourceforge.ganttproject/import")));
     for (Importer importer : ourImporters) {
-      importer.setContext(project, uiFacade, options.getPluginPreferences());
+      importer.setContext(app, project, uiFacade, options.getPluginPreferences());
     }
   }
 

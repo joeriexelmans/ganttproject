@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.action.project;
 
 import net.sourceforge.ganttproject.GanttProject;
+import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.importer.ImportFileWizardImpl;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.wizard.AbstractWizard;
 
 import java.awt.event.ActionEvent;
@@ -33,11 +35,14 @@ public class ProjectImportAction extends GPAction {
 
   private final UIFacade myUIFacade;
 
-  private final GanttProject myProject;
+  private final GanttProject myApp;
 
-  public ProjectImportAction(UIFacade uiFacade, GanttProject project) {
+  private final IProject myProject;
+
+  public ProjectImportAction(UIFacade uiFacade, GanttProject app, IProject project) {
     super("project.import");
     myUIFacade = uiFacade;
+    myApp = app;
     myProject = project;
   }
 
@@ -46,7 +51,7 @@ public class ProjectImportAction extends GPAction {
     if (calledFromAppleScreenMenu(e)) {
       return;
     }
-    AbstractWizard wizard = new ImportFileWizardImpl(myUIFacade, myProject, myProject.getGanttOptions());
+    AbstractWizard wizard = new ImportFileWizardImpl(myUIFacade, myApp, myProject, myApp.getGanttOptions());
     wizard.show();
   }
 

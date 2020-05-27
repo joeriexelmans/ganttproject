@@ -38,7 +38,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEvent;
 import com.itextpdf.text.pdf.PdfWriter;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.export.ExportException;
 import net.sourceforge.ganttproject.export.ExporterBase;
@@ -48,6 +47,7 @@ import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder.I18N;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.LanguageOption;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.task.Task;
@@ -90,7 +90,7 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
   private static final BaseColor SORTAVALA_GREEN = new BaseColor(0x66, 0x99, 0x99);
   private Document myDoc;
   private PdfWriter myWriter;
-  private IGanttProject myProject;
+  private IProject myProject;
   private UIFacade myUIFacade;
   private String myLeftSubcolontitle;
   private final BooleanOption myShowNotesOption = new DefaultBooleanOption("export.itext.showNotes");
@@ -215,7 +215,7 @@ class ThemeImpl extends StylesheetImpl implements PdfPageEvent, ITextStylesheet 
     return value == null ? key : value;
   }
 
-  void run(IGanttProject project, UIFacade facade, OutputStream out) throws ExportException {
+  void run(IProject project, UIFacade facade, OutputStream out) throws ExportException {
     myProject = project;
     myUIFacade = facade;
     Rectangle pageSize = PageSize.getRectangle(myPageSizeOption.getValue());

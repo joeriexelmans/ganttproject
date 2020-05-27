@@ -44,7 +44,7 @@ public class WebDavOptionPageProvider extends OptionPageProviderBase {
 
   @Override
   public Component buildPageComponent() {
-    WebDavStorageImpl webdavStorage = (WebDavStorageImpl) getProject().getDocumentManager().getWebDavStorageUi();
+    WebDavStorageImpl webdavStorage = (WebDavStorageImpl) getApp().getDocumentManager().getWebDavStorageUi();
     final ListOption<WebDavServerDescriptor> serversOption = webdavStorage.getServersOption();
     final EditableList<WebDavServerDescriptor> serverList = new EditableList<WebDavServerDescriptor>(
         Lists.newArrayList(serversOption.getValues()), Collections.EMPTY_LIST) {

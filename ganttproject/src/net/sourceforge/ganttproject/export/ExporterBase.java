@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -45,7 +46,7 @@ import net.sourceforge.ganttproject.gui.zoom.ZoomManager.ZoomState;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 
 public abstract class ExporterBase implements Exporter {
-  private IGanttProject myProject;
+  private IProject myProject;
   private Chart myGanttChart;
   private Chart myResourceChart;
   private UIFacade myUIFacade;
@@ -58,7 +59,7 @@ public abstract class ExporterBase implements Exporter {
   static protected Object EXPORT_JOB_FAMILY = new String("Export job family");
 
   @Override
-  public void setContext(IGanttProject project, UIFacade uiFacade, Preferences prefs) {
+  public void setContext(IProject project, UIFacade uiFacade, Preferences prefs) {
     myGanttChart = uiFacade.getGanttChart();
     myResourceChart = uiFacade.getResourceChart();
     myProject = project;
@@ -84,7 +85,7 @@ public abstract class ExporterBase implements Exporter {
     return myUIFacade;
   }
 
-  public IGanttProject getProject() {
+  public IProject getProject() {
     return myProject;
   }
 

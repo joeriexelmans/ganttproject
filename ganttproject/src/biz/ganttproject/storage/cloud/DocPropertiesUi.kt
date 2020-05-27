@@ -344,7 +344,7 @@ class ProjectPropertiesPageProvider : OptionPageProviderBase("project.cloud") {
   }
 
   private fun buildScene(): Scene {
-    val onlineDocument = this.project.document.asOnlineDocument() ?: return buildNotOnlineDocumentScene()
+    val onlineDocument = this.app.document.asOnlineDocument() ?: return buildNotOnlineDocumentScene()
     if (onlineDocument is GPCloudDocument) {
       val docPropertiesUi = DocPropertiesUi(errorUi = {}, busyUi = {})
       val vboxBuilder = VBoxBuilder("dlg-lock").also {

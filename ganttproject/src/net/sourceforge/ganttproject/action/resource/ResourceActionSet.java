@@ -21,6 +21,7 @@ package net.sourceforge.ganttproject.action.resource;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.ResourceTreeTable;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.AssignmentContext;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceContext;
@@ -45,11 +46,11 @@ public class ResourceActionSet {
   private AbstractAction[] myActions;
 
   public ResourceActionSet(ResourceContext resourceContext, AssignmentContext assignmentContext,
-      GanttProject projectFrame, UIFacade uiFacade, ResourceTreeTable table) {
-    HumanResourceManager manager = projectFrame.getHumanResourceManager();
-    myResourceNewAction = new ResourceNewAction(manager, projectFrame.getRoleManager(), projectFrame.getTaskManager(), uiFacade);
+                           GanttProject app, IProject project, UIFacade uiFacade, ResourceTreeTable table) {
+    HumanResourceManager manager = project.getHumanResourceManager();
+    myResourceNewAction = new ResourceNewAction(manager, project.getRoleManager(), project.getTaskManager(), uiFacade);
     myResourceDeleteAction = new ResourceDeleteAction(manager, resourceContext, uiFacade);
-    myResourcePropertiesAction = new ResourcePropertiesAction(projectFrame, resourceContext, uiFacade);
+    myResourcePropertiesAction = new ResourcePropertiesAction(app, project, resourceContext, uiFacade);
     myResourceMoveUpAction = new ResourceMoveUpAction(table);
     myResourceMoveDownAction = new ResourceMoveDownAction(table);
     myResourceSendMailAction = new ResourceSendMailAction(table);

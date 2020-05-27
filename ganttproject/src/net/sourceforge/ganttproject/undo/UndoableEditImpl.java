@@ -88,8 +88,7 @@ class UndoableEditImpl extends AbstractUndoableEdit {
   }
 
   private void restoreDocument(Document document) throws IOException, DocumentException {
-    Document projectDocument = myManager.getProject().getDocument();
-    myManager.getProject().close();
+    myManager.getProject().reset();
     AlgorithmCollection algs = myManager.getProject().getTaskManager().getAlgorithmCollection();
     try {
       algs.getScheduler().setEnabled(false);
@@ -101,8 +100,6 @@ class UndoableEditImpl extends AbstractUndoableEdit {
       algs.getAdjustTaskBoundsAlgorithm().setEnabled(true);
       algs.getScheduler().setEnabled(true);
     }
-    myManager.getProject().setDocument(projectDocument);
-
   }
 
   @Override

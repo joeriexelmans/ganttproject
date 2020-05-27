@@ -42,6 +42,7 @@ import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.DocumentStorageUi;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -64,17 +65,19 @@ public class WebDavStorageImpl implements DocumentStorageUi {
   private final StringOption myPassword = new DefaultStringOption("password", "");
   private final StringOption myProxy = new DefaultStringOption("proxy", "");
   private final MiltonResourceFactory myWebDavFactory = new MiltonResourceFactory();
+  private final IGanttProject myApp;
+  private final IProject myProject;
   private final UIFacade myUiFacade;
-  private final IGanttProject myProject;
 
-  public WebDavStorageImpl(final IGanttProject project, UIFacade uiFacade) {
+  public WebDavStorageImpl(IGanttProject app, final IProject project, UIFacade uiFacade) {
+    myApp = app;
     myProject = project;
     myUiFacade = uiFacade;
-    project.addProjectEventListener(new ProjectEventListener.Stub() {
+    myApp.addProjectEventListener(new ProjectEventListener.Stub() {
       @Override
       public void projectClosed() {
-        if (myReleaseLockOption.isChecked() && project.getDocument() != null) {
-          project.getDocument().releaseLock();
+        if (myReleaseLockOption.isChecked() && myApp.getDocument() != null) {
+          myApp.getDocument().releaseLock();
         }
       }
     });
@@ -161,7 +164,7 @@ public class WebDavStorageImpl implements DocumentStorageUi {
       }
     }
     myWebDavFactory.clearCache();
-    return new GanttURLChooser(myProject, myUiFacade, myServers, currentUri, myUsername, myPassword, getWebDavLockTimeoutOption(), getWebDavReleaseLockOption(), myWebDavFactory);
+    return new GanttURLChooser(myApp, myProject, myUiFacade, myServers, currentUri, myUsername, myPassword, getWebDavLockTimeoutOption(), getWebDavReleaseLockOption(), myWebDavFactory);
   }
 
   private OkAction createNoLockAction(String key, final GanttURLChooser chooser, final DocumentReceiver receiver) {

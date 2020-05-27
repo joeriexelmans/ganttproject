@@ -53,7 +53,7 @@ public class NetworkOptionPageProvider extends OptionPageProviderBase {
 
   @Override
   public GPOptionGroup[] getOptionGroups() {
-    return new GPOptionGroup[] {getProject().getDocumentManager().getFTPOptions()};
+    return new GPOptionGroup[] {getApp().getDocumentManager().getFTPOptions()};
   }
 
   @Override
@@ -64,7 +64,7 @@ public class NetworkOptionPageProvider extends OptionPageProviderBase {
   @Override
   public Component buildPageComponent() {
     OptionsPageBuilder builder = new OptionsPageBuilder();
-    final GPOptionGroup ftpGroup = getProject().getDocumentManager().getNetworkOptionGroups()[0];
+    final GPOptionGroup ftpGroup = getApp().getDocumentManager().getNetworkOptionGroups()[0];
     ftpGroup.setTitled(false);
     I18N i18n = new OptionsPageBuilder.I18N();
 
@@ -91,7 +91,7 @@ public class NetworkOptionPageProvider extends OptionPageProviderBase {
       public void actionPerformed(ActionEvent e) {
         WebPublisher.Ftp ftp = new WebPublisher.Ftp();
         try {
-          IStatus status = ftp.loginAndChangedir(getProject().getDocumentManager().getFTPOptions());
+          IStatus status = ftp.loginAndChangedir(getApp().getDocumentManager().getFTPOptions());
           if (status.isOK()) {
             getUiFacade().showOptionDialog(JOptionPane.INFORMATION_MESSAGE,
                 GanttLanguage.getInstance().getText("successFTPConnection"),

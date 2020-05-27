@@ -22,7 +22,6 @@ import biz.ganttproject.core.calendar.ImportCalendarOption;
 import biz.ganttproject.core.option.ChangeValueEvent;
 import biz.ganttproject.core.option.ChangeValueListener;
 import biz.ganttproject.core.option.GPOption;
-import biz.ganttproject.core.table.ColumnList;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.IGanttProject;
@@ -40,11 +39,8 @@ import net.sourceforge.ganttproject.task.TaskManagerImpl;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmCollection;
 import org.osgi.service.prefs.Preferences;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class ImporterFromGanttFile extends ImporterBase {
@@ -70,8 +66,8 @@ public class ImporterFromGanttFile extends ImporterBase {
   }
 
   @Override
-  public void setContext(IGanttProject project, UIFacade uiFacade, Preferences preferences) {
-    super.setContext(project, uiFacade, preferences);
+  public void setContext(IGanttProject app, IProject project, UIFacade uiFacade, Preferences preferences) {
+    super.setContext(app, project, uiFacade, preferences);
     final Preferences node = preferences.node("/instance/net.sourceforge.ganttproject/import");
     myMergeResourcesOption.lock();
     myMergeResourcesOption.loadPersistentValue(node.get(myMergeResourcesOption.getID(),
@@ -93,32 +89,28 @@ public class ImporterFromGanttFile extends ImporterBase {
     getUiFacade().getUndoManager().undoableEdit("Import", new Runnable() {
       @Override
       public void run() {
-        ImporterFromGanttFile.this.run(selectedFile, targetProject, bufferProject);
+        try {
+          Document document = getApp().getDocumentManager().getDocument(selectedFile.getAbsolutePath());
+          AlgorithmCollection algs = bufferProject.getTaskManager().getAlgorithmCollection();
+          try {
+            algs.getScheduler().setEnabled(false);
+            algs.getRecalculateTaskScheduleAlgorithm().setEnabled(false);
+            algs.getAdjustTaskBoundsAlgorithm().setEnabled(false);
+            document.read(bufferProject);
+          } finally {
+            algs.getRecalculateTaskScheduleAlgorithm().setEnabled(true);
+            algs.getAdjustTaskBoundsAlgorithm().setEnabled(true);
+            algs.getScheduler().setEnabled(true);
+          }
+
+          importBufferProject(targetProject, bufferProject, getUiFacade(), myMergeResourcesOption, myImportCalendarOption);
+        } catch (DocumentException e) {
+          getUiFacade().showErrorDialog(e);
+        } catch (IOException e) {
+          getUiFacade().showErrorDialog(e);
+        }
       }
     });
-  }
-
-  private void run(File selectedFile, IProject targetProject, BufferProject bufferProject) {
-    try {
-      Document document = getProject().getDocumentManager().getDocument(selectedFile.getAbsolutePath());
-      AlgorithmCollection algs = getProject().getTaskManager().getAlgorithmCollection();
-      try {
-        algs.getScheduler().setEnabled(false);
-        algs.getRecalculateTaskScheduleAlgorithm().setEnabled(false);
-        algs.getAdjustTaskBoundsAlgorithm().setEnabled(false);
-        document.read(bufferProject);
-      } finally {
-        algs.getRecalculateTaskScheduleAlgorithm().setEnabled(true);
-        algs.getAdjustTaskBoundsAlgorithm().setEnabled(true);
-        algs.getScheduler().setEnabled(true);
-      }
-
-      importBufferProject(targetProject, bufferProject, getUiFacade(), myMergeResourcesOption, myImportCalendarOption);
-    } catch (DocumentException e) {
-      getUiFacade().showErrorDialog(e);
-    } catch (IOException e) {
-      getUiFacade().showErrorDialog(e);
-    }
   }
 
   private BufferProject createBufferProject(final IProject targetProject, final UIFacade uiFacade) {

@@ -37,17 +37,20 @@ import net.sourceforge.ganttproject.chart.item.TaskProgressChartItem;
 import net.sourceforge.ganttproject.chart.mouse.MouseMotionListenerBase;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.Task;
 
 class MouseMotionListenerImpl extends MouseMotionListenerBase {
   private final ChartComponentBase myChartComponent;
   private GanttChartController myChartController;
+  private final IProject myProject;
 
   public MouseMotionListenerImpl(GanttChartController chartImplementation, ChartModelImpl chartModel,
-      UIFacade uiFacade, ChartComponentBase chartComponent) {
+                                 IProject project, UIFacade uiFacade, ChartComponentBase chartComponent) {
     super(uiFacade, chartImplementation);
     myChartController = chartImplementation;
     myChartComponent = chartComponent;
+    myProject = project;
   }
 
   // Move the move on the area
@@ -102,6 +105,6 @@ class MouseMotionListenerImpl extends MouseMotionListenerBase {
   }
 
   private CalendarEvent findCalendarEvent(Date date) {
-    return myChartComponent.getProject().getActiveCalendar().getEvent(date);
+    return myProject.getActiveCalendar().getEvent(date);
   }
 }

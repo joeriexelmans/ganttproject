@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.scroll.*;
 import net.sourceforge.ganttproject.chart.TimelineChart;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -32,7 +33,6 @@ import java.awt.*;
 
 public class NavigationPanel {
   private final TimelineChart myChart;
-  private final IGanttProject myProject;
 
   private final AbstractAction[] myScrollActions;
   private final AbstractAction myScrollBackAction;
@@ -40,15 +40,14 @@ public class NavigationPanel {
   private final IntegerOption myDpiOption;
   private final GPOption<String> myLafOption;
 
-  public NavigationPanel(IGanttProject project, TimelineChart chart, UIFacade uiFacade) {
-    myProject = project;
+  public NavigationPanel(IProject project, TimelineChart chart, UIFacade uiFacade) {
     myChart = chart;
-    myScrollActions = new AbstractAction[] { new ScrollToStartAction(myProject, myChart),
-        new ScrollToTodayAction(myChart), new ScrollToEndAction(myProject, myChart),
+    myScrollActions = new AbstractAction[] { new ScrollToStartAction(project, myChart),
+        new ScrollToTodayAction(myChart), new ScrollToEndAction(project, myChart),
         new ScrollToSelectionAction(uiFacade, myChart) };
-    myScrollBackAction = new ScrollTimeIntervalAction("scroll.back", -1, myProject.getTaskManager(), chart.getModel(),
+    myScrollBackAction = new ScrollTimeIntervalAction("scroll.back", -1, project.getTaskManager(), chart.getModel(),
         uiFacade.getScrollingManager());
-    myScrollForwardAction = new ScrollTimeIntervalAction("scroll.forward", 1, myProject.getTaskManager(),
+    myScrollForwardAction = new ScrollTimeIntervalAction("scroll.forward", 1, project.getTaskManager(),
         chart.getModel(), uiFacade.getScrollingManager());
     myDpiOption = uiFacade.getDpiOption();
     myLafOption = uiFacade.getLafOption();

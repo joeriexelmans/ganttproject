@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.swing.filechooser.FileFilter;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.Preferences;
@@ -45,13 +46,16 @@ class FileChooserPage extends FileChooserPageBase {
 
   private final State myState;
 
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+
+  private final IProject myProject;
 
   private final GPOptionGroup myWebPublishingGroup;
 
-  FileChooserPage(State state, IGanttProject project, WizardImpl wizardImpl, Preferences prefs) {
+  FileChooserPage(State state, IGanttProject app, IProject project, WizardImpl wizardImpl, Preferences prefs) {
     super(wizardImpl, prefs, false);
     myState = state;
+    myApp = app;
     myProject = project;
     myWebPublishingGroup = new GPOptionGroup("exporter.webPublishing", new GPOption[] { state.getPublishInWebOption() });
     myWebPublishingGroup.setTitled(false);
@@ -71,7 +75,7 @@ class FileChooserPage extends FileChooserPageBase {
   protected void loadPreferences() {
     super.loadPreferences();
     if (getPreferences().get(PREF_SELECTED_FILE, null) == null) {
-      getChooser().setFile(proposeOutputFile(myProject, myState.getExporter()));
+      getChooser().setFile(proposeOutputFile(myApp, myProject, myState.getExporter()));
     } else {
       String proposedExtension = myState.getExporter().proposeFileExtension();
       if (proposedExtension != null) {
@@ -141,14 +145,14 @@ class FileChooserPage extends FileChooserPageBase {
     return customUI == null ? super.createSecondaryOptionsPanel() : customUI;
   }
 
-  static File proposeOutputFile(IGanttProject project, Exporter exporter) {
+  static File proposeOutputFile(IGanttProject app, IProject project, Exporter exporter) {
     String proposedExtension = exporter.proposeFileExtension();
     if (proposedExtension == null) {
       return null;
     }
 
     File result = null;
-    Document projectDocument = project.getDocument();
+    Document projectDocument = app.getDocument();
     if (projectDocument != null) {
       File localFile = new File(projectDocument.getFilePath());
       if (localFile.exists()) {

@@ -117,7 +117,7 @@ import java.util.regex.Pattern;
  *  <li> The logical state of the main application (path of currently opened document, dirty/clean, ...) </li>
  *  <li> Ownership of other global interests (DocumentManager, UndoManager, DocumentsMRU, ...) </li>
  */
-public class GanttProject extends JFrame implements IGanttProject, IProject, ResourceListener, GanttLanguage.Listener {
+public class GanttProject extends JFrame implements IGanttProject, ResourceListener, GanttLanguage.Listener {
   // Static members
   private final static GanttLanguage language = GanttLanguage.getInstance();
 
@@ -171,40 +171,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   public GanttProject(boolean isOnlyViewer) {
     super("GanttProject");
 
-    statusBar = new GanttStatusBar(this);
-    myTabPane = new GanttTabbedPane();
-    myContentPaneBuilder = new ContentPaneBuilder(myTabPane, statusBar);
-
-    myTimeUnitStack = GPTimeUnitStack.getInstance();
-    NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
-    myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, this);
-    GPLogger.setUIFacade(myUIFacade);
-    myDocumentManager = new DocumentCreator(this, myUIFacade, myParserFactory) {
-      @Override
-      protected ColumnList getTaskVisibleFields() {
-        return tree.getVisibleFields();
-      }
-      @Override
-      protected ColumnList getResourceVisibleFields() {
-        return resp.getVisibleFields();
-      }
-    };
-    myUndoManager = new UndoManagerImpl(this, null, myDocumentManager) {
-      @Override
-      protected ParserFactory getParserFactory() {
-        return myParserFactory;
-      }
-    };
-    myViewManager = new ViewManagerImpl(this, myUIFacade, myTabPane, myUndoManager);
-    myMRU = new DocumentsMRU(5);
-    myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myMRU, myUndoManager);
-    myRssChecker = new RssFeedChecker((GPTimeUnitStack) getTimeUnitStack(), myUIFacade);
-    myUIFacade.addOptions(myRssChecker.getUiOptions());
-
-    System.err.println("Creating main frame...");
-    ToolTipManager.sharedInstance().setInitialDelay(200);
-    ToolTipManager.sharedInstance().setDismissDelay(60000);
-
     myProject = new Project(() -> {
       if (myFacadeInvalidator == null) {
         return TaskContainmentHierarchyFacade.STUB;
@@ -238,6 +204,36 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
         return myUIFacade.getNotificationManager();
       }
     });
+    myProject.onReset(() -> { fireProjectClosed(); });
+
+    statusBar = new GanttStatusBar(this);
+    myTabPane = new GanttTabbedPane();
+    myContentPaneBuilder = new ContentPaneBuilder(myTabPane, statusBar);
+
+    myTimeUnitStack = GPTimeUnitStack.getInstance();
+    NotificationManagerImpl notificationManager = new NotificationManagerImpl(myContentPaneBuilder.getAnimationHost());
+    myUIFacade = new UIFacadeImpl(this, statusBar, notificationManager, this, myProject);
+    GPLogger.setUIFacade(myUIFacade);
+    myDocumentManager = new DocumentCreator(this, myProject, myUIFacade, myParserFactory) {
+      @Override
+      protected ColumnList getTaskVisibleFields() {
+        return tree.getVisibleFields();
+      }
+      @Override
+      protected ColumnList getResourceVisibleFields() {
+        return resp.getVisibleFields();
+      }
+    };
+    myUndoManager = new UndoManagerImpl(myProject, myDocumentManager);
+    myViewManager = new ViewManagerImpl(this, myProject, myUIFacade, myTabPane, myUndoManager);
+    myMRU = new DocumentsMRU(5);
+    myProjectUIFacade = new ProjectUIFacadeImpl(myUIFacade, myDocumentManager, myMRU, myUndoManager);
+    myRssChecker = new RssFeedChecker((GPTimeUnitStack) getTimeUnitStack(), myUIFacade);
+    myUIFacade.addOptions(myRssChecker.getUiOptions());
+
+    System.err.println("Creating main frame...");
+    ToolTipManager.sharedInstance().setInitialDelay(200);
+    ToolTipManager.sharedInstance().setDismissDelay(60000);
 
     myProject.prjinfos.addListener(new InvalidationListener() {
       @Override
@@ -272,12 +268,12 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
 
-    resp = new ResourceTreePanel(this, myUIFacade);
+    resp = new ResourceTreePanel(this, myProject, myUIFacade);
     resp.init();
     myRowHeightAligners.add(resp.getRowHeightAligner());
     myProject.hrManager.addListener(resp);
 
-    tree = new TaskTreePanel(this, myProject.taskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
+    tree = new TaskTreePanel(this, myProject, myProject.taskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);
     this.addProjectEventListener(myFacadeInvalidator);
     tree.init();
@@ -322,13 +318,13 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     mruMenu.setIcon(new ImageIcon(getClass().getResource("/icons/recent_16.gif")));
     myMRU.addListener(mruMenu);
 
-    myProjectMenu = new ProjectMenu(this, myMRU, "project");
+    myProjectMenu = new ProjectMenu(this, myProject, myMRU, "project");
     bar.add(myProjectMenu);
 
-    myEditMenu = new EditMenu(this, myUIFacade, myViewManager, () -> mySearchUi.requestFocus(), "edit");
+    myEditMenu = new EditMenu(this, myProject, myUIFacade, myViewManager, () -> mySearchUi.requestFocus(), "edit");
     bar.add(myEditMenu);
 
-    ViewMenu viewMenu = new ViewMenu(this, myViewManager, myUIFacade.getDpiOption(), myUIFacade.getChartFontOption(), "view");
+    ViewMenu viewMenu = new ViewMenu(myProject, myViewManager, myUIFacade.getDpiOption(), myUIFacade.getChartFontOption(), "view");
     bar.add(viewMenu);
 
     {
@@ -350,12 +346,12 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     bar.add(helpMenu.createMenu());
 
     System.err.println("4. creating views...");
-    myGanttChartTabContent = new GanttChartTabContentPanel(this, myUIFacade, tree, tree.area.getJComponent(),
+    myGanttChartTabContent = new GanttChartTabContentPanel(this, myProject, myUIFacade, tree, tree.area.getJComponent(),
         myUIConfiguration);
     myViewManager.createView(myGanttChartTabContent, new ImageIcon(getClass().getResource("/icons/tasks_16.gif")));
     myViewManager.toggleVisible(myGanttChartTabContent);
 
-    myResourceChartTabContent = new ResourceChartTabContentPanel(this, myUIFacade, resp,
+    myResourceChartTabContent = new ResourceChartTabContentPanel(myProject, myUIFacade, resp,
         resp.area);
     myViewManager.createView(myResourceChartTabContent, new ImageIcon(getClass().getResource("/icons/res_16.gif")));
     myViewManager.toggleVisible(myResourceChartTabContent);
@@ -442,7 +438,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
     System.err.println("8. finalizing...");
     // applyComponentOrientation(GanttLanguage.getInstance()
     // .getComponentOrientation());
-    myProject.taskManager.addTaskListener(new TaskModelModificationListener(this, myUIFacade));
+    myProject.taskManager.addTaskListener(new TaskModelModificationListener(this, myProject.taskManager, myUIFacade));
     addMouseListenerToAllContainer(this.getComponents());
 
     // Add globally available actions/key strokes
@@ -645,7 +641,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
         .addWhitespace()
         .addButton(myEditMenu.getUndoAction().asToolbarAction())
         .addButton(myEditMenu.getRedoAction().asToolbarAction());
-    mySearchUi = new FXSearchUi(this, myUIFacade);
+    mySearchUi = new FXSearchUi(myProject, myUIFacade);
     builder.addSearchBox(mySearchUi);
 
     return builder.build();
@@ -654,17 +650,12 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   void doShow() {
     setVisible(true);
     GPLogger.log(String.format("Bounds after setVisible: %s", getBounds()));
-    DesktopIntegration.setup(GanttProject.this);
+    DesktopIntegration.setup(GanttProject.this, myProject);
     getActiveChart().reset();
     myRssChecker.setOptionsVersion(options.getVersion());
     myRssChecker.setUpdater(myUpdater);
     myRssChecker.run();
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-  }
-
-  @Override
-  public ArrayList<GanttPreviousState> getBaselines() {
-    return myProject.baseLines;
   }
 
   /**
@@ -701,13 +692,13 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
    * Create a new project
    */
   public void newProject() {
-    myProjectUIFacade.createProjectWizard(this);
+    myProjectUIFacade.createProjectWizard(this, myProject);
     fireProjectCreated();
   }
 
   @Override
   public void open(Document document) throws IOException, DocumentException {
-    document.read(this);
+    document.read(myProject);
     myMRU.add(document.getPath(), true);
     myObservableDocument.set(document);
     setTitle(language.getText("appliTitle") + " [" + document.getFileName() + "]");
@@ -748,7 +739,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       if (Pattern.matches(".*(" + importer.getFileNamePattern() + ")$", document.getFilePath())) {
         try {
           myProject.taskManager.setEventsEnabled(false);
-          importer.setContext(this, myUIFacade, options.getPluginPreferences());
+          importer.setContext(this, myProject, myUIFacade, options.getPluginPreferences());
           importer.setFile(new File(document.getFilePath()));
           importer.run();
           success = true;
@@ -810,7 +801,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
       options.setUIConfiguration(myUIConfiguration);
       options.save();
       if (myProjectUIFacade.saveChangesDialog(this)) {
-        this.close();
+        close();
         setVisible(false);
         dispose();
         if (ourQuitCallback != null) {
@@ -931,35 +922,10 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
 
   // ///////////////////////////////////////////////////////
   // IGanttProject implementation
-  @Override
-  public HumanResourceManager getHumanResourceManager() {
-    return myProject.hrManager;
-  }
-
-  @Override
-  public TaskManager getTaskManager() {
-    return myProject.taskManager;
-  }
-
-  @Override
-  public RoleManager getRoleManager() {
-    return myProject.roleManager;
-  }
-
-  @Override
-  public PrjInfos getPrjInfos() {
-    return myProject.prjinfos;
-  }
-
-  @Override
-  public CustomPropertyManager getTaskCustomPropertyManager() {
-    return myProject.taskManager.getCustomPropertyManager();
-  }
 
   @Override
   public IProject getCurrentProject() {
-    // TODO: instead return a 'Project' object
-    return this;
+    return myProject;
   }
 
   @Override
@@ -970,11 +936,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   @Override
   public void setDocument(Document document) {
     myObservableDocument.set(document);
-  }
-
-  @Override
-  public GPCalendarCalc getActiveCalendar() {
-    return myProject.calendar;
   }
 
   @Override
@@ -1021,7 +982,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   @Override
   public void close() {
     myProject.reset();
-    fireProjectClosed();
     myObservableDocument.set(null);
     myFacadeInvalidator.projectClosed();
   }
@@ -1096,7 +1056,7 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   private class ParserFactoryImpl implements ParserFactory {
     @Override
     public GPSaver newSaver() {
-      return new GanttXMLSaver(GanttProject.this, tree.area, myUIFacade);
+      return new GanttXMLSaver(myProject, tree.area, myUIFacade);
     }
   }
 
@@ -1233,11 +1193,6 @@ public class GanttProject extends JFrame implements IGanttProject, IProject, Res
   @Override
   public TimeUnitStack getTimeUnitStack() {
     return myTimeUnitStack;
-  }
-
-  @Override
-  public CustomPropertyManager getResourceCustomPropertyManager() {
-    return myProject.hrCustomPropertyManager;
   }
 
   protected void setUpdater(Updater updater) {

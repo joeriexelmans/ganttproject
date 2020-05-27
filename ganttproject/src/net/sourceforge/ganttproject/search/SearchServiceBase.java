@@ -23,6 +23,7 @@ import java.util.List;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.TreeUiFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 
 /**
  * Base class for task and resource search services.
@@ -36,7 +37,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
  */
 abstract class SearchServiceBase<SR extends SearchResult<SO>, SO> implements SearchService<SR, SO> {
   private final int myViewIndex;
-  private IGanttProject myProject;
+  private IProject myProject;
   private TreeUiFacade<SO> myTreeUiFacade;
   private UIFacade myUiFacade;
 
@@ -44,7 +45,7 @@ abstract class SearchServiceBase<SR extends SearchResult<SO>, SO> implements Sea
     myViewIndex = viewIndex;
   }
 
-  protected void init(IGanttProject project, TreeUiFacade<SO> treeUiFacade, UIFacade uiFacade) {
+  protected void init(IProject project, TreeUiFacade<SO> treeUiFacade, UIFacade uiFacade) {
     myProject = project;
     myTreeUiFacade = treeUiFacade;
     myUiFacade = uiFacade;
@@ -54,7 +55,7 @@ abstract class SearchServiceBase<SR extends SearchResult<SO>, SO> implements Sea
     return doc != null && doc.toLowerCase().contains(query);
   }
 
-  protected IGanttProject getProject() {
+  protected IProject getProject() {
     return myProject;
   }
 

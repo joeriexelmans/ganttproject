@@ -19,10 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject.action.edit;
 
 import net.sourceforge.ganttproject.GanttProject;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.view.GPViewManager;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
 
 import javax.swing.*;
@@ -31,9 +31,9 @@ public class EditMenu extends JMenu {
   private final UndoAction myUndoAction;
   private final RedoAction myRedoAction;
 
-  public EditMenu(GanttProject project, UIFacade uiFacade, GPViewManager viewManager, Runnable searchUi, String key) {
+  public EditMenu(GanttProject app, IProject project, UIFacade uiFacade, GPViewManager viewManager, Runnable searchUi, String key) {
     super(GPAction.createVoidAction(key));
-    final GPUndoManager undoManager = project.getUndoManager();
+    final GPUndoManager undoManager = app.getUndoManager();
     myUndoAction = new UndoAction(undoManager);
     myRedoAction = new RedoAction(undoManager);
 
@@ -47,7 +47,7 @@ public class EditMenu extends JMenu {
     add(viewManager.getCopyAction());
     add(viewManager.getPasteAction());
     addSeparator();
-    add(new SettingsDialogAction(project, uiFacade));
+    add(new SettingsDialogAction(app, project, uiFacade));
     setToolTipText(null);
   }
 

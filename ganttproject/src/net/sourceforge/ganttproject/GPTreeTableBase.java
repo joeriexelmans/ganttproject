@@ -33,6 +33,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.GanttLanguage.Event;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.CustomColumn;
 import net.sourceforge.ganttproject.task.CustomPropertyEvent;
 import net.sourceforge.ganttproject.task.event.TaskDependencyEvent;
@@ -85,7 +86,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class GPTreeTableBase extends JXTreeTable implements CustomPropertyListener {
-  private final IGanttProject myProject;
+  protected final IGanttProject myApp;
+  protected final IProject myProject;
   private final UIFacade myUiFacade;
   private final TableHeaderUiFacadeImpl myTableHeaderFacade = new TableHeaderUiFacadeImpl();
   private final CustomPropertyManager myCustomPropertyManager;
@@ -546,10 +548,6 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
 
   }
 
-  protected IGanttProject getProject() {
-    return myProject;
-  }
-
   private boolean isStartEditingEvent(KeyEvent e, boolean includeCharTyping) {
     boolean result = e.getKeyCode() == KeyEvent.VK_F2
         || e.getKeyCode() == KeyEvent.VK_INSERT
@@ -609,8 +607,7 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
     }
   }
 
-  protected GPTreeTableBase(IGanttProject project, UIFacade uiFacade, CustomPropertyManager customPropertyManager,
-                            DefaultTreeTableModel model) {
+  protected GPTreeTableBase(IGanttProject app, IProject project, UIFacade uiFacade, CustomPropertyManager customPropertyManager, DefaultTreeTableModel model) {
     super(model);
     setTableHeader(new JTableHeader(getColumnModel()) {
       @Override
@@ -619,9 +616,8 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
       }
     });
     myCustomPropertyManager = customPropertyManager;
-    myUiFacade = uiFacade;
-    myProject = project;
-    myProject.addProjectEventListener(new ProjectEventListener.Stub() {
+    myApp = app;
+    myApp.addProjectEventListener(new ProjectEventListener.Stub() {
       @Override
       public void projectClosed() {
         getTableHeaderUiFacade().clear();
@@ -637,6 +633,8 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
         onProjectCreated();
       }
     });
+    myProject = project;
+    myUiFacade = uiFacade;
     setAutoStartEditOnKeyStroke(true);
     setSurrendersFocusOnKeystroke(true);
   }
@@ -776,30 +774,30 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
       }
     }));
 
-    myProject.getTaskManager().addTaskListener(myRemoveOrderListener);
+    myApp.getCurrentProject().getTaskManager().addTaskListener(myRemoveOrderListener);
 
     getTable().getTableHeader().addMouseListener(new HeaderMouseListener(myCustomPropertyManager));
     getTable().getColumnModel().addColumnModelListener(new TableColumnModelListener() {
       @Override
       public void columnMoved(TableColumnModelEvent e) {
         if (e.getFromIndex() != e.getToIndex()) {
-          myProject.setModified();
+          myApp.setModified();
         }
       }
 
       @Override
       public void columnAdded(TableColumnModelEvent e) {
-        myProject.setModified();
+        myApp.setModified();
       }
 
       @Override
       public void columnRemoved(TableColumnModelEvent e) {
-        myProject.setModified();
+        myApp.setModified();
       }
 
       @Override
       public void columnMarginChanged(ChangeEvent e) {
-        myProject.setModified();
+        myApp.setModified();
       }
 
       @Override

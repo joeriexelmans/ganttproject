@@ -52,6 +52,7 @@ import net.sourceforge.ganttproject.document.webdav.WebDavStorageImpl
 import net.sourceforge.ganttproject.filter.GanttXMLFileFilter
 import net.sourceforge.ganttproject.gui.projectwizard.NewProjectWizard
 import net.sourceforge.ganttproject.language.GanttLanguage
+import net.sourceforge.ganttproject.project.IProject
 import net.sourceforge.ganttproject.undo.GPUndoManager
 import org.eclipse.core.runtime.IStatus
 import java.awt.event.ActionEvent
@@ -252,7 +253,7 @@ class ProjectUIFacadeImpl(
   @Throws(IOException::class, DocumentException::class)
   override fun openProject(document: Document, project: IGanttProject) {
     try {
-      ProjectOpenStrategy(project, myUIFacade).use { strategy ->
+      ProjectOpenStrategy(project, project.currentProject, myUIFacade).use { strategy ->
         // Run coroutine which fetches document and wait until it sends the result to the channel.
         val job = GlobalScope.launch(Dispatchers.Main) {
           val successChannel = Channel<Document>()
@@ -303,12 +304,12 @@ class ProjectUIFacadeImpl(
     undoManager.die()
   }
 
-  override fun createProjectWizard(project: IGanttProject) {
-    if (!saveChangesDialog(project)) {
+  override fun createProjectWizard(app: IGanttProject, project: IProject) {
+    if (!saveChangesDialog(app)) {
       return
     }
     beforeClose()
-    project.close()
+    app.close()
     myUIFacade.setStatusText(i18n.getText("project.new.description"))
     val wizard = NewProjectWizard()
     wizard.createNewProject(project, myUIFacade)

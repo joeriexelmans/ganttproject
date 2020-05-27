@@ -44,6 +44,7 @@ import net.sourceforge.ganttproject.action.GPAction
 import net.sourceforge.ganttproject.action.OkAction
 import net.sourceforge.ganttproject.document.Document
 import net.sourceforge.ganttproject.language.GanttLanguage
+import net.sourceforge.ganttproject.project.IProject
 import net.sourceforge.ganttproject.task.TaskImpl
 import net.sourceforge.ganttproject.task.TaskManager
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmCollection
@@ -64,10 +65,11 @@ import kotlin.coroutines.suspendCoroutine
  *
  * @author bard
  */
-internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) : AutoCloseable {
+internal class ProjectOpenStrategy(app: IGanttProject, project: IProject, uiFacade: UIFacade) : AutoCloseable {
 
   private val myUiFacade: UIFacade = Preconditions.checkNotNull(uiFacade)
-  private val myProject: IGanttProject = Preconditions.checkNotNull(project)
+  private val myApp: IGanttProject = Preconditions.checkNotNull(app)
+  private val myProject: IProject = Preconditions.checkNotNull(project)
   private val myDiagnostics: ProjectOpenDiagnosticImpl
   private val myCloseables = Lists.newArrayList<AutoCloseable>()
   private val myEnableAlgorithmsCmd: AutoCloseable
@@ -225,7 +227,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
     myAlgs.adjustTaskBoundsAlgorithm.setEnabled(false)
     myAlgs.scheduler.setDiagnostic(myDiagnostics)
     try {
-      myProject.open(document)
+      myApp.open(document)
     } finally {
       myAlgs.scheduler.setDiagnostic(null)
     }
@@ -257,7 +259,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
           ProjectOpenStrategy.ConvertMilestones.UNKNOWN -> myJobs.add(Runnable {
             try {
               myProject.taskManager.algorithmCollection.scheduler.setDiagnostic(myDiagnostics)
-              tryPatchMilestones(myProject, taskManager)
+              tryPatchMilestones(myApp, taskManager)
             } finally {
               myProject.taskManager.algorithmCollection.scheduler.setDiagnostic(null)
             }
@@ -275,7 +277,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
 
     // Asks user what shall we do with milestones and updates milestones if user
     // decides to convert them. This code is executed by Step3.runUiTasks
-    private fun tryPatchMilestones(project: IGanttProject, taskManager: TaskManager) {
+    private fun tryPatchMilestones(app: IGanttProject, taskManager: TaskManager) {
       val buttonConvert = JRadioButton(i18n.getText("legacyMilestones.choice.convert"))
       val buttonKeep = JRadioButton(i18n.getText("legacyMilestones.choice.keep"))
       buttonConvert.isSelected = true
@@ -308,7 +310,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
             milestonesOption.selectedValue = if (buttonConvert.isSelected) ConvertMilestones.TRUE else ConvertMilestones.FALSE
           }
           adjustTasks(taskManager)
-          project.isModified = true
+          app.isModified = true
         }
       }), i18n.getText("legacyMilestones.title")).show()
     }
@@ -370,7 +372,7 @@ internal class ProjectOpenStrategy(project: IGanttProject, uiFacade: UIFacade) :
         }
       })
       if (myDiagnostics.myMessages.isEmpty() && myResetModifiedState) {
-        myJobs.add(Runnable { myProject.isModified = false })
+        myJobs.add(Runnable { myApp.isModified = false })
       }
       myJobs.add(Runnable {
         try {

@@ -57,7 +57,6 @@ public class GanttChartSelection extends ChartSelectionImpl implements Clipboard
   private final RetainRootsAlgorithm<DefaultMutableTreeTableNode> myRetainRootsAlgorithm = new RetainRootsAlgorithm<DefaultMutableTreeTableNode>();
   private final TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> myTree;
   private final TaskManager myTaskManager;
-  private final IGanttProject myProject;
 
   private ClipboardContents myClipboardContents;
 
@@ -69,10 +68,9 @@ public class GanttChartSelection extends ChartSelectionImpl implements Clipboard
     }
   };
 
-  GanttChartSelection(IGanttProject project, TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> treeView, TaskManager taskManager) {
+  GanttChartSelection(TreeTableContainer<Task, GanttTreeTable, GanttTreeTableModel> treeView, TaskManager taskManager) {
     myTree = treeView;
     myTaskManager = taskManager;
-    myProject = project;
   }
   @Override
   public boolean isEmpty() {

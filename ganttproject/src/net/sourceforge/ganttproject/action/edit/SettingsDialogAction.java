@@ -22,6 +22,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.SettingsDialog2;
+import net.sourceforge.ganttproject.project.IProject;
 
 import java.awt.event.ActionEvent;
 
@@ -30,13 +31,16 @@ import java.awt.event.ActionEvent;
  * all available OptionPageProvider classes
  */
 public class SettingsDialogAction extends GPAction {
+  private final IGanttProject myApp;
+  private final IProject myProject;
   private final UIFacade myUiFacade;
-  private final IGanttProject myProject;
 
-  public SettingsDialogAction(IGanttProject project, UIFacade uiFacade) {
+
+  public SettingsDialogAction(IGanttProject app, IProject project, UIFacade uiFacade) {
     super("settings.app");
-    myUiFacade = uiFacade;
+    myApp = app;
     myProject = project;
+    myUiFacade = uiFacade;
   }
 
   @Override
@@ -44,7 +48,7 @@ public class SettingsDialogAction extends GPAction {
     if (calledFromAppleScreenMenu(e)) {
       return;
     }
-    SettingsDialog2 dialog = new SettingsDialog2(myProject, myUiFacade, "settings.app.pageOrder");
+    SettingsDialog2 dialog = new SettingsDialog2(myApp, myProject, myUiFacade, "settings.app.pageOrder");
     dialog.show();
   }
 }

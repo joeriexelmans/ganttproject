@@ -22,13 +22,14 @@ import java.awt.Component;
 
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.options.ProjectSettingsPanel;
+import net.sourceforge.ganttproject.project.IProject;
 
 public class ProjectNamePage implements WizardPage {
   private final I18N myI18N;
 
   private final ProjectSettingsPanel myProjectSettingsPanel;
 
-  public ProjectNamePage(IGanttProject project, I18N i18n) {
+  public ProjectNamePage(IProject project, I18N i18n) {
     myProjectSettingsPanel = new ProjectSettingsPanel(project.getPrjInfos());
     myProjectSettingsPanel.initialize();
     myI18N = i18n;

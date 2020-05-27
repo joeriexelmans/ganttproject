@@ -30,6 +30,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.export.ExportException;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.util.FileUtil;
 
 import org.xml.sax.SAXException;
@@ -43,10 +44,12 @@ import biz.ganttproject.core.time.CalendarFactory;
  * @author dbarashev (Dmitry Barashev)
  */
 public class HtmlSerializer extends XmlSerializer {
-  private ExporterToHTML myEngine;
+  private final IProject myProject;
+  private final UIFacade myUiFacade;
 
-  public HtmlSerializer(ExporterToHTML engine) {
-    myEngine = engine;
+  public HtmlSerializer(IProject project, UIFacade uiFacade) {
+    myProject = project;
+    myUiFacade = uiFacade;
   }
 
   void serialize(TransformerHandler handler, File outputFile) throws SAXException, IOException, ExportException {
@@ -54,7 +57,7 @@ public class HtmlSerializer extends XmlSerializer {
     handler.startDocument();
     AttributesImpl attrs = new AttributesImpl();
 
-    writeViews(getUIFacade(), handler);
+    writeViews(myUiFacade, handler);
     startElement("ganttproject", attrs, handler);
     textElement("title", attrs, "GanttProject - " + filenameWithoutExtension, handler);
 
@@ -68,13 +71,13 @@ public class HtmlSerializer extends XmlSerializer {
 
     startElement("project", attrs, handler);
     addAttribute("title", i18n("project"), attrs);
-    textElement("name", attrs, getProject().getPrjInfos().getName(), handler);
+    textElement("name", attrs, myProject.getPrjInfos().getName(), handler);
     addAttribute("title", i18n("organization"), attrs);
-    textElement("organization", attrs, getProject().getPrjInfos().getOrganization(), handler);
+    textElement("organization", attrs, myProject.getPrjInfos().getOrganization(), handler);
     addAttribute("title", i18n("webLink"), attrs);
-    textElement("webLink", attrs, getProject().getPrjInfos().getWebLink(), handler);
+    textElement("webLink", attrs, myProject.getPrjInfos().getWebLink(), handler);
     addAttribute("title", i18n("shortDescription"), attrs);
-    textElement("description", attrs, getProject().getPrjInfos().getDescription(), handler);
+    textElement("description", attrs, myProject.getPrjInfos().getDescription(), handler);
     endElement("project", handler);
 
     // TODO: [dbarashev, 10.09.2005] introduce output files grouping structure
@@ -85,7 +88,7 @@ public class HtmlSerializer extends XmlSerializer {
     addAttribute("mail", i18n("colMail"), attrs);
     addAttribute("phone", i18n("colPhone"), attrs);
     startElement("resources", attrs, handler);
-    writeResources(getProject().getHumanResourceManager(), handler);
+    writeResources(myProject.getHumanResourceManager(), handler);
 
     String resourceChartFileName = ExporterToHTML.replaceExtension(outputFile,
         ExporterToHTML.RESOURCE_CHART_FILE_EXTENSION).getName();
@@ -101,7 +104,7 @@ public class HtmlSerializer extends XmlSerializer {
 //    addAttribute("assigned-to", i18n("assignTo"), attrs);
 //    addAttribute("notes", i18n("notesTask"), attrs);
     try {
-      writeTasks(getProject().getTaskManager(), handler);
+      writeTasks(myProject.getTaskManager(), handler);
     } catch (Exception e) {
       throw new ExportException("Failed to write tasks", e);
     }
@@ -115,15 +118,7 @@ public class HtmlSerializer extends XmlSerializer {
     endElement("ganttproject", handler);
     handler.endDocument();
   }
-
-  private IGanttProject getProject() {
-    return myEngine.getProject();
-  }
-
-  private UIFacade getUIFacade() {
-    return myEngine.getUIFacade();
-  }
-
+  
   @Override
   protected String getAssignedResourcesDelimiter() {
     return ", ";

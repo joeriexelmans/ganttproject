@@ -918,7 +918,7 @@ public class ActivityOnNodePertChart extends PertChart {
   }
 
   @Override
-  public IGanttProject getProject() {
+  public IGanttProject getApp() {
     // TODO Auto-generated method stub
     return null;
   }

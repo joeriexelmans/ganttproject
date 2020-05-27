@@ -51,6 +51,7 @@ import net.sourceforge.ganttproject.chart.mouse.MoveTaskInteractions;
 import net.sourceforge.ganttproject.chart.mouse.TimelineFacadeImpl;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
@@ -77,16 +78,16 @@ public class GanttChartController extends AbstractChartImplementation implements
   protected CustomBalloonTip myTooltip;
   private final TaskSelectionManager mySelectionManager;
 
-  public GanttChartController(IGanttProject project, UIFacade uiFacade, ChartModelImpl chartModel,
+  public GanttChartController(IGanttProject app, IProject project, UIFacade uiFacade, ChartModelImpl chartModel,
                               ChartComponentBase chartComponent, TaskTreePanel tree, ChartViewState chartViewState) {
-    super(project, uiFacade, chartModel, chartComponent);
+    super(app, project, uiFacade, chartModel, chartComponent);
     myTree = tree;
     myChartViewState = chartViewState;
     myTaskManager = project.getTaskManager();
     myChartModel = chartModel;
     myMouseListener = new MouseListenerImpl(this, myChartModel, uiFacade, chartComponent, tree);
-    myMouseMotionListener = new MouseMotionListenerImpl(this, chartModel, uiFacade, chartComponent);
-    mySelection = new GanttChartSelection(project, tree, myTaskManager);
+    myMouseMotionListener = new MouseMotionListenerImpl(this, chartModel, project, uiFacade, chartComponent);
+    mySelection = new GanttChartSelection(tree, myTaskManager);
     mySelectionManager = uiFacade.getTaskSelectionManager();
   }
 

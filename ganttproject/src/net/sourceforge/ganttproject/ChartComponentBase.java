@@ -42,6 +42,7 @@ import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomListener;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.TaskManager;
 import org.eclipse.core.runtime.IStatus;
 
@@ -81,7 +82,9 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
     CURSOR_DRAG = drag;
     DEFAULT_CURSOR = hand;
   }
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+
+  protected final IProject myProject;
 
   private final ZoomManager myZoomManager;
 
@@ -91,7 +94,8 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
 
   private final ViewChartOptionsDialogAction myOptionsDialogAction;
 
-  public ChartComponentBase(IGanttProject project, UIFacade uiFacade, ZoomManager zoomManager) {
+  public ChartComponentBase(IGanttProject app, IProject project, UIFacade uiFacade, ZoomManager zoomManager) {
+    myApp = app;
     myProject = project;
     myUIFacade = uiFacade;
     myZoomManager = zoomManager;
@@ -121,7 +125,7 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
   }
 
   @Override
-  public void init(IGanttProject project, IntegerOption dpiOption, FontOption chartFontOption) {
+  public void init(IProject project, IntegerOption dpiOption, FontOption chartFontOption) {
     // Skip as we already have a project instance.
   }
 
@@ -156,7 +160,7 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
 
   @Override
   public Chart createCopy() {
-    return new AbstractChartImplementation(myProject, getUIFacade(), getChartModel().createCopy(), this);
+    return new AbstractChartImplementation(myApp, myProject, getUIFacade(), getChartModel().createCopy(), this);
   }
 
   @Override
@@ -195,11 +199,11 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
   }
 
   protected TimeUnitStack getTimeUnitStack() {
-    return myProject.getTimeUnitStack();
+    return myApp.getTimeUnitStack();
   }
 
   protected UIConfiguration getUIConfiguration() {
-    return myProject.getUIConfiguration();
+    return myApp.getUIConfiguration();
   }
 
   public void setDefaultCursor() {
@@ -242,8 +246,8 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
   }
 
   @Override
-  public IGanttProject getProject() {
-    return myProject;
+  public IGanttProject getApp() {
+    return myApp;
   }
 
   @Override

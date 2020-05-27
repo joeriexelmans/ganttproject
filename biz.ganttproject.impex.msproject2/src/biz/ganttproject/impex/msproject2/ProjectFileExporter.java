@@ -48,6 +48,7 @@ import net.sourceforge.ganttproject.CustomPropertyHolder;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
 import net.sourceforge.ganttproject.IGanttProject;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
@@ -71,10 +72,10 @@ import java.util.Map.Entry;
  * @author dbarashev (Dmitry Barashev)
  */
 class ProjectFileExporter {
-  private IGanttProject myNativeProject;
+  private IProject myNativeProject;
   private ProjectFile myOutputProject;
 
-  public ProjectFileExporter(IGanttProject nativeProject) {
+  public ProjectFileExporter(IProject nativeProject) {
     myNativeProject = nativeProject;
     myOutputProject = new ProjectFile();
     myOutputProject.getProjectConfig().setAutoOutlineLevel(true);

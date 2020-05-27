@@ -22,6 +22,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.GanttDialogPerson;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.ResourceContext;
 
@@ -30,15 +31,17 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public class ResourcePropertiesAction extends ResourceAction {
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+  private final IProject myProject;
   private final UIFacade myUIFacade;
 
-  public ResourcePropertiesAction(IGanttProject project, ResourceContext context, UIFacade uiFacade) {
-    this(project, context, uiFacade, IconSize.MENU);
+  public ResourcePropertiesAction(IGanttProject app, IProject project, ResourceContext context, UIFacade uiFacade) {
+    this(app, project, context, uiFacade, IconSize.MENU);
   }
 
-  private ResourcePropertiesAction(IGanttProject project, ResourceContext context, UIFacade uiFacade, IconSize size) {
+  private ResourcePropertiesAction(IGanttProject app, IProject project, ResourceContext context, UIFacade uiFacade, IconSize size) {
     super("resource.properties", null, context, size);
+    myApp = app;
     myProject = project;
     myUIFacade = uiFacade;
     setEnabled(hasResources());
@@ -57,14 +60,14 @@ public class ResourcePropertiesAction extends ResourceAction {
           selectedResources[0]);
       dp.setVisible(true);
       if (dp.result()) {
-        myProject.setModified(true);
+        myApp.setModified(true);
       }
     }
   }
 
   @Override
   public ResourcePropertiesAction asToolbarAction() {
-    final ResourcePropertiesAction result = new ResourcePropertiesAction(myProject, getContext(), myUIFacade);
+    final ResourcePropertiesAction result = new ResourcePropertiesAction(myApp, myProject, getContext(), myUIFacade);
     result.setFontAwesomeLabel(UIUtil.getFontawesomeLabel(result));
     addPropertyChangeListener(new PropertyChangeListener() {
       @Override

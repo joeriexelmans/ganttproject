@@ -75,7 +75,7 @@ public abstract class FileChooserPageBase implements WizardPage {
 
   /** @return a default export filename */
   protected String getDefaultFileName() {
-    Document document = myWizard.getUIFacade().getGanttChart().getProject().getDocument();
+    Document document = myWizard.getUIFacade().getGanttChart().getApp().getDocument();
     if (document == null) {
       return "document.gan";
     }

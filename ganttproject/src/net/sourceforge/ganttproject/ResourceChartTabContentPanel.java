@@ -5,10 +5,12 @@ package net.sourceforge.ganttproject;
 
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.ResourceChart;
+import net.sourceforge.ganttproject.chart.TimelineChart;
 import net.sourceforge.ganttproject.chart.overview.GPToolbar;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.view.GPView;
+import net.sourceforge.ganttproject.project.IProject;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,9 +20,9 @@ class ResourceChartTabContentPanel extends ChartTabContentPanel implements GPVie
   private Component myResourceChart;
   private JComponent myTabContentPanel;
 
-  ResourceChartTabContentPanel(GanttProject project, UIFacade workbenchFacade, TreeTableContainer resourceTree,
-      Component resourceChart) {
-    super(project, workbenchFacade, project.getResourceChart());
+  ResourceChartTabContentPanel(IProject project, UIFacade workbenchFacade, TreeTableContainer resourceTree,
+                               ResourceLoadGraphicArea resourceChart) {
+    super(project, workbenchFacade, resourceChart);
     myTreeFacade = resourceTree;
     myResourceChart = resourceChart;
     addTableResizeListeners(resourceTree.getTreeComponent(), myTreeFacade.getTreeTable().getScrollPane().getViewport());

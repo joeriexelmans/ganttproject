@@ -24,11 +24,14 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.chart.ChartSelection;
 import net.sourceforge.ganttproject.document.Document;
+import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.view.GPViewManager;
 import net.sourceforge.ganttproject.importer.BufferProject;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;
+import net.sourceforge.ganttproject.parser.UIParser;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
 
@@ -45,28 +48,31 @@ import java.nio.file.Files;
 public class PasteAction extends GPAction {
   private final GPViewManager myViewmanager;
   private final GPUndoManager myUndoManager;
-  private final IGanttProject myProject;
+  private final IProject myProject;
   private final UIFacade myUiFacade;
+  private final DocumentManager myDocumentManager;
 
-  public PasteAction(IGanttProject project, UIFacade uiFacade, GPViewManager viewManager, GPUndoManager undoManager) {
+  public PasteAction(IProject project, UIFacade uiFacade, DocumentManager documentManager, GPViewManager viewManager, GPUndoManager undoManager) {
     super("paste");
     myViewmanager = viewManager;
     myUndoManager = undoManager;
     myProject = project;
     myUiFacade = uiFacade;
+    myDocumentManager = documentManager;
   }
 
-  private PasteAction(IGanttProject project, UIFacade uiFacade, GPViewManager viewmanager, IconSize size, GPUndoManager undoManager) {
+  private PasteAction(IProject project, UIFacade uiFacade, DocumentManager documentManager,GPViewManager viewmanager, GPUndoManager undoManager, IconSize size) {
     super("paste", size);
     myViewmanager = viewmanager;
     myUndoManager = undoManager;
     myProject = project;
     myUiFacade = uiFacade;
+    myDocumentManager = documentManager;
   }
 
   @Override
   public GPAction withIcon(IconSize size) {
-    return new PasteAction(myProject, myUiFacade, myViewmanager, size, myUndoManager);
+    return new PasteAction(myProject, myUiFacade, myDocumentManager, myViewmanager, myUndoManager, size);
   }
 
   @Override
@@ -95,14 +101,10 @@ public class PasteAction extends GPAction {
 
   private void pasteExternalDocument(InputStream data) {
     try {
-      byte[] bytes = ByteStreams.toByteArray(data);
       final BufferProject bufferProject = new BufferProject(myProject);
-      File tmpFile = File.createTempFile("ganttPaste", "");
-      Files.write(tmpFile.toPath(), bytes);
 
-      Document document = myProject.getDocumentManager().getDocument(tmpFile.getAbsolutePath());
-      document.read(bufferProject);
-      tmpFile.delete();
+      UIParser parser = new UIParser(myDocumentManager, myUiFacade);
+      parser.parse(bufferProject, data);
 
       HumanResourceMerger.MergeResourcesOption mergeOption = new HumanResourceMerger.MergeResourcesOption();
       mergeOption.setValue(HumanResourceMerger.MergeResourcesOption.NO);
@@ -124,7 +126,7 @@ public class PasteAction extends GPAction {
 
   @Override
   public PasteAction asToolbarAction() {
-    final PasteAction result = new PasteAction(myProject, myUiFacade, myViewmanager, myUndoManager);
+    final PasteAction result = new PasteAction(myProject, myUiFacade, myDocumentManager, myViewmanager, myUndoManager);
     result.setFontAwesomeLabel(UIUtil.getFontawesomeLabel(result));
     this.addPropertyChangeListener(new PropertyChangeListener() {
       @Override

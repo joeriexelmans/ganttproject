@@ -30,6 +30,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.model.OptionPageProvider;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.plugins.PluginManager;
+import net.sourceforge.ganttproject.project.IProject;
 
 public class SettingsDialog2 extends AbstractPagesDialog {
   private static List<OptionPageProvider> ourProviders;
@@ -40,11 +41,11 @@ public class SettingsDialog2 extends AbstractPagesDialog {
         OptionPageProvider.class);
   }
 
-  public SettingsDialog2(IGanttProject project, UIFacade uifacade, String pageOrderKey) {
-    super("settings.app", uifacade, getPages(pageOrderKey, project, uifacade));
+  public SettingsDialog2(IGanttProject app, IProject project, UIFacade uifacade, String pageOrderKey) {
+    super("settings.app", uifacade, getPages(pageOrderKey, app, project, uifacade));
     for (OptionPageProvider p : ourProviders) {
       if (isPageVisible(p.getPageID())) {
-        p.init(project, uifacade);
+        p.init(app, project, uifacade);
         myProviders.add(p);
       }
     }
@@ -57,12 +58,12 @@ public class SettingsDialog2 extends AbstractPagesDialog {
     }
   }
 
-  private static List<ListItem> getPages(String pageOrderKey, IGanttProject project, UIFacade uiFacade) {
-    return getListItems(ourProviders, pageOrderKey, project, uiFacade);
+  private static List<ListItem> getPages(String pageOrderKey, IGanttProject app, IProject project, UIFacade uiFacade) {
+    return getListItems(ourProviders, pageOrderKey, app, project, uiFacade);
   }
 
   private static List<ListItem> getListItems(List<OptionPageProvider> providers, String pageOrderKey,
-      IGanttProject project, UIFacade uiFacade) {
+      IGanttProject app, IProject project, UIFacade uiFacade) {
     Map<String, OptionPageProvider> pageId_provider = new HashMap<String, OptionPageProvider>();
     for (OptionPageProvider p : providers) {
       pageId_provider.put(p.getPageID(), p);
@@ -77,8 +78,7 @@ public class SettingsDialog2 extends AbstractPagesDialog {
       } else {
         OptionPageProvider p = pageId_provider.get(pageName);
         assert p != null : "OptionPageProvider with pageID=" + pageName + " not found";
-        li = new ListItem(false, p.getPageID(), p.toString(), (Container) new OptionPageProviderPanel(p, project,
-            uiFacade).getComponent());
+        li = new ListItem(false, p.getPageID(), p.toString(), (Container) new OptionPageProviderPanel(p, app, project, uiFacade).getComponent());
       }
       items.add(li);
     }

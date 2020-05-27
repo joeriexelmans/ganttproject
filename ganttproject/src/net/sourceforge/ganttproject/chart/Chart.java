@@ -24,6 +24,7 @@ import biz.ganttproject.core.option.IntegerOption;
 import net.sourceforge.ganttproject.GanttExportSettings;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.chart.export.ChartImageVisitor;
+import net.sourceforge.ganttproject.project.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
 
@@ -31,9 +32,9 @@ import java.awt.image.RenderedImage;
 import java.util.Date;
 
 public interface Chart extends IAdaptable {
-  IGanttProject getProject();
+  IGanttProject getApp();
 
-  void init(IGanttProject project, IntegerOption dpiOption, FontOption chartFontOption);
+  void init(IProject project, IntegerOption dpiOption, FontOption chartFontOption);
 
   public void buildImage(GanttExportSettings settings, ChartImageVisitor imageVisitor);
 

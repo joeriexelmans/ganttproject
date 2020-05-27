@@ -22,6 +22,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.gui.UIFacade;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.osgi.service.prefs.Preferences;
 
 /**
@@ -30,11 +31,11 @@ import org.osgi.service.prefs.Preferences;
  * @author dbarashev (Dmitry Barashev)
  */
 public class AbstractEngine {
-  private IGanttProject myProject;
+  private IProject myProject;
   private UIFacade myUiFacade;
   private Preferences myPreferences;
 
-  public void setContext(IGanttProject project, UIFacade uiFacade, Preferences preferences) {
+  public void setContext(IProject project, UIFacade uiFacade, Preferences preferences) {
     myProject = project;
     myUiFacade = uiFacade;
     myPreferences = preferences;
@@ -44,7 +45,7 @@ public class AbstractEngine {
     return myUiFacade;
   }
 
-  protected IGanttProject getProject() {
+  protected IProject getProject() {
     return myProject;
   }
 

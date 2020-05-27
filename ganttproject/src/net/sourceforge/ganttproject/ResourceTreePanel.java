@@ -29,6 +29,7 @@ import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.ResourceTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.AssignmentContext;
 import net.sourceforge.ganttproject.resource.AssignmentNode;
 import net.sourceforge.ganttproject.resource.HumanResource;
@@ -52,7 +53,9 @@ import java.util.List;
 public class ResourceTreePanel extends TreeTableContainer<HumanResource, ResourceTreeTable, ResourceTreeTableModel>
     implements ResourceListener, ResourceContext, AssignmentContext, ResourceTreeUIFacade {
 
-  public final GanttProject appli;
+  public final GanttProject myApp;
+
+  private final IProject myProject;
 
   private final ResourceActionSet myResourceActionSet;
   private final GanttProject.RowHeightAligner myRowHeightAligner;
@@ -63,21 +66,23 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
 
   private final UIFacade myUIFacade;
 
-  private static Pair<ResourceTreeTable, ResourceTreeTableModel> createTreeTable(GanttProject project,
+  private static Pair<ResourceTreeTable, ResourceTreeTableModel> createTreeTable(GanttProject app,
+                                                                                 IProject project,
                                                                                  UIFacade uiFacade) {
     ResourceTreeTableModel model = new ResourceTreeTableModel(project.getHumanResourceManager(),
         project.getTaskManager(), project.getResourceCustomPropertyManager());
-    ResourceTreeTable table = new ResourceTreeTable(project, model, uiFacade);
+    ResourceTreeTable table = new ResourceTreeTable(app, project, model, uiFacade);
     return Pair.create(table, model);
   }
 
-  public ResourceTreePanel(final GanttProject prj, final UIFacade uiFacade) {
-    super(createTreeTable(prj, uiFacade));
-    appli = prj;
+  public ResourceTreePanel(final GanttProject app, IProject project, final UIFacade uiFacade) {
+    super(createTreeTable(app, project, uiFacade));
+    myApp = app;
+    myProject = project;
     myUIFacade = uiFacade;
 
-    prj.addProjectEventListener(getProjectEventListener());
-    myResourceActionSet = new ResourceActionSet(this, this, prj, uiFacade, getTreeTable());
+    app.addProjectEventListener(getProjectEventListener());
+    myResourceActionSet = new ResourceActionSet(this, this, app, project, uiFacade, getTreeTable());
 
     final GPAction resourceDeleteAction = myResourceActionSet.getResourceDeleteAction();
     final GPAction assignmentDeleteAction = myResourceActionSet.getAssignmentDelete();
@@ -95,13 +100,13 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
         deleteAction);
     getTreeTable().setupActionMaps(myResourceActionSet.getResourceMoveUpAction(),
         myResourceActionSet.getResourceMoveDownAction(), null, null, deleteAction,
-        appli.getCutAction(), appli.getCopyAction(), appli.getPasteAction(),
+        myApp.getCutAction(), myApp.getCopyAction(), myApp.getPasteAction(),
         myResourceActionSet.getResourcePropertiesAction());
     getTreeTable().addActionWithAccelleratorKey(myResourceActionSet.getAssignmentDelete());
     getTreeTable().setRowHeight(20);
 
     getTreeTable().insertWithLeftyScrollBar(this);
-    area = new ResourceLoadGraphicArea(prj, myUIFacade.getZoomManager(), this) {
+    area = new ResourceLoadGraphicArea(app, myProject, myUIFacade.getZoomManager(), this) {
       @Override
       public boolean isExpanded(HumanResource hr) {
         return getResourceTreeTable().isExpanded(hr);
@@ -162,8 +167,8 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
     myResourceActionSet.getResourcePropertiesAction().setEnabled(getResources().length == 1);
     myResourceActionSet.getResourceDeleteAction().setEnabled(getResources().length > 0);
     myResourceActionSet.getAssignmentDelete().setEnabled(getResourceAssignments().length > 0);
-    appli.getViewManager().getCopyAction().setEnabled(getResources().length > 0);
-    appli.getViewManager().getCutAction().setEnabled(getResources().length > 0);
+    myApp.getViewManager().getCopyAction().setEnabled(getResources().length > 0);
+    myApp.getViewManager().getCutAction().setEnabled(getResources().length > 0);
   }
 
   @Override
@@ -208,9 +213,9 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
       menu.add(myResourceActionSet.getResourceMoveUpAction());
       menu.add(myResourceActionSet.getResourceMoveDownAction());
       menu.addSeparator();
-      menu.add(appli.getCutAction());
-      menu.add(appli.getCopyAction());
-      menu.add(appli.getPasteAction());
+      menu.add(myApp.getCutAction());
+      menu.add(myApp.getCopyAction());
+      menu.add(myApp.getPasteAction());
       menu.add(myResourceActionSet.getResourceDeleteAction());
     }
     menu.applyComponentOrientation(GanttLanguage.getInstance().getComponentOrientation());
@@ -360,7 +365,7 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
       if (node instanceof ResourceNode) {
         HumanResource res = (HumanResource) node.getUserObject();
         if (cut) {
-          this.appli.getHumanResourceManager().remove(res, this.appli.getUndoManager());
+          myProject.getHumanResourceManager().remove(res, myApp.getUndoManager());
         }
         clipboardContents.addResource(res);
       }

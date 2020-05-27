@@ -32,6 +32,7 @@ import net.sourceforge.ganttproject.gui.ResourceTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.util.MouseUtil;
@@ -60,14 +61,14 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
 
   private final ResourceTreeUIFacade myTreeUi;
 
-  public ResourceLoadGraphicArea(GanttProject app, ZoomManager zoomManager, ResourceTreeUIFacade treeUi) {
-    super(app, app.getUIFacade(), zoomManager);
+  public ResourceLoadGraphicArea(GanttProject app, IProject project, ZoomManager zoomManager, ResourceTreeUIFacade treeUi) {
+    super(app, project, app.getUIFacade(), zoomManager);
     appli = app;
     myTreeUi = treeUi;
     this.setBackground(Color.WHITE);
-    myChartModel = new ChartModelResource(getTaskManager(), app.getHumanResourceManager(), getTimeUnitStack(),
+    myChartModel = new ChartModelResource(getTaskManager(), myProject.getHumanResourceManager(), getTimeUnitStack(),
         getUIConfiguration(), this);
-    myChartImplementation = new ResourcechartImplementation(app, getUIFacade(), myChartModel, this);
+    myChartImplementation = new ResourcechartImplementation(app, myProject, getUIFacade(), myChartModel, this);
     myViewState = new ChartViewState(this, app.getUIFacade());
     app.getUIFacade().getZoomManager().addZoomListener(myViewState);
     initMouseListeners();
@@ -133,7 +134,7 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
   @Override
   protected AbstractChartImplementation getImplementation() {
     if (myChartImplementation == null) {
-      myChartImplementation = new ResourcechartImplementation(getProject(), getUIFacade(), myChartModel, this);
+      myChartImplementation = new ResourcechartImplementation(getApp(), myProject, getUIFacade(), myChartModel, this);
     }
     return myChartImplementation;
   }
@@ -153,9 +154,9 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
 
     private ResourceChartSelection mySelection;
 
-    public ResourcechartImplementation(IGanttProject project, UIFacade uiFacade, ChartModelBase chartModel,
+    public ResourcechartImplementation(IGanttProject app, IProject project, UIFacade uiFacade, ChartModelBase chartModel,
         ChartComponentBase chartComponent) {
-      super(project, uiFacade, chartModel, chartComponent);
+      super(app, project, uiFacade, chartModel, chartComponent);
     }
 
     @Override
@@ -179,7 +180,7 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
     @Override
     public ChartSelection getSelection() {
       if (mySelection == null) {
-        mySelection = new ResourceChartSelection(getProject(), appli.getResourcePanel());
+        mySelection = new ResourceChartSelection(myProject, appli.getResourcePanel());
       }
       return mySelection;
     }
@@ -225,15 +226,15 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
   }
 
   private HumanResourceManager getResourceManager() {
-    return appli.getHumanResourceManager();
+    return myProject.getHumanResourceManager();
   }
 
   static class ResourceChartSelection extends AbstractChartImplementation.ChartSelectionImpl implements ClipboardOwner {
     private final ResourceTreePanel myResourcePanel;
-    private final IGanttProject myProject;
+    private final IProject myProject;
     private ClipboardContents myClipboardContents;
 
-    ResourceChartSelection(IGanttProject project, ResourceTreePanel resourcePanel) {
+    ResourceChartSelection(IProject project, ResourceTreePanel resourcePanel) {
       myProject = project;
       myResourcePanel = resourcePanel;
     }

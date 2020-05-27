@@ -111,18 +111,17 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
     };
   }
   private static Pair<GanttTreeTable, GanttTreeTableModel> createTreeTable(
-      IGanttProject project, Runnable dirtyfier, UIFacade uiFacade) {
+      IGanttProject app, IProject project, Runnable dirtyfier, UIFacade uiFacade) {
     GanttTreeTableModel tableModel = new GanttTreeTableModel(project.getTaskManager(),
         project.getTaskManager().getCustomPropertyManager(), uiFacade, dirtyfier);
-    GanttTreeTable table = new GanttTreeTable(project, uiFacade, tableModel);
+    GanttTreeTable table = new GanttTreeTable(app, project, uiFacade, tableModel);
     return Pair.create(table, tableModel);
   }
 
-  public TaskTreePanel(final GanttProject project, TaskManager taskManager, TaskSelectionManager selectionManager,
-                       final UIFacade uiFacade) {
-    super(createTreeTable(project, createDirtyfier(project), uiFacade));
+  public TaskTreePanel(final GanttProject app, IProject project, TaskManager taskManager, TaskSelectionManager selectionManager, final UIFacade uiFacade) {
+    super(createTreeTable(app, project, createDirtyfier(app), uiFacade));
     myUIFacade = uiFacade;
-    myApp = project;
+    myApp = app;
     myProject = project;
     myTaskManager = taskManager;
     mySelectionManager = selectionManager;
@@ -163,9 +162,9 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
     });
 
     // Create Actions
-    GPAction propertiesAction = new TaskPropertiesAction(project, selectionManager, uiFacade);
+    GPAction propertiesAction = new TaskPropertiesAction(myProject, selectionManager, uiFacade);
     GPAction deleteAction = new TaskDeleteAction(taskManager, selectionManager, uiFacade, this);
-    GPAction newAction = new TaskNewAction(project, uiFacade);
+    GPAction newAction = new TaskNewAction(myProject, uiFacade);
 
     setArtefactActions(newAction, propertiesAction, deleteAction);
     myLinkTasksAction = new TaskLinkAction(taskManager, selectionManager, uiFacade);
@@ -178,7 +177,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
             myIndentAction, myUnindentAction, newAction, myApp.getCutAction(), myApp.getCopyAction(),
             myApp.getPasteAction(), propertiesAction, deleteAction);
 
-    area = new GanttGraphicArea(project, this, myTaskManager, myUIFacade.getZoomManager(), project.getUndoManager());
+    area = new GanttGraphicArea(myApp, myProject, this, myTaskManager, myUIFacade.getZoomManager(), myApp.getUndoManager());
     myRowHeightAligner = new GanttProject.RowHeightAligner(this, this.area.getChartModel());
   }
 

@@ -22,6 +22,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 
@@ -29,15 +30,15 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class TaskNewAction extends GPAction {
-  private final IGanttProject myProject;
+  private final IProject myProject;
   private final UIFacade myUiFacade;
 
 
-  public TaskNewAction(IGanttProject project, UIFacade uiFacade) {
+  public TaskNewAction(IProject project, UIFacade uiFacade) {
     this(project, uiFacade, IconSize.MENU);
   }
 
-  private TaskNewAction(IGanttProject project, UIFacade uiFacade, IconSize size) {
+  private TaskNewAction(IProject project, UIFacade uiFacade, IconSize size) {
     super("task.new", size.asString());
     myProject = project;
     myUiFacade = uiFacade;

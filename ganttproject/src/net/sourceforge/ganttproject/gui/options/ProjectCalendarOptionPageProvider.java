@@ -93,7 +93,7 @@ public class ProjectCalendarOptionPageProvider extends OptionPageProviderBase {
     myProjectStart = getProject().getTaskManager().getProjectStart();
     myProjectStartOption = new DefaultDateOption("project.startDate", myProjectStart) {
       private TimeDuration getMoveDuration() {
-        return getProject().getTaskManager().createLength(getProject().getTimeUnitStack().getDefaultTimeUnit(),
+        return getProject().getTaskManager().createLength(getApp().getTimeUnitStack().getDefaultTimeUnit(),
             getInitialValue(), getValue());
       }
 
@@ -183,7 +183,7 @@ public class ProjectCalendarOptionPageProvider extends OptionPageProviderBase {
     if (moveDuration.getLength() != 0) {
       String moveLabel = MessageFormat.format(
           GanttLanguage.getInstance().getText("project.calendar.moveDuration.label"), moveDuration.getLength(),
-          getProject().getTimeUnitStack().encode(moveDuration.getTimeUnit()));
+          getApp().getTimeUnitStack().encode(moveDuration.getTimeUnit()));
       myMoveDurationLabel.setText(moveLabel);
       UIUtil.setEnabledTree(myMoveStrategyPanelWrapper, true);
     } else {

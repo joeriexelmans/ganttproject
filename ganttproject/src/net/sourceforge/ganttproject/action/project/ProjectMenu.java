@@ -23,6 +23,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.document.DocumentsMRU;
 import net.sourceforge.ganttproject.document.webdav.WebDavStorageImpl;
+import net.sourceforge.ganttproject.project.IProject;
 
 import javax.swing.*;
 
@@ -37,28 +38,28 @@ public class ProjectMenu extends JMenu {
   private final DocumentsMRU myMRU;
   private final OpenProjectAction myOpenProjectAction;
 
-  public ProjectMenu(final GanttProject project, DocumentsMRU mru, String key) {
+  public ProjectMenu(final GanttProject app, IProject project, DocumentsMRU mru, String key) {
     super(GPAction.createVoidAction(key));
-    myNewProjectAction = new NewProjectAction(project);
-    mySaveProjectAction = new SaveProjectAction(project);
-    myPrintAction = new PrintAction(project);
+    myNewProjectAction = new NewProjectAction(app);
+    mySaveProjectAction = new SaveProjectAction(app);
+    myPrintAction = new PrintAction(app);
     myMRU = mru;
 
-    ProjectPropertiesAction projectSettingsAction = new ProjectPropertiesAction(project);
-    myOpenProjectAction = new OpenProjectAction(project, project.getProjectUIFacade());
-    SaveProjectAsAction saveProjectAsAction = new SaveProjectAsAction(project);
+    ProjectPropertiesAction projectSettingsAction = new ProjectPropertiesAction(app, project);
+    myOpenProjectAction = new OpenProjectAction(app, app.getProjectUIFacade());
+    SaveProjectAsAction saveProjectAsAction = new SaveProjectAsAction(app);
 //    OpenURLAction openURLAction = new OpenURLAction(project.getProject(), project.getUIFacade(),
 //        project.getProjectUIFacade());
 //    SaveURLAction saveURLAction = new SaveURLAction(project.getProject(), project.getUIFacade(),
 //        project.getProjectUIFacade());
-    ExitAction exitAction = new ExitAction(project);
-    ProjectImportAction projectImportAction = new ProjectImportAction(project.getUIFacade(), project);
-    ProjectExportAction projectExportAction = new ProjectExportAction(project.getUIFacade(), project,
-        project.getGanttOptions().getPluginPreferences());
+    ExitAction exitAction = new ExitAction(app);
+    ProjectImportAction projectImportAction = new ProjectImportAction(app.getUIFacade(), app, project);
+    ProjectExportAction projectExportAction = new ProjectExportAction(app.getUIFacade(), app, project,
+        app.getGanttOptions().getPluginPreferences());
 
-    WebDavStorageImpl webdavStorage = (WebDavStorageImpl) project.getDocumentManager().getWebDavStorageUi();
+    WebDavStorageImpl webdavStorage = (WebDavStorageImpl) app.getDocumentManager().getWebDavStorageUi();
     StorageDialogAction cloudDialogAction = new StorageDialogAction(
-        project, project.getProjectUIFacade(), project.getDocumentManager(), myMRU, webdavStorage.getServersOption());
+        app, app.getProjectUIFacade(), app.getDocumentManager(), myMRU, webdavStorage.getServersOption());
     add(cloudDialogAction);
     add(projectSettingsAction);
     add(myNewProjectAction);
@@ -80,7 +81,7 @@ public class ProjectMenu extends JMenu {
 //    add(mServer);
 
     add(myPrintAction);
-    add(new ProjectPreviewAction(project));
+    add(new ProjectPreviewAction(app));
     addSeparator();
     add(exitAction);
     setToolTipText(null);

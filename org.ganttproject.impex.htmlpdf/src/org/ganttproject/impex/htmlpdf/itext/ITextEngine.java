@@ -42,6 +42,7 @@ import net.sourceforge.ganttproject.export.ExporterBase.ExporterJob;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
@@ -99,7 +100,7 @@ public class ITextEngine extends AbstractEngine {
     return new FontSubstitutionPanel(mySubstitutionModel).getComponent();
   }
 
-  public void setContext(IGanttProject project, UIFacade uiFacade, Preferences preferences, Stylesheet stylesheet) {
+  public void setContext(IProject project, UIFacade uiFacade, Preferences preferences, Stylesheet stylesheet) {
     super.setContext(project, uiFacade, preferences);
     setSelectedStylesheet(stylesheet);
   }

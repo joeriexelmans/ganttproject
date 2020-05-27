@@ -34,6 +34,7 @@ import javax.swing.tree.TreePath;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.AssignmentNode;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.ResourceNode;
@@ -59,8 +60,8 @@ public class ResourceTreeTable extends GPTreeTableBase {
 
   private final UIFacade myUiFacade;
 
-  public ResourceTreeTable(IGanttProject project, ResourceTreeTableModel model, UIFacade uiFacade) {
-    super(project, uiFacade, project.getResourceCustomPropertyManager(), model);
+  public ResourceTreeTable(IGanttProject app, IProject project, ResourceTreeTableModel model, UIFacade uiFacade) {
+    super(app, project, uiFacade, project.getResourceCustomPropertyManager(), model);
     myUiFacade = uiFacade;
     myRoleManager = project.getRoleManager();
     myRoleManager.addRoleListener(new RoleManager.Listener() {

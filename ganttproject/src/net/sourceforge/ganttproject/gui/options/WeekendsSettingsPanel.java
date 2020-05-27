@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.projectwizard.I18N;
 import net.sourceforge.ganttproject.gui.projectwizard.WeekendConfigurationPage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
 
@@ -35,16 +36,15 @@ import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
  */
 public class WeekendsSettingsPanel extends GeneralOptionPanel {
 
-  private final IGanttProject project;
+  private final IProject myProject;
 
   private WeekendConfigurationPage weekendConfigurationPanel;
 
   private GPCalendarCalc calendar;
 
-  public WeekendsSettingsPanel(IGanttProject project, UIFacade uiFacade) {
+  public WeekendsSettingsPanel(IProject project, UIFacade uiFacade) {
     super(uiFacade, language.getCorrectedLabel("weekends"), language.getText("settingsWeekends"));
-
-    this.project = project;
+    myProject = project;
     calendar = new WeekendCalendarImpl();
 
     weekendConfigurationPanel = null;
@@ -53,7 +53,7 @@ public class WeekendsSettingsPanel extends GeneralOptionPanel {
   @Override
   public boolean applyChanges(boolean askForApply) {
     weekendConfigurationPanel.setActive(false);
-    GPCalendarCalc projectCalendar = project.getActiveCalendar();
+    GPCalendarCalc projectCalendar = myProject.getActiveCalendar();
     boolean hasChange = weekendConfigurationPanel.isChanged();
     for (int i = 1; !hasChange && i < 8; i++) {
       if (calendar.getWeekDayType(i) != projectCalendar.getWeekDayType(i)) {
@@ -68,7 +68,7 @@ public class WeekendsSettingsPanel extends GeneralOptionPanel {
       projectCalendar.setPublicHolidays(calendar.getPublicHolidays());
       projectCalendar.setOnlyShowWeekends(calendar.getOnlyShowWeekends());
       try {
-        TaskManager taskManager = project.getTaskManager();
+        TaskManager taskManager = myProject.getTaskManager();
         taskManager.getAlgorithmCollection().getRecalculateTaskScheduleAlgorithm().run();
         taskManager.getAlgorithmCollection().getAdjustTaskBoundsAlgorithm().adjustNestedTasks(taskManager.getRootTask());
       } catch (TaskDependencyException e) {
@@ -87,7 +87,7 @@ public class WeekendsSettingsPanel extends GeneralOptionPanel {
     }
 
     // Make a copy of the WeekDayTypes
-    calendar = project.getActiveCalendar().copy();
+    calendar = myProject.getActiveCalendar().copy();
     weekendConfigurationPanel = new WeekendConfigurationPage(calendar, new I18N(), getUIFacade());
     vb.add(weekendConfigurationPanel.getComponent());
   }

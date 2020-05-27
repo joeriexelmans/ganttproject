@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.Task;
 
 /** Search service for tasks */
@@ -76,7 +77,7 @@ public class TaskSearchService extends SearchServiceBase<TaskSearchService.MySea
   }
 
   @Override
-  public void init(IGanttProject project, UIFacade uiFacade) {
+  public void init(IProject project, UIFacade uiFacade) {
     super.init(project, uiFacade.getTaskTree(), uiFacade);
   }
 

@@ -24,6 +24,7 @@ import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode
 import net.sourceforge.ganttproject.IGanttProject
 import net.sourceforge.ganttproject.gui.UIFacade
+import net.sourceforge.ganttproject.project.IProject
 import net.sourceforge.ganttproject.search.PopupSearchCallback
 import net.sourceforge.ganttproject.search.SearchUi
 import java.awt.Rectangle
@@ -37,7 +38,7 @@ import javax.swing.SwingUtilities
  *
  * @author dbarashev@bardsoftware.com
  */
-class FXSearchUi(private val project: IGanttProject, private val uiFacade: UIFacade) : SearchUi {
+class FXSearchUi(private val project: IProject, private val uiFacade: UIFacade) : SearchUi {
   private val textField: TextField by lazy {
     TextField().also {
       it.onKeyPressed = EventHandler { evt ->

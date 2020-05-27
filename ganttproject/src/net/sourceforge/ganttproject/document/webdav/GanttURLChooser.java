@@ -44,6 +44,7 @@ import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 import net.sourceforge.ganttproject.gui.options.SpringUtilities;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.util.collect.Pair;
 import org.divxdede.swing.busy.JBusyComponent;
 import org.jdesktop.swingx.JXHyperlink;
@@ -177,9 +178,11 @@ class GanttURLChooser {
 
   private JButton myLockButton;
 
-  private final UIFacade myUiFacade;
+  private final IGanttProject myApp;
 
-  private final IGanttProject myProject;
+  private final IProject myProject;
+
+  private final UIFacade myUiFacade;
 
   private JScrollPane myFilesComponent;
 
@@ -197,9 +200,10 @@ class GanttURLChooser {
     public void setSelection(WebDavResource resource);
   }
 
-  GanttURLChooser(IGanttProject project, UIFacade uiFacade, ListOption<WebDavServerDescriptor> servers, WebDavUri currentUri, StringOption username,
+  GanttURLChooser(IGanttProject app, IProject project, UIFacade uiFacade, ListOption<WebDavServerDescriptor> servers, WebDavUri currentUri, StringOption username,
       StringOption password, IntegerOption lockTimeoutOption, BooleanOption releaseLockOption,
       MiltonResourceFactory webDavFactory) {
+    myApp = app;
     myProject = project;
     myUiFacade = uiFacade;
     myWebDavFactory = webDavFactory;
@@ -480,7 +484,7 @@ class GanttURLChooser {
       @Override
       public void actionPerformed(ActionEvent arg0) {
         WebDavOptionPageProvider optionPage = new WebDavOptionPageProvider();
-        optionPage.init(myProject, myUiFacade);
+        optionPage.init(myApp, myProject, myUiFacade);
         myUiFacade.createDialog(optionPage.buildPageComponent(), new Action[] {CancelAction.CLOSE}, "").show();
         updateUsernameAndPassword();
         myReloadAction.actionPerformed(null);

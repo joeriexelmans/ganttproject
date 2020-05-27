@@ -117,7 +117,7 @@ class StorageDialogBuilder(
 
     val titleBox = VBox()
     titleBox.styleClass.add("header")
-    val projectName = Label(myProject.prjInfos.name)
+    val projectName = Label(myProject.currentProject.prjInfos.name)
 
     val buttonBar = GridPane().apply {
       maxWidth = Double.MAX_VALUE

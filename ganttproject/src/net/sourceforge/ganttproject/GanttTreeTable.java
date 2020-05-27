@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.GanttChart;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.Task;
 
 import javax.swing.*;
@@ -57,12 +58,12 @@ public class GanttTreeTable extends GPTreeTableBase {
     ID_FORMAT.setGroupingUsed(false);
   }
 
-  GanttTreeTable(IGanttProject project, final UIFacade uifacade, GanttTreeTableModel model) {
-    super(project, uifacade, project.getTaskManager().getCustomPropertyManager(), model);
+  GanttTreeTable(IGanttProject app, IProject project, final UIFacade uifacade, GanttTreeTableModel model) {
+    super(app, app.getCurrentProject(), uifacade, project.getTaskManager().getCustomPropertyManager(), model);
     myUIfacade = uifacade;
     getTableHeaderUiFacade().createDefaultColumns(TaskDefaultColumn.getColumnStubs());
     setDropMode(DropMode.ON);
-    final GPTreeTransferHandler transferHandler = new GPTreeTransferHandler(this, project.getTaskManager(), new Supplier<GanttChart>() {
+    final GPTreeTransferHandler transferHandler = new GPTreeTransferHandler(this, myProject.getTaskManager(), new Supplier<GanttChart>() {
       @Override
       public GanttChart get() {
         return uifacade.getGanttChart();
@@ -143,12 +144,12 @@ public class GanttTreeTable extends GPTreeTableBase {
 
               if (column.getSort() == SortOrder.ASCENDING) {
                 column.setSort(SortOrder.DESCENDING);
-                getProject().getTaskManager().getTaskHierarchy().sort(
+                myProject.getTaskManager().getTaskHierarchy().sort(
                     Collections.reverseOrder((Comparator<Task>) taskColumn.getSortComparator())
                 );
               } else {
                 column.setSort(SortOrder.ASCENDING);
-                getProject().getTaskManager().getTaskHierarchy().sort((Comparator<Task>) taskColumn.getSortComparator());
+                myProject.getTaskManager().getTaskHierarchy().sort((Comparator<Task>) taskColumn.getSortComparator());
               }
             }
           }

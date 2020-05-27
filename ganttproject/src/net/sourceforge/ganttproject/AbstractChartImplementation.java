@@ -45,6 +45,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomEvent;
 import net.sourceforge.ganttproject.gui.zoom.ZoomListener;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import org.eclipse.core.runtime.IStatus;
@@ -65,7 +66,8 @@ import java.util.TimerTask;
 
 public class AbstractChartImplementation implements TimelineChart, ZoomListener {
   private final ChartModelBase myChartModel;
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+  private final IProject myProject;
   private Set<ChartSelectionListener> mySelectionListeners = new LinkedHashSet<>();
   private final ChartComponentBase myChartComponent;
   private MouseInteraction myActiveInteraction;
@@ -120,12 +122,12 @@ public class AbstractChartImplementation implements TimelineChart, ZoomListener 
     }
   }
 
-  public AbstractChartImplementation(IGanttProject project, UIFacade uiFacade, ChartModelBase chartModel,
-      ChartComponentBase chartComponent) {
+  public AbstractChartImplementation(IGanttProject app, IProject project, UIFacade uiFacade, ChartModelBase chartModel, ChartComponentBase chartComponent) {
     assert chartModel != null;
+    myApp = app;
+    myProject = project;
     myUiFacade = uiFacade;
     myChartModel = chartModel;
-    myProject = project;
 
     myChartComponent = chartComponent;
     uiFacade.getTaskSelectionManager().addSelectionListener(new TaskSelectionManager.Listener() {
@@ -152,7 +154,7 @@ public class AbstractChartImplementation implements TimelineChart, ZoomListener 
 
 
   @Override
-  public void init(IGanttProject project, IntegerOption dpiOption, FontOption chartFontOption) {
+  public void init(IProject project, IntegerOption dpiOption, FontOption chartFontOption) {
     // Skip as we already have a project instance.
   }
 
@@ -165,8 +167,8 @@ public class AbstractChartImplementation implements TimelineChart, ZoomListener 
   }
 
   @Override
-  public IGanttProject getProject() {
-    return myProject;
+  public IGanttProject getApp() {
+    return myApp;
   }
 
   @Override
@@ -374,7 +376,7 @@ public class AbstractChartImplementation implements TimelineChart, ZoomListener 
 
   @Override
   public Chart createCopy() {
-    return new AbstractChartImplementation(myProject, myUiFacade, getChartModel().createCopy(), myChartComponent);
+    return new AbstractChartImplementation(myApp, myProject, myUiFacade, getChartModel().createCopy(), myChartComponent);
   }
 
   @Override

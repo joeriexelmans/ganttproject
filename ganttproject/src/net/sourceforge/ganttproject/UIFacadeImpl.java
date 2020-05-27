@@ -67,6 +67,7 @@ import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.LanguageOption;
 import net.sourceforge.ganttproject.language.ShortDateFormatOption;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import net.sourceforge.ganttproject.task.TaskView;
@@ -150,22 +151,24 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   private ChangeValueListener myAppFontValueListener;
   private final LanguageOption myLanguageOption;
-  private final GanttProject myProject;
+  private final GanttProject myApp;
+  private final IProject myProject;
   private FontSpec myLastFontSpec;
 
   UIFacadeImpl(JFrame mainFrame, GanttStatusBar statusBar, NotificationManagerImpl notificationManager,
-               final GanttProject project) {
+               final GanttProject app, IProject project) {
     myMainFrame = mainFrame;
+    myApp = app;
     myProject = project;
     myDialogBuilder = new DialogBuilder(mainFrame);
     myScrollingManager = new ScrollingManagerImpl();
-    myZoomManager = new ZoomManager(project.getTimeUnitStack());
+    myZoomManager = new ZoomManager(app.getTimeUnitStack());
     myStatusBar = statusBar;
     myStatusBar.setNotificationManager(notificationManager);
     Job.getJobManager().setProgressProvider(this);
     myTaskSelectionManager = new TaskSelectionManager(Suppliers.memoize(new Supplier<TaskManager>() {
       public TaskManager get() {
-        return project.getTaskManager();
+        return app.getCurrentProject().getTaskManager();
       }
     }));
     myNotificationManager = notificationManager;
@@ -267,12 +270,12 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public GPUndoManager getUndoManager() {
-    return myProject.getUndoManager();
+    return myApp.getUndoManager();
   }
 
   @Override
   public ZoomActionSet getZoomActionSet() {
-    return myProject.getZoomActionSet();
+    return myApp.getZoomActionSet();
   }
 
   @Override
@@ -430,7 +433,7 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public void showSettingsDialog(String pageID) {
-    SettingsDialog2 dialog = new SettingsDialog2(myProject, this, "settings.app.pageOrder");
+    SettingsDialog2 dialog = new SettingsDialog2(myApp, myProject, this, "settings.app.pageOrder");
     dialog.show(pageID);
   }
 
@@ -447,52 +450,52 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public GanttChart getGanttChart() {
-    return myProject.getGanttChart();
+    return myApp.getGanttChart();
   }
 
   @Override
   public TimelineChart getResourceChart() {
-    return myProject.getResourceChart();
+    return myApp.getResourceChart();
   }
 
   @Override
   public Chart getActiveChart() {
-    return myProject.getActiveChart();
+    return myApp.getActiveChart();
   }
 
   @Override
   public int getViewIndex() {
-    return myProject.getViewIndex();
+    return myApp.getViewIndex();
   }
 
   @Override
   public void setViewIndex(int viewIndex) {
-    myProject.setViewIndex(viewIndex);
+    myApp.setViewIndex(viewIndex);
   }
 
   @Override
   public int getGanttDividerLocation() {
-    return myProject.getGanttDividerLocation();
+    return myApp.getGanttDividerLocation();
   }
 
   @Override
   public void setGanttDividerLocation(int location) {
-    myProject.setGanttDividerLocation(location);
+    myApp.setGanttDividerLocation(location);
   }
 
   @Override
   public int getResourceDividerLocation() {
-    return myProject.getResourceDividerLocation();
+    return myApp.getResourceDividerLocation();
   }
 
   @Override
   public void setResourceDividerLocation(int location) {
-    myProject.setResourceDividerLocation(location);
+    myApp.setResourceDividerLocation(location);
   }
 
   @Override
   public void refresh() {
-    myProject.refresh();
+    myApp.refresh();
   }
 
   @Override
@@ -550,12 +553,12 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
 
   @Override
   public TaskTreeUIFacade getTaskTree() {
-    return myProject.getTaskTree();
+    return myApp.getTaskTree();
   }
 
   @Override
   public ResourceTreeUIFacade getResourceTree() {
-    return myProject.getResourceTree();
+    return myApp.getResourceTree();
   }
 
   @Override
@@ -632,8 +635,8 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
         for (Runnable r : myOnUpdateComponentTreeUiCallbacks) {
           r.run();
         }
-        myProject.getGanttChart().reset();
-        myProject.getResourceChart().reset();
+        myApp.getGanttChart().reset();
+        myApp.getResourceChart().reset();
       }
     });
   }

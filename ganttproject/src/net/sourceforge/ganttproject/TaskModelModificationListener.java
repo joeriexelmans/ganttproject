@@ -19,6 +19,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 package net.sourceforge.ganttproject;
 
 import net.sourceforge.ganttproject.gui.UIFacade;
+import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.event.TaskDependencyEvent;
 import net.sourceforge.ganttproject.task.event.TaskHierarchyEvent;
 import net.sourceforge.ganttproject.task.event.TaskListenerAdapter;
@@ -26,62 +27,64 @@ import net.sourceforge.ganttproject.task.event.TaskPropertyEvent;
 import net.sourceforge.ganttproject.task.event.TaskScheduleEvent;
 
 public class TaskModelModificationListener extends TaskListenerAdapter {
-  private IGanttProject myGanttProject;
+  private IGanttProject myApp;
+  private final TaskManager myTaskManager;
   private UIFacade myUiFacade;
 
-  TaskModelModificationListener(IGanttProject ganttProject, UIFacade uiFacade) {
-    myGanttProject = ganttProject;
+  TaskModelModificationListener(IGanttProject ganttProject, TaskManager taskManager, UIFacade uiFacade) {
+    myApp = ganttProject;
+    myTaskManager = taskManager;
     myUiFacade = uiFacade;
   }
 
   @Override
   public void taskScheduleChanged(TaskScheduleEvent e) {
-    myGanttProject.setModified();
-    myGanttProject.getTaskManager().getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
+    myApp.setModified();
+    myTaskManager.getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
   }
 
   @Override
   public void dependencyAdded(TaskDependencyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
   }
 
   @Override
   public void dependencyRemoved(TaskDependencyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
   }
 
   @Override
   public void dependencyChanged(TaskDependencyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
   }
 
   @Override
   public void taskAdded(TaskHierarchyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
     myUiFacade.setViewIndex(UIFacade.GANTT_INDEX);
-    myGanttProject.getTaskManager().getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
+    myTaskManager.getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
     myUiFacade.refresh();
   }
 
   @Override
   public void taskRemoved(TaskHierarchyEvent e) {
-    myGanttProject.setModified();
-    myGanttProject.getTaskManager().getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
+    myApp.setModified();
+    myTaskManager.getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
   }
 
   @Override
   public void taskMoved(TaskHierarchyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
   }
 
   @Override
   public void taskPropertiesChanged(TaskPropertyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
   }
 
   @Override
   public void taskProgressChanged(TaskPropertyEvent e) {
-    myGanttProject.setModified();
+    myApp.setModified();
     e.getTask().getManager().getAlgorithmCollection().getRecalculateTaskCompletionPercentageAlgorithm().run();
   }
 }

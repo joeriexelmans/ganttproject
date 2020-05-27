@@ -38,6 +38,7 @@ import net.sourceforge.ganttproject.gui.taskproperties.TaskAllocationsPanel;
 import net.sourceforge.ganttproject.gui.taskproperties.TaskDependenciesPanel;
 import net.sourceforge.ganttproject.gui.taskproperties.TaskScheduleDatesPanel;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.shape.JPaintCombo;
@@ -151,13 +152,13 @@ public class GanttTaskPropertiesBean extends JPanel {
 
   private Task myUnpluggedClone;
   private final TaskManager myTaskManager;
-  private final IGanttProject myProject;
+  private final IProject myProject;
   private final UIFacade myUIfacade;
 
   private JCheckBox myShowInTimeline;
   private AbstractAction myOnEarliestBeginToggle;
 
-  public GanttTaskPropertiesBean(GanttTask[] selectedTasks, IGanttProject project, UIFacade uifacade) {
+  public GanttTaskPropertiesBean(GanttTask[] selectedTasks, IProject project, UIFacade uifacade) {
     myTaskScheduleDates = new TaskScheduleDatesPanel(uifacade);
     this.selectedTasks = selectedTasks;
     storeOriginalValues(selectedTasks[0]);

@@ -37,16 +37,19 @@ import net.sourceforge.ganttproject.gui.AbstractTableAndActionsComponent;
 import net.sourceforge.ganttproject.gui.EditableList;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
+import net.sourceforge.ganttproject.project.IProject;
 
 public class BaselineDialogAction extends GPAction {
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
+  private final IProject myProject;
   private final UIFacade myUiFacade;
   private final GanttChart myGanttChart;
   private List<GanttPreviousState> myBaselines;
   private List<GanttPreviousState> myTrash = new ArrayList<GanttPreviousState>();
 
-  public BaselineDialogAction(IGanttProject project, UIFacade uiFacade, GanttChart ganttChart) {
+  public BaselineDialogAction(IGanttProject app, IProject project, UIFacade uiFacade, GanttChart ganttChart) {
     super("baseline.dialog");
+    myApp = app;
     myProject = project;
     myUiFacade = uiFacade;
     myGanttChart = ganttChart;
@@ -137,7 +140,7 @@ public class BaselineDialogAction extends GPAction {
         for (GanttPreviousState trashBaseline : myTrash) {
           trashBaseline.remove();
         }
-        myProject.setModified();
+        myApp.setModified();
       }
     }, CancelAction.EMPTY };
 

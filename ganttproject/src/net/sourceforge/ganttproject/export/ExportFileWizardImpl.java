@@ -20,11 +20,11 @@ package net.sourceforge.ganttproject.export;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import net.sourceforge.ganttproject.project.IProject;
 import org.osgi.service.prefs.Preferences;
 
 import biz.ganttproject.core.option.BooleanOption;
@@ -42,17 +42,17 @@ import net.sourceforge.ganttproject.plugins.PluginManager;
  */
 public class ExportFileWizardImpl extends WizardImpl {
 
-  private final IGanttProject myProject;
+  private final IGanttProject myApp;
 
   private final State myState;
 
   private static Exporter ourLastSelectedExporter;
   private static List<Exporter> ourExporters;
 
-  public ExportFileWizardImpl(UIFacade uiFacade, IGanttProject project, Preferences pluginPreferences) {
+  public ExportFileWizardImpl(UIFacade uiFacade, IGanttProject app, IProject project, Preferences pluginPreferences) {
     super(uiFacade, language.getText("exportWizard.dialog.title"));
     final Preferences exportNode = pluginPreferences.node("/instance/net.sourceforge.ganttproject/export");
-    myProject = project;
+    myApp = app;
     myState = new State();
     myState.myPublishInWebOption.setValue(exportNode.getBoolean("publishInWeb", false));
     myState.myPublishInWebOption.addChangeValueListener(new ChangeValueListener() {
@@ -69,7 +69,7 @@ public class ExportFileWizardImpl extends WizardImpl {
       e.setContext(project, uiFacade, pluginPreferences);
     }
     addPage(new ExporterChooserPage(ourExporters, myState));
-    addPage(new FileChooserPage(myState, myProject, this, exportNode));
+    addPage(new FileChooserPage(myState, myApp, project, this, exportNode));
   }
 
   @Override
@@ -100,7 +100,7 @@ public class ExportFileWizardImpl extends WizardImpl {
     public void run(File[] exportedFiles) {
       if (myState.getPublishInWebOption().isChecked() && exportedFiles.length > 0) {
         WebPublisher publisher = new WebPublisher();
-        publisher.run(exportedFiles, myProject.getDocumentManager().getFTPOptions());
+        publisher.run(exportedFiles, myApp.getDocumentManager().getFTPOptions());
       }
     }
   }

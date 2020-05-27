@@ -30,6 +30,7 @@ import net.sourceforge.ganttproject.gui.NotificationManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.util.collect.Pair;
 
 import javax.swing.*;
@@ -53,8 +54,8 @@ public class InterfaceOptionPageProvider extends OptionPageProviderBase {
   }
 
   @Override
-  public void init(IGanttProject project, final UIFacade uiFacade) {
-    super.init(project, uiFacade);
+  public void init(IGanttProject app, IProject project, final UIFacade uiFacade) {
+    super.init(app, project, uiFacade);
     uiFacade.getLanguageOption().addChangeValueListener(new ChangeValueListener() {
       @Override
       public void changeValue(ChangeValueEvent event) {

@@ -9,6 +9,7 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.gui.ProjectUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.about.AboutDialog2;
+import net.sourceforge.ganttproject.project.IProject;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +22,7 @@ public class DesktopIntegration {
     return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
   }
 
-  static void setup(final GanttProject app) {
-    final IGanttProject project = app;
+  static void setup(final GanttProject app, IProject project) {
     final UIFacade uiFacade = app.getUIFacade();
     final ProjectUIFacade projectUiFacade = app.getProjectUIFacade();
 
@@ -36,7 +36,7 @@ public class DesktopIntegration {
 
         @Override
         public void showPreferencesDialog() {
-          new SettingsDialogAction(project, uiFacade).actionPerformed(null);
+          new SettingsDialogAction(app, project, uiFacade).actionPerformed(null);
         }
 
         @Override
@@ -51,10 +51,10 @@ public class DesktopIntegration {
         @Override
         public void openFile(final File file) {
           javax.swing.SwingUtilities.invokeLater(() -> {
-            if (projectUiFacade.saveChangesDialog(project)) {
-              Document myDocument = project.getDocumentManager().getDocument(file.getAbsolutePath());
+            if (projectUiFacade.saveChangesDialog(app)) {
+              Document myDocument = app.getDocumentManager().getDocument(file.getAbsolutePath());
               try {
-                projectUiFacade.openProject(myDocument, project);
+                projectUiFacade.openProject(myDocument, app);
               } catch (Document.DocumentException | IOException ex) {
                 uiFacade.showErrorDialog(ex);
               }

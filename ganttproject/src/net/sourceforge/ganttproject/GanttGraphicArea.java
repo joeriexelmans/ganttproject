@@ -20,6 +20,7 @@ package net.sourceforge.ganttproject;
 
 import biz.ganttproject.core.calendar.CalendarEvent;
 import biz.ganttproject.core.calendar.GPCalendar;
+import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.option.ColorOption;
 import biz.ganttproject.core.option.DefaultColorOption;
 import biz.ganttproject.core.option.GPOption;
@@ -40,6 +41,7 @@ import net.sourceforge.ganttproject.chart.item.ChartItem;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.task.CustomPropertyEvent;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -99,9 +101,9 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   private final ChartOptionGroup myStateDiffOptions;
 
-  public GanttGraphicArea(GanttProject app, TaskTreePanel ttree, TaskManager taskManager, ZoomManager zoomManager,
+  public GanttGraphicArea(GanttProject app, IProject project, TaskTreePanel ttree, TaskManager taskManager, ZoomManager zoomManager,
                           GPUndoManager undoManager) {
-    super(app, app.getUIFacade(), zoomManager);
+    super(app, project, app.getUIFacade(), zoomManager);
     this.setBackground(Color.WHITE);
     myTaskManager = taskManager;
     myUndoManager = undoManager;
@@ -147,8 +149,8 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
         }
       }
     });
-    myPublicHolidayDialogAction = new ProjectCalendarDialogAction(getProject(), getUIFacade());
-    getProject().getTaskManager().getCustomPropertyManager().addListener(this);
+    myPublicHolidayDialogAction = new ProjectCalendarDialogAction(getApp(), myProject, getUIFacade());
+    myProject.getTaskManager().getCustomPropertyManager().addListener(this);
     initMouseListeners();
   }
 
@@ -230,28 +232,29 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   private List<Action> createToggleHolidayAction(int x) {
     List<Action> result = Lists.newArrayList();
+    GPCalendarCalc calendar = myProject.getActiveCalendar();
     ChartItem chartItem = myChartModel.getChartItemWithCoordinates(x, 0);
     if (chartItem instanceof CalendarChartItem) {
       Date date = ((CalendarChartItem) chartItem).getDate();
-      CalendarEvent event = getProject().getActiveCalendar().getEvent(date);
-      int dayMask = getProject().getActiveCalendar().getDayMask(date);
+      CalendarEvent event = calendar.getEvent(date);
+      int dayMask = calendar.getDayMask(date);
       if ((dayMask & GPCalendar.DayMask.WEEKEND) != 0) {
         switch (dayMask & GPCalendar.DayMask.WORKING) {
         case 0:
           if (event == null) {
-            result.add(CalendarEventAction.addException(getProject().getActiveCalendar(), date, getUndoManager()));
+            result.add(CalendarEventAction.addException(calendar, date, getUndoManager()));
           }
           break;
         case GPCalendar.DayMask.WORKING:
-          result.add(CalendarEventAction.removeException(getProject().getActiveCalendar(), date, getUndoManager()));
+          result.add(CalendarEventAction.removeException(calendar, date, getUndoManager()));
           break;
         }
       }
       if ((dayMask & GPCalendar.DayMask.HOLIDAY) != 0) {
-        result.add(CalendarEventAction.removeHoliday(getProject().getActiveCalendar(), date, getUndoManager()));
+        result.add(CalendarEventAction.removeHoliday(calendar, date, getUndoManager()));
       } else {
         if (event == null) {
-          result.add(CalendarEventAction.addHoliday(getProject().getActiveCalendar(), date, getUndoManager()));
+          result.add(CalendarEventAction.addHoliday(calendar, date, getUndoManager()));
         }
       }
     }
@@ -306,8 +309,7 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   GanttChartController getChartImplementation() {
     if (myChartComponentImpl == null) {
-      myChartComponentImpl = new GanttChartController(getProject(), getUIFacade(), myChartModel, this, tree,
-          getViewState());
+      myChartComponentImpl = new GanttChartController(getApp(), myProject, getUIFacade(), myChartModel, this, tree, getViewState());
     }
     return myChartComponentImpl;
   }

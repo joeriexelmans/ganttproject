@@ -168,7 +168,7 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
     Job.getJobManager().setProgressProvider(this);
     myTaskSelectionManager = new TaskSelectionManager(Suppliers.memoize(new Supplier<TaskManager>() {
       public TaskManager get() {
-        return app.getCurrentProject().getTaskManager();
+        return myProject.getTaskManager();
       }
     }));
     myNotificationManager = notificationManager;

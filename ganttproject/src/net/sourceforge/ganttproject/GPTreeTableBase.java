@@ -774,7 +774,7 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
       }
     }));
 
-    myApp.getCurrentProject().getTaskManager().addTaskListener(myRemoveOrderListener);
+    myProject.getTaskManager().addTaskListener(myRemoveOrderListener);
 
     getTable().getTableHeader().addMouseListener(new HeaderMouseListener(myCustomPropertyManager));
     getTable().getColumnModel().addColumnModelListener(new TableColumnModelListener() {

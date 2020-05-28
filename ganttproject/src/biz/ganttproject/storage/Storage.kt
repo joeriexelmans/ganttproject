@@ -93,13 +93,13 @@ sealed class StorageMode(val name: String) {
  * @author dbarashev@bardsoftware.com
  */
 class StoragePane internal constructor(
-    private val cloudStorageOptions: GPCloudStorageOptions,
-    private val documentManager: DocumentManager,
-    private val currentDocument: ReadOnlyProxyDocument,
-    private val mru: DocumentsMRU,
-    private val documentReceiver: Consumer<Document>,
-    private val documentUpdater: Consumer<Document>,
-    private val dialogUi: StorageDialogBuilder.DialogUi) {
+  private val cloudStorageOptions: GPCloudStorageOptions,
+  private val documentManager: DocumentManager,
+  private val currentDocument: ReadOnlyProxyDocument,
+  private val mru: DocumentsMRU,
+  private val documentOpener: Consumer<Document>,
+  private val documentSaver: Consumer<Document>,
+  private val dialogUi: StorageDialogBuilder.DialogUi) {
 
   private val storageUiMap = mutableMapOf<String, Supplier<Pane>>()
   private val storageUiList = mutableListOf<StorageDialogBuilder.Ui>()
@@ -150,7 +150,7 @@ class StoragePane internal constructor(
 
     val openDocument = { document: Document ->
       try {
-        (if (mode == StorageDialogBuilder.Mode.OPEN) documentReceiver else documentUpdater).accept(document)
+        (if (mode == StorageDialogBuilder.Mode.OPEN) documentOpener else documentSaver).accept(document)
         dialogUi.close()
       } catch (e: Exception) {
         dialogUi.error(e)

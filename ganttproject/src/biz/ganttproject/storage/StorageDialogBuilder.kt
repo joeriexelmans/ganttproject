@@ -54,8 +54,8 @@ class StorageDialogBuilder(
     cloudStorageOptions: GPCloudStorageOptions,
     private val dialogBuildApi: DialogController) {
   private val myCloudStorageOptions: GPCloudStorageOptions = Preconditions.checkNotNull(cloudStorageOptions)
-  private val myDocumentReceiver: Consumer<Document>
-  private val myDocumentUpdater: Consumer<Document>
+  private val myDocumentOpener: Consumer<Document>
+  private val myDocumentSaver: Consumer<Document>
   private var myNotificationPane: NotificationPane? = null
   private var myOpenStorage: Node? = null
   private var mySaveStorage: Pane? = null
@@ -63,7 +63,7 @@ class StorageDialogBuilder(
   private val myDialogUi = DialogUi(dialogBuildApi) { myNotificationPane!!}
 
   init {
-    myDocumentReceiver = Consumer { document: Document ->
+    myDocumentOpener = Consumer { document: Document ->
       SwingUtilities.invokeLater {
         try {
           projectUi.openProject(documentManager.getProxyDocument(document), myProject)
@@ -74,7 +74,7 @@ class StorageDialogBuilder(
         }
       }
     }
-    myDocumentUpdater = Consumer { document ->
+    myDocumentSaver = Consumer { document ->
       SwingUtilities.invokeLater {
         if (myProject.document == null) {
           myProject.document = documentManager.getProxyDocument(document)
@@ -163,7 +163,7 @@ class StorageDialogBuilder(
 
   private fun buildStoragePane(mode: Mode): Pane {
     if (myProject.document != null) {
-      val storagePane = StoragePane(myCloudStorageOptions, myProject.documentManager, ReadOnlyProxyDocument(myProject.document), myMRU, myDocumentReceiver, myDocumentUpdater, myDialogUi)
+      val storagePane = StoragePane(myCloudStorageOptions, myProject.documentManager, ReadOnlyProxyDocument(myProject.document), myMRU, myDocumentOpener, myDocumentSaver, myDialogUi)
       return storagePane.buildStoragePane(mode)
     } else {
       return Pane(Label("No document!"))

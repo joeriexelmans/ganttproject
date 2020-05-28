@@ -978,15 +978,13 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
   // ResourceListener implementation
   @Override
   public void resourceAdded(ResourceEvent event) {
-    if (statusBar != null) {
-      // tabpane.setSelectedIndex(1);
-      String description = language.getCorrectedLabel("resource.new.description");
-      if (description == null) {
-        description = language.getCorrectedLabel("resource.new");
-      }
-      myUIFacade.setStatusText(description);
-      refreshProjectInformation();
+    // tabpane.setSelectedIndex(1);
+    String description = language.getCorrectedLabel("resource.new.description");
+    if (description == null) {
+      description = language.getCorrectedLabel("resource.new");
     }
+    myUIFacade.setStatusText(description);
+    refreshProjectInformation();
   }
 
   @Override

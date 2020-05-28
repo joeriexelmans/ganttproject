@@ -81,7 +81,7 @@ public class ProjectMenu extends JMenu {
 //    add(mServer);
 
     add(myPrintAction);
-    add(new ProjectPreviewAction(app));
+    add(new ProjectPreviewAction(app, app.getUIFacade()));
     addSeparator();
     add(exitAction);
     setToolTipText(null);

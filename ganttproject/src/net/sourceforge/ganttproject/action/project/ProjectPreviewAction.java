@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.action.project;
 
-import net.sourceforge.ganttproject.GanttProject;
+import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.gui.UIFacade;
@@ -32,14 +32,14 @@ import java.util.Date;
  */
 public class ProjectPreviewAction extends GPAction {
 
+  private final IGanttProject myApp;
+
   private final UIFacade myUIFacade;
 
-  private final GanttProject myProject;
-
-  public ProjectPreviewAction(GanttProject project) {
+  public ProjectPreviewAction(IGanttProject app, UIFacade uiFacade) {
     super("project.preview");
-    myUIFacade = project.getUIFacade();
-    myProject = project;
+    myApp = app;
+    myUIFacade = uiFacade;
   }
 
   @Override
@@ -63,7 +63,7 @@ public class ProjectPreviewAction extends GPAction {
     }
 
     try {
-      PrintPreview preview = new PrintPreview(myProject, myUIFacade, chart, startDate, endDate);
+      PrintPreview preview = new PrintPreview(myApp.getDocument(), myUIFacade, chart, startDate, endDate);
       preview.setVisible(true);
     } catch (OutOfMemoryError exception) {
       myUIFacade.showErrorDialog(getI18n("printing.out_of_memory"));

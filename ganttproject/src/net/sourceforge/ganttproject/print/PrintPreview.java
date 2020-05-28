@@ -146,7 +146,7 @@ public class PrintPreview extends JDialog {
     }
   };
 
-  private final IGanttProject myProject;
+  private final Document myDocument;
 
   private final UIFacade myUIFacade;
 
@@ -156,9 +156,9 @@ public class PrintPreview extends JDialog {
     updateSourceImage();
   }
 
-  public PrintPreview(IGanttProject project, UIFacade uifacade, Chart chart, Date start, Date end) {
+  public PrintPreview(Document document, UIFacade uifacade, Chart chart, Date start, Date end) {
     super(uifacade.getMainFrame(), language.getText("preview"), false);
-    myProject = project;
+    myDocument = document;
     myUIFacade = uifacade;
     Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
     setSize((int) (screenDim.width * 0.75), (int) (screenDim.height * 0.75));
@@ -578,9 +578,8 @@ public class PrintPreview extends JDialog {
     PrintRequestAttributeSet attr = new HashPrintRequestAttributeSet();
     attr.add(myMediaSizeName);
     attr.add(myOrientation == PageFormat.LANDSCAPE ? OrientationRequested.LANDSCAPE : OrientationRequested.PORTRAIT);
-    Document doc = myProject.getDocument();
-    if (doc != null) {
-      attr.add(new JobName(doc.getFileName(), language.getLocale()));
+    if (myDocument != null) {
+      attr.add(new JobName(myDocument.getFileName(), language.getLocale()));
     }
 
     if (prnJob.printDialog(attr)) {

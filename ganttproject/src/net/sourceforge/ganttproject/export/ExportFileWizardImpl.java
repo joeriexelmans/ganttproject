@@ -69,7 +69,7 @@ public class ExportFileWizardImpl extends WizardImpl {
       e.setContext(project, uiFacade, pluginPreferences);
     }
     addPage(new ExporterChooserPage(ourExporters, myState));
-    addPage(new FileChooserPage(myState, myApp, project, this, exportNode));
+    addPage(new FileChooserPage(myState, project, myApp.getDocument(), this, exportNode));
   }
 
   @Override

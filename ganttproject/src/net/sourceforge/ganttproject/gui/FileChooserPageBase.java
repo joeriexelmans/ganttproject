@@ -20,6 +20,7 @@ package net.sourceforge.ganttproject.gui;
 
 import biz.ganttproject.core.option.DefaultBooleanOption;
 import biz.ganttproject.core.option.GPOptionGroup;
+import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.gui.options.GPOptionChoicePanel;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
@@ -49,6 +50,7 @@ public abstract class FileChooserPageBase implements WizardPage {
   public static final int URL_SOURCE = 1;
   protected static final String PREF_SELECTED_FILE = "selected_file";
   private static final String PREF_SELECTED_URL = "selected_url";
+  protected final Document myCurrentDocument;
 
   private JPanel myComponent;
   private TextFieldAndFileChooserComponent myChooser;
@@ -62,24 +64,24 @@ public abstract class FileChooserPageBase implements WizardPage {
   private final JLabel myUrlLabel = new JLabel(" ");
   private final Preferences myPreferences;
 
-  protected FileChooserPageBase(WizardImpl wizard, Preferences prefs, boolean enableUrlChooser) {
+  protected FileChooserPageBase(WizardImpl wizard, Preferences prefs, boolean enableUrlChooser, Document currentDocument) {
     myPreferences = prefs;
     isUrlChooserEnabled = enableUrlChooser;
     myWizard = wizard;
     myOptionsBuilder = new OptionsPageBuilder();
     mySecondaryOptionsComponent = new JPanel(new BorderLayout());
     mySecondaryOptionsComponent.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+    myCurrentDocument = currentDocument;
   }
 
   protected abstract String getFileChooserTitle();
 
   /** @return a default export filename */
   protected String getDefaultFileName() {
-    Document document = myWizard.getUIFacade().getGanttChart().getApp().getDocument();
-    if (document == null) {
+    if (myCurrentDocument == null) {
       return "document.gan";
     }
-    return document.getFileName();
+    return myCurrentDocument.getFileName();
   }
 
   protected int getFileChooserSelectionMode() {

@@ -117,7 +117,7 @@ import java.util.regex.Pattern;
  *  <li> The logical state of the main application (path of currently opened document, dirty/clean, ...) </li>
  *  <li> Ownership of other global interests (DocumentManager, UndoManager, DocumentsMRU, ...) </li>
  */
-public class GanttProject extends JFrame implements IGanttProject, ResourceListener, GanttLanguage.Listener {
+public class GanttProject extends JFrame implements IGanttProject, GanttLanguage.Listener {
   // Static members
   private final static GanttLanguage language = GanttLanguage.getInstance();
 
@@ -251,7 +251,29 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
     myUIConfiguration.setChartFontOption(myUIFacade.getChartFontOption());
     myUIConfiguration.setDpiOption(myUIFacade.getDpiOption());
 
-    myProject.hrManager.addListener(this);
+    myProject.hrManager.addListener(new ResourceListener() {
+      @Override
+      public void resourceAdded(ResourceEvent event) {
+        // tabpane.setSelectedIndex(1);
+        String description = language.getCorrectedLabel("resource.new.description");
+        if (description == null) {
+          description = language.getCorrectedLabel("resource.new");
+        }
+        myUIFacade.setStatusText(description);
+        refreshProjectInformation();
+      }
+
+      @Override
+      public void resourcesRemoved(ResourceEvent event) {
+        refreshProjectInformation();
+      }
+
+      @Override
+      public void resourceChanged(ResourceEvent e) {}
+
+      @Override
+      public void resourceAssignmentsChanged(ResourceEvent e) {}
+    });
 
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
     setIconImage(icon.getImage());
@@ -973,30 +995,6 @@ public class GanttProject extends JFrame implements IGanttProject, ResourceListe
     myObservableDocument.set(null);
     myFacadeInvalidator.projectClosed();
   }
-
-  // ///////////////////////////////////////////////////////////////
-  // ResourceListener implementation
-  @Override
-  public void resourceAdded(ResourceEvent event) {
-    // tabpane.setSelectedIndex(1);
-    String description = language.getCorrectedLabel("resource.new.description");
-    if (description == null) {
-      description = language.getCorrectedLabel("resource.new");
-    }
-    myUIFacade.setStatusText(description);
-    refreshProjectInformation();
-  }
-
-  @Override
-  public void resourcesRemoved(ResourceEvent event) {
-    refreshProjectInformation();
-  }
-
-  @Override
-  public void resourceChanged(ResourceEvent e) {}
-
-  @Override
-  public void resourceAssignmentsChanged(ResourceEvent e) {}
 
   // ///////////////////////////////////////////////////////////////
   // UIFacade

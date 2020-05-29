@@ -1,21 +1,11 @@
 package net.sourceforge.ganttproject.parser;
 
-import biz.ganttproject.core.time.CalendarFactory;
-import biz.ganttproject.core.time.impl.GPTimeUnitStack;
-import junit.framework.TestCase;
-import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
-import net.sourceforge.ganttproject.project.IProject;
 import net.sourceforge.ganttproject.project.Project;
-import net.sourceforge.ganttproject.project.ProjectFactory;
 import net.sourceforge.ganttproject.test.ProjectTestBase;
-import net.sourceforge.ganttproject.update.UpdateParserTest;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.util.Locale;
 
 /**
  * This test was written to understand the minimum dependencies of parsing an XML file,
@@ -27,7 +17,7 @@ import java.util.Locale;
 public class ParserTest extends ProjectTestBase {
 
     public void testParser() throws IOException {
-        Project project = getTestProject("/testproject.gan");
+        Project project = getTestProject("/testproject.xml");
 
         // task and resource count
         assertEquals(5, project.getTaskManager().getTaskCount());
@@ -45,7 +35,7 @@ public class ParserTest extends ProjectTestBase {
     }
 
     public void testUnparser() throws IOException, InterruptedException {
-        Project project = getTestProject("/testproject.gan");
+        Project project = getTestProject("/testproject.xml");
 
         // now serialize it
         GanttXMLSaver saver = new GanttXMLSaver(project);

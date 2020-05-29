@@ -12,12 +12,12 @@ import static net.sourceforge.ganttproject.resource.HumanResourceMerger.MergeRes
 
 public class ImporterTest extends ProjectTestBase {
     public void testImport() throws IOException {
-        Project target = getTestProject("/testproject.gan");
+        Project target = getTestProject("/testproject.xml");
 
         assertEquals(2, target.getHumanResourceManager().getResources().size());
 
         // Project with a single resource defined
-        Project source = getTestProject("/importable.gan");
+        Project source = getTestProject("/importable.xml");
 
         HumanResourceMerger.MergeResourcesOption mergeOption = new HumanResourceMerger.MergeResourcesOption();
         mergeOption.setValue(BY_NAME);

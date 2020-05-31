@@ -1,14 +1,10 @@
 package net.sourceforge.ganttproject.test;
 
 import biz.ganttproject.core.time.CalendarFactory;
-import biz.ganttproject.core.time.impl.GPTimeUnitStack;
-import junit.framework.TestCase;
 import net.sourceforge.ganttproject.ProjectStub;
-import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.parser.Parser;
 import net.sourceforge.ganttproject.parser.ParserTest;
 import net.sourceforge.ganttproject.project.Project;
-import net.sourceforge.ganttproject.project.ProjectFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,16 +28,10 @@ public abstract class ProjectTestBase {
         };
     }
 
-    protected final static ProjectFactory factory = new ProjectFactory(){
-        public Project newProject() {
-            return new ProjectStub();
-        }
-    };
-
     protected final static Project getTestProject(String resourcePath) throws IOException {
         Parser parser = new Parser(null);
         InputStream is = ParserTest.class.getResourceAsStream(resourcePath);
-        Project project = factory.newProject();
+        Project project = new ProjectStub();
         parser.parse(project, is);
         return project;
     }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TestProject" company="" webLink="http://" view-date="2020-04-22" view-index="1" gantt-divider-location="300" resource-divider-location="400" version="3.0" locale="en">
+    <description/>
+    <view zooming-state="default:2" id="gantt-chart">
+        <field id="tpd3" name="Name" width="109" order="0"/>
+        <field id="tpd4" name="Begin date" width="59" order="1"/>
+        <field id="tpd5" name="End date" width="59" order="2"/>
+        <field id="tpc0" name="cate

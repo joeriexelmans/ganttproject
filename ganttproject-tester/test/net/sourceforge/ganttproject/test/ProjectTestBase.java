@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.Locale;
 
-public abstract class ProjectTestBase extends TestCase {
+public abstract class ProjectTestBase {
     // Apparently this is how one "sets up" the locale for the calendar...
     static {
         new CalendarFactory() {

@@ -5,14 +5,17 @@ import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.test.ProjectTestBase;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 
 import static biz.ganttproject.core.calendar.ImportCalendarOption.Values.*;
 import static net.sourceforge.ganttproject.resource.HumanResourceMerger.MergeResourcesOption.*;
+import static org.junit.Assert.assertEquals;
 
 public class ImporterTest extends ProjectTestBase {
+    @Test
     public void testImport() throws IOException {
         Project target = getTestProject("/testproject.xml");
 

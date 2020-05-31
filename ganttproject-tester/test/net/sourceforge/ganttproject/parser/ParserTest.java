@@ -4,19 +4,23 @@ import net.sourceforge.ganttproject.io.GanttXMLSaver;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.test.ProjectTestBase;
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 
 import java.io.*;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
- * This test was written to understand the minimum dependencies of parsing an XML file,
- * specifically, if we can parse an XML file apart from any UI stuff.
- * For the usage of the tag handlers, we base ourselves on ProxyDocument.ParsingState.enter()
+ * This test was initially written to understand the minimum dependencies of parsing an XML file.
+ * Now it is just a simple test covering much of the parsing logic. Can be extended further.
  *
  * @author joeriexelmans
   */
 public class ParserTest extends ProjectTestBase {
 
-    public void testParser() throws IOException {
+    @Test
+    public void parseFile() throws IOException {
         Project project = getTestProject("/testproject.xml");
 
         // task and resource count
@@ -34,7 +38,13 @@ public class ParserTest extends ProjectTestBase {
         assertEquals(2, project.getBaselines().size());
     }
 
-    public void testUnparser() throws IOException, InterruptedException {
+    @Test(expected = NullPointerException.class)
+    public void parseInvalidFile() throws NullPointerException {
+        throw new NullPointerException();
+    }
+
+    @Test
+    public void unparse() throws IOException, InterruptedException {
         Project project = getTestProject("/testproject.xml");
 
         // now serialize it

@@ -31,7 +31,7 @@ import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.CustomColumnsValues;
 import net.sourceforge.ganttproject.task.Task;
@@ -39,9 +39,9 @@ import net.sourceforge.ganttproject.task.TaskProperties;
 
 public class PropertyFetcher {
   private static final GanttLanguage language = GanttLanguage.getInstance();
-  private final IProject myProject;
+  private final Project myProject;
 
-  public PropertyFetcher(IProject project) {
+  public PropertyFetcher(Project project) {
     myProject = project;
   }
 

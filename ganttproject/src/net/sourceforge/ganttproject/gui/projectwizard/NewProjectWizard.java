@@ -21,12 +21,12 @@ package net.sourceforge.ganttproject.gui.projectwizard;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.roles.RoleSet;
 
 public class NewProjectWizard {
 
-  public PrjInfos createNewProject(IProject project, UIFacade uiFacade) {
+  public PrjInfos createNewProject(Project project, UIFacade uiFacade) {
     RoleSet[] roleSets = project.getRoleManager().getRoleSets();
     NewProjectWizardWindow newProjectWizard = new NewProjectWizardWindow(project, uiFacade, new I18N());
     newProjectWizard.addProjectNamePage(project);

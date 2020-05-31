@@ -31,7 +31,7 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.ProjectCalendarOptionPageProvider;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 /**
  * This action shows a project calendar settings page.
@@ -42,11 +42,11 @@ public class ProjectCalendarDialogAction extends GPAction {
 
   private final IGanttProject myApp;
 
-  private final IProject myProject;
+  private final Project myProject;
 
   private final UIFacade myUIFacade;
 
-  public ProjectCalendarDialogAction(IGanttProject app, IProject project, UIFacade uiFacade) {
+  public ProjectCalendarDialogAction(IGanttProject app, Project project, UIFacade uiFacade) {
     super("editPublicHolidays");
     myApp = app;
     myProject = project;

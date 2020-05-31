@@ -29,7 +29,7 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
 import net.sourceforge.ganttproject.document.FileDocument;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger.MergeResourcesOption;
@@ -66,7 +66,7 @@ public class ImporterFromGanttFile extends ImporterBase {
   }
 
   @Override
-  public void setContext(IGanttProject app, IProject project, UIFacade uiFacade, Preferences preferences) {
+  public void setContext(IGanttProject app, Project project, UIFacade uiFacade, Preferences preferences) {
     super.setContext(app, project, uiFacade, preferences);
     final Preferences node = preferences.node("/instance/net.sourceforge.ganttproject/import");
     myMergeResourcesOption.lock();
@@ -84,7 +84,7 @@ public class ImporterFromGanttFile extends ImporterBase {
   @Override
   public void run() {
     final File selectedFile = getFile();
-    final IProject targetProject = getProject();
+    final Project targetProject = getProject();
     final BufferProject bufferProject = createBufferProject(targetProject, getUiFacade());
     getUiFacade().getUndoManager().undoableEdit("Import", new Runnable() {
       @Override
@@ -113,7 +113,7 @@ public class ImporterFromGanttFile extends ImporterBase {
     });
   }
 
-  private BufferProject createBufferProject(final IProject targetProject, final UIFacade uiFacade) {
+  private BufferProject createBufferProject(final Project targetProject, final UIFacade uiFacade) {
     return new BufferProject(targetProject);
   }
 
@@ -121,7 +121,7 @@ public class ImporterFromGanttFile extends ImporterBase {
     return new FileDocument(selectedFile);
   }
 
-  public static Map<Task, Task> importProject(IProject targetProject, IProject sourceProject, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
+  public static Map<Task, Task> importProject(Project targetProject, Project sourceProject, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
     targetProject.getRoleManager().importData(sourceProject.getRoleManager());
     if (importCalendarOption != null) {
       targetProject.getActiveCalendar().importCalendar(sourceProject.getActiveCalendar(), importCalendarOption);
@@ -150,7 +150,7 @@ public class ImporterFromGanttFile extends ImporterBase {
     return result;
   }
 
-  public static Map<Task, Task> importBufferProject(IProject targetProject, BufferProject bufferProject, UIFacade uiFacade, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
+  public static Map<Task, Task> importBufferProject(Project targetProject, BufferProject bufferProject, UIFacade uiFacade, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
     Map<Task,Task> result = importProject(targetProject, bufferProject, mergeOption, importCalendarOption);
     uiFacade.refresh();
     uiFacade.getTaskTree().getVisibleFields().importData(bufferProject.getTaskVisibleFields());

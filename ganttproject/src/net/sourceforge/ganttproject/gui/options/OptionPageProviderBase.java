@@ -29,12 +29,12 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.options.model.OptionPageProvider;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 public abstract class OptionPageProviderBase implements OptionPageProvider {
   private String myPageID;
   private IGanttProject myApp;
-  private IProject myProject;
+  private Project myProject;
   private UIFacade myUiFacade;
 
   protected OptionPageProviderBase(String pageID) {
@@ -57,7 +57,7 @@ public abstract class OptionPageProviderBase implements OptionPageProvider {
   }
 
   @Override
-  public void init(IGanttProject app, IProject project, UIFacade uiFacade) {
+  public void init(IGanttProject app, Project project, UIFacade uiFacade) {
     myApp = app;
     myProject = project;
     myUiFacade = uiFacade;
@@ -77,7 +77,7 @@ public abstract class OptionPageProviderBase implements OptionPageProvider {
     return myApp;
   }
 
-  final protected IProject getProject() {
+  final protected Project getProject() {
     return myProject;
   }
 

@@ -23,7 +23,7 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.export.ExportFileWizardImpl;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.projectwizard.WizardImpl;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.osgi.service.prefs.Preferences;
 
 import java.awt.event.ActionEvent;
@@ -34,13 +34,13 @@ import java.awt.event.ActionEvent;
 public class ProjectExportAction extends GPAction {
   private final IGanttProject myApp;
 
-  private final IProject myProject;
+  private final Project myProject;
 
   private final UIFacade myUIFacade;
 
   private Preferences myPluginPrerences;
 
-  public ProjectExportAction(UIFacade uiFacade, IGanttProject app, IProject project, Preferences pluginPrerences) {
+  public ProjectExportAction(UIFacade uiFacade, IGanttProject app, Project project, Preferences pluginPrerences) {
     super("project.export");
     myApp = app;
     myProject = project;

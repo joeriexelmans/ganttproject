@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.importer;
 
 import java.io.File;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.osgi.service.prefs.Preferences;
 
 import biz.ganttproject.core.option.GPOptionGroup;
@@ -38,7 +38,7 @@ public interface Importer {
 
   String EXTENSION_POINT_ID = "net.sourceforge.ganttproject.importer";
 
-  void setContext(IGanttProject app, IProject project, UIFacade uiFacade, Preferences pluginPreferences);
+  void setContext(IGanttProject app, Project project, UIFacade uiFacade, Preferences pluginPreferences);
 
   boolean isReady();
   void run();

@@ -77,7 +77,7 @@ import net.sourceforge.ganttproject.language.GanttLanguage.Event;
 import net.sourceforge.ganttproject.parser.ParserFactory;
 import net.sourceforge.ganttproject.plugins.PluginManager;
 import net.sourceforge.ganttproject.print.PrintManager;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
@@ -934,7 +934,7 @@ public class GanttProject extends JFrame implements IGanttProject, GanttLanguage
   // IGanttProject implementation
 
   @Override
-  public IProject getCurrentProject() {
+  public Project getCurrentProject() {
     return myProject;
   }
 

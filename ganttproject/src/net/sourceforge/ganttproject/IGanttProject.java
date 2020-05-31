@@ -25,7 +25,7 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 /**
  * This interface represents a project as a logical business entity, without any
@@ -44,7 +44,7 @@ public interface IGanttProject {
    * This function was introduced to ease the refactoring of the GanttProject God class.
    */
   @Deprecated
-  public IProject getCurrentProject();
+  public Project getCurrentProject();
 
   // main app logic
   void open(Document document) throws IOException, DocumentException;

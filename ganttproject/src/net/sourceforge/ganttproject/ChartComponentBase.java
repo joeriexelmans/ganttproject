@@ -42,7 +42,7 @@ import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomListener;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.TaskManager;
 import org.eclipse.core.runtime.IStatus;
 
@@ -84,7 +84,7 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
   }
   private final IGanttProject myApp;
 
-  protected final IProject myProject;
+  protected final Project myProject;
 
   private final ZoomManager myZoomManager;
 
@@ -94,7 +94,7 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
 
   private final ViewChartOptionsDialogAction myOptionsDialogAction;
 
-  public ChartComponentBase(IGanttProject app, IProject project, UIFacade uiFacade, ZoomManager zoomManager) {
+  public ChartComponentBase(IGanttProject app, Project project, UIFacade uiFacade, ZoomManager zoomManager) {
     myApp = app;
     myProject = project;
     myUIFacade = uiFacade;
@@ -125,7 +125,7 @@ public abstract class ChartComponentBase extends JPanel implements TimelineChart
   }
 
   @Override
-  public void init(IProject project, IntegerOption dpiOption, FontOption chartFontOption) {
+  public void init(Project project, IntegerOption dpiOption, FontOption chartFontOption) {
     // Skip as we already have a project instance.
   }
 

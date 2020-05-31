@@ -52,7 +52,7 @@ import net.sourceforge.ganttproject.document.webdav.WebDavStorageImpl
 import net.sourceforge.ganttproject.filter.GanttXMLFileFilter
 import net.sourceforge.ganttproject.gui.projectwizard.NewProjectWizard
 import net.sourceforge.ganttproject.language.GanttLanguage
-import net.sourceforge.ganttproject.project.IProject
+import net.sourceforge.ganttproject.project.Project
 import net.sourceforge.ganttproject.undo.GPUndoManager
 import org.eclipse.core.runtime.IStatus
 import java.awt.event.ActionEvent
@@ -304,7 +304,7 @@ class ProjectUIFacadeImpl(
     undoManager.die()
   }
 
-  override fun createProjectWizard(app: IGanttProject, project: IProject) {
+  override fun createProjectWizard(app: IGanttProject, project: Project) {
     if (!saveChangesDialog(app)) {
       return
     }

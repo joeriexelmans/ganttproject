@@ -25,7 +25,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.projectwizard.I18N;
 import net.sourceforge.ganttproject.gui.projectwizard.WeekendConfigurationPage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
 
@@ -36,13 +36,13 @@ import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
  */
 public class WeekendsSettingsPanel extends GeneralOptionPanel {
 
-  private final IProject myProject;
+  private final Project myProject;
 
   private WeekendConfigurationPage weekendConfigurationPanel;
 
   private GPCalendarCalc calendar;
 
-  public WeekendsSettingsPanel(IProject project, UIFacade uiFacade) {
+  public WeekendsSettingsPanel(Project project, UIFacade uiFacade) {
     super(uiFacade, language.getCorrectedLabel("weekends"), language.getText("settingsWeekends"));
     myProject = project;
     calendar = new WeekendCalendarImpl();

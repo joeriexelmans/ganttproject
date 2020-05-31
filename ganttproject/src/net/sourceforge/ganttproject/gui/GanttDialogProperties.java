@@ -29,7 +29,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.CancelAction;
 import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
 
 public class GanttDialogProperties {
@@ -39,7 +39,7 @@ public class GanttDialogProperties {
     myTasks = tasks;
   }
 
-  public void show(final IProject project, final UIFacade uiFacade) {
+  public void show(final Project project, final UIFacade uiFacade) {
     final GanttLanguage language = GanttLanguage.getInstance();
     final GanttTaskPropertiesBean taskPropertiesBean = new GanttTaskPropertiesBean(myTasks, project, uiFacade);
     final Action[] actions = new Action[] { new OkAction() {

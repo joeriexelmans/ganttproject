@@ -67,7 +67,7 @@ import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.LanguageOption;
 import net.sourceforge.ganttproject.language.ShortDateFormatOption;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import net.sourceforge.ganttproject.task.TaskView;
@@ -152,11 +152,11 @@ class UIFacadeImpl extends ProgressProvider implements UIFacade {
   private ChangeValueListener myAppFontValueListener;
   private final LanguageOption myLanguageOption;
   private final GanttProject myApp;
-  private final IProject myProject;
+  private final Project myProject;
   private FontSpec myLastFontSpec;
 
   UIFacadeImpl(JFrame mainFrame, GanttStatusBar statusBar, NotificationManagerImpl notificationManager,
-               final GanttProject app, IProject project) {
+               final GanttProject app, Project project) {
     myMainFrame = mainFrame;
     myApp = app;
     myProject = project;

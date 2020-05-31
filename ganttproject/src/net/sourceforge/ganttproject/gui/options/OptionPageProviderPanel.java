@@ -28,14 +28,14 @@ import biz.ganttproject.core.option.GPOptionGroup;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.model.OptionPageProvider;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 public class OptionPageProviderPanel {
   private final OptionPageProvider myProvider;
   private final GPOptionGroup[] myGroups;
   private final UIFacade myUiFacade;
 
-  public OptionPageProviderPanel(OptionPageProvider provider, IGanttProject app, IProject project, UIFacade uiFacade) {
+  public OptionPageProviderPanel(OptionPageProvider provider, IGanttProject app, Project project, UIFacade uiFacade) {
     myUiFacade = uiFacade;
     myProvider = provider;
     provider.init(app, project, uiFacade);

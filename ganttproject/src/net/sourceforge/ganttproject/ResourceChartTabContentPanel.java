@@ -10,7 +10,7 @@ import net.sourceforge.ganttproject.chart.overview.GPToolbar;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.view.GPView;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ class ResourceChartTabContentPanel extends ChartTabContentPanel implements GPVie
   private Component myResourceChart;
   private JComponent myTabContentPanel;
 
-  ResourceChartTabContentPanel(IProject project, UIFacade workbenchFacade, TreeTableContainer resourceTree,
+  ResourceChartTabContentPanel(Project project, UIFacade workbenchFacade, TreeTableContainer resourceTree,
                                ResourceLoadGraphicArea resourceChart) {
     super(project, workbenchFacade, resourceChart);
     myTreeFacade = resourceTree;

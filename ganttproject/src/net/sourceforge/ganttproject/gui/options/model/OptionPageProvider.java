@@ -24,7 +24,7 @@ import biz.ganttproject.core.option.GPOptionGroup;
 
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 public interface OptionPageProvider {
   GPOptionGroup[] getOptionGroups();
@@ -35,7 +35,7 @@ public interface OptionPageProvider {
 
   Component buildPageComponent();
 
-  void init(IGanttProject app, IProject project, UIFacade uiFacade);
+  void init(IGanttProject app, Project project, UIFacade uiFacade);
 
   void commit();
 }

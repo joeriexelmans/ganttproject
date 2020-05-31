@@ -32,7 +32,7 @@ import net.sourceforge.ganttproject.gui.ResourceTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.util.MouseUtil;
@@ -61,7 +61,7 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
 
   private final ResourceTreeUIFacade myTreeUi;
 
-  public ResourceLoadGraphicArea(GanttProject app, IProject project, ZoomManager zoomManager, ResourceTreeUIFacade treeUi) {
+  public ResourceLoadGraphicArea(GanttProject app, Project project, ZoomManager zoomManager, ResourceTreeUIFacade treeUi) {
     super(app, project, app.getUIFacade(), zoomManager);
     appli = app;
     myTreeUi = treeUi;
@@ -154,7 +154,7 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
 
     private ResourceChartSelection mySelection;
 
-    public ResourcechartImplementation(IGanttProject app, IProject project, UIFacade uiFacade, ChartModelBase chartModel,
+    public ResourcechartImplementation(IGanttProject app, Project project, UIFacade uiFacade, ChartModelBase chartModel,
         ChartComponentBase chartComponent) {
       super(app, project, uiFacade, chartModel, chartComponent);
     }
@@ -231,10 +231,10 @@ public class ResourceLoadGraphicArea extends ChartComponentBase implements Resou
 
   static class ResourceChartSelection extends AbstractChartImplementation.ChartSelectionImpl implements ClipboardOwner {
     private final ResourceTreePanel myResourcePanel;
-    private final IProject myProject;
+    private final Project myProject;
     private ClipboardContents myClipboardContents;
 
-    ResourceChartSelection(IProject project, ResourceTreePanel resourcePanel) {
+    ResourceChartSelection(Project project, ResourceTreePanel resourcePanel) {
       myProject = project;
       myResourcePanel = resourcePanel;
     }

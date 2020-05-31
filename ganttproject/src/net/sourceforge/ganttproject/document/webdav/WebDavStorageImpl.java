@@ -42,7 +42,7 @@ import net.sourceforge.ganttproject.action.OkAction;
 import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.DocumentStorageUi;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -66,10 +66,10 @@ public class WebDavStorageImpl implements DocumentStorageUi {
   private final StringOption myProxy = new DefaultStringOption("proxy", "");
   private final MiltonResourceFactory myWebDavFactory = new MiltonResourceFactory();
   private final IGanttProject myApp;
-  private final IProject myProject;
+  private final Project myProject;
   private final UIFacade myUiFacade;
 
-  public WebDavStorageImpl(IGanttProject app, final IProject project, UIFacade uiFacade) {
+  public WebDavStorageImpl(IGanttProject app, final Project project, UIFacade uiFacade) {
     myApp = app;
     myProject = project;
     myUiFacade = uiFacade;

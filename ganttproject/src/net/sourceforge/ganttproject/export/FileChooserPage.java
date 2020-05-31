@@ -26,7 +26,7 @@ import java.util.List;
 
 import javax.swing.filechooser.FileFilter;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.osgi.service.prefs.Preferences;
@@ -46,11 +46,11 @@ class FileChooserPage extends FileChooserPageBase {
 
   private final State myState;
 
-  private final IProject myProject;
+  private final Project myProject;
 
   private final GPOptionGroup myWebPublishingGroup;
 
-  FileChooserPage(State state, IProject project, Document currentDocument, WizardImpl wizardImpl, Preferences prefs) {
+  FileChooserPage(State state, Project project, Document currentDocument, WizardImpl wizardImpl, Preferences prefs) {
     super(wizardImpl, prefs, false, currentDocument);
     myState = state;
     myProject = project;
@@ -142,7 +142,7 @@ class FileChooserPage extends FileChooserPageBase {
     return customUI == null ? super.createSecondaryOptionsPanel() : customUI;
   }
 
-  static File proposeOutputFile(IProject currentProject, Document currentDocument, Exporter exporter) {
+  static File proposeOutputFile(Project currentProject, Document currentDocument, Exporter exporter) {
     String proposedExtension = exporter.proposeFileExtension();
     if (proposedExtension == null) {
       return null;

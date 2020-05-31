@@ -4,7 +4,7 @@
  */
 package net.sourceforge.ganttproject.document;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import java.io.IOException;
 
@@ -54,7 +54,7 @@ public abstract class AbstractDocument implements Document {
   }
 
   @Override
-  public void read(IProject target) throws IOException {
+  public void read(Project target) throws IOException {
     throw new UnsupportedOperationException("This method should be overriden in derived classes");
   }
 

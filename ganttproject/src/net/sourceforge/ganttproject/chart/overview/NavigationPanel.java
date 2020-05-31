@@ -25,7 +25,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.scroll.*;
 import net.sourceforge.ganttproject.chart.TimelineChart;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -40,7 +40,7 @@ public class NavigationPanel {
   private final IntegerOption myDpiOption;
   private final GPOption<String> myLafOption;
 
-  public NavigationPanel(IProject project, TimelineChart chart, UIFacade uiFacade) {
+  public NavigationPanel(Project project, TimelineChart chart, UIFacade uiFacade) {
     myChart = chart;
     myScrollActions = new AbstractAction[] { new ScrollToStartAction(project, myChart),
         new ScrollToTodayAction(myChart), new ScrollToEndAction(project, myChart),

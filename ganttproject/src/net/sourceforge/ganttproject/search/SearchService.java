@@ -22,7 +22,7 @@ import java.util.List;
 
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 /**
  * Interface of a pluggable search service. Given a search query, a search
@@ -41,7 +41,7 @@ import net.sourceforge.ganttproject.project.IProject;
 public interface SearchService<SR extends SearchResult<SO>, SO> {
   String EXTENSION_POINT_ID = "net.sourceforge.ganttproject.search";
 
-  void init(IProject project, UIFacade uiFacade);
+  void init(Project project, UIFacade uiFacade);
 
   List<SR> search(String query);
 

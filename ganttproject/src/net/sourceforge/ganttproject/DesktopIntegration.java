@@ -9,7 +9,7 @@ import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.gui.ProjectUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.about.AboutDialog2;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,7 @@ public class DesktopIntegration {
     return System.getProperty("os.name").toLowerCase().startsWith("mac os x");
   }
 
-  static void setup(final GanttProject app, IProject project) {
+  static void setup(final GanttProject app, Project project) {
     final UIFacade uiFacade = app.getUIFacade();
     final ProjectUIFacade projectUiFacade = app.getProjectUIFacade();
 

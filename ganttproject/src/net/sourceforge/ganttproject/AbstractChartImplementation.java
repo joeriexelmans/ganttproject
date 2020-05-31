@@ -45,7 +45,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomEvent;
 import net.sourceforge.ganttproject.gui.zoom.ZoomListener;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import org.eclipse.core.runtime.IStatus;
@@ -67,7 +67,7 @@ import java.util.TimerTask;
 public class AbstractChartImplementation implements TimelineChart, ZoomListener {
   private final ChartModelBase myChartModel;
   private final IGanttProject myApp;
-  private final IProject myProject;
+  private final Project myProject;
   private Set<ChartSelectionListener> mySelectionListeners = new LinkedHashSet<>();
   private final ChartComponentBase myChartComponent;
   private MouseInteraction myActiveInteraction;
@@ -122,7 +122,7 @@ public class AbstractChartImplementation implements TimelineChart, ZoomListener 
     }
   }
 
-  public AbstractChartImplementation(IGanttProject app, IProject project, UIFacade uiFacade, ChartModelBase chartModel, ChartComponentBase chartComponent) {
+  public AbstractChartImplementation(IGanttProject app, Project project, UIFacade uiFacade, ChartModelBase chartModel, ChartComponentBase chartComponent) {
     assert chartModel != null;
     myApp = app;
     myProject = project;
@@ -154,7 +154,7 @@ public class AbstractChartImplementation implements TimelineChart, ZoomListener 
 
 
   @Override
-  public void init(IProject project, IntegerOption dpiOption, FontOption chartFontOption) {
+  public void init(Project project, IntegerOption dpiOption, FontOption chartFontOption) {
     // Skip as we already have a project instance.
   }
 

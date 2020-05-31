@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.IGanttProject;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 class ResourceSaver extends SaverBase {
-  void save(IProject project, TransformerHandler handler) throws SAXException {
+  void save(Project project, TransformerHandler handler) throws SAXException {
     final AttributesImpl attrs = new AttributesImpl();
     startElement("resources", handler);
     saveCustomColumnDefinitions(project, handler);
@@ -84,7 +84,7 @@ class ResourceSaver extends SaverBase {
     }
   }
 
-  private void saveCustomColumnDefinitions(IProject project, TransformerHandler handler) throws SAXException {
+  private void saveCustomColumnDefinitions(Project project, TransformerHandler handler) throws SAXException {
     CustomPropertyManager customPropsManager = project.getHumanResourceManager().getCustomPropertyManager();
     List<CustomPropertyDefinition> definitions = customPropsManager.getDefinitions();
     // HumanResourceManager hrManager = (HumanResourceManager)

@@ -28,7 +28,7 @@ import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.ChartSelection;
 import net.sourceforge.ganttproject.gui.GanttTabbedPane;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
 
 import javax.swing.*;
@@ -51,7 +51,7 @@ public class ViewManagerImpl implements GPViewManager {
   private final CutAction myCutAction;
   private final PasteAction myPasteAction;
 
-  public ViewManagerImpl(IGanttProject app, IProject project, UIFacade uiFacade, GanttTabbedPane tabs, GPUndoManager undoManager) {
+  public ViewManagerImpl(IGanttProject app, Project project, UIFacade uiFacade, GanttTabbedPane tabs, GPUndoManager undoManager) {
     myTabs = tabs;
     app.addProjectEventListener(getProjectEventListener());
     // Create actions

@@ -25,7 +25,7 @@ import biz.ganttproject.core.time.TimeDuration;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.chart.TimelineChart;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.TaskManager;
 
 public class ScrollToStartAction extends GPAction {
@@ -33,7 +33,7 @@ public class ScrollToStartAction extends GPAction {
   private final TaskManager myTaskManager;
   private final TimeDuration myCorrectionInterval;
 
-  public ScrollToStartAction(IProject project, TimelineChart chart) {
+  public ScrollToStartAction(Project project, TimelineChart chart) {
     super("scroll.start");
     myChart = chart;
     myTaskManager = project.getTaskManager();

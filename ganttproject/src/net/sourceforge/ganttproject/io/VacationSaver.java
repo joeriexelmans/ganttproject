@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.io;
 
 import javax.xml.transform.sax.TransformerHandler;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -30,7 +30,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 
 class VacationSaver extends SaverBase {
-  void save(IProject project, TransformerHandler handler) throws SAXException {
+  void save(Project project, TransformerHandler handler) throws SAXException {
     AttributesImpl attrs = new AttributesImpl();
     startElement("vacations", handler);
     HumanResource[] resources = project.getHumanResourceManager().getResourcesArray();

@@ -29,7 +29,7 @@ import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.ResourceTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.AssignmentContext;
 import net.sourceforge.ganttproject.resource.AssignmentNode;
 import net.sourceforge.ganttproject.resource.HumanResource;
@@ -55,7 +55,7 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
 
   public final GanttProject myApp;
 
-  private final IProject myProject;
+  private final Project myProject;
 
   private final ResourceActionSet myResourceActionSet;
   private final GanttProject.RowHeightAligner myRowHeightAligner;
@@ -67,7 +67,7 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
   private final UIFacade myUIFacade;
 
   private static Pair<ResourceTreeTable, ResourceTreeTableModel> createTreeTable(GanttProject app,
-                                                                                 IProject project,
+                                                                                 Project project,
                                                                                  UIFacade uiFacade) {
     ResourceTreeTableModel model = new ResourceTreeTableModel(project.getHumanResourceManager(),
         project.getTaskManager(), project.getResourceCustomPropertyManager());
@@ -75,7 +75,7 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
     return Pair.create(table, model);
   }
 
-  public ResourceTreePanel(final GanttProject app, IProject project, final UIFacade uiFacade) {
+  public ResourceTreePanel(final GanttProject app, Project project, final UIFacade uiFacade) {
     super(createTreeTable(app, project, uiFacade));
     myApp = app;
     myProject = project;

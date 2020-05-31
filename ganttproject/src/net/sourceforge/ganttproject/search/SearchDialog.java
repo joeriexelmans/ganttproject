@@ -21,7 +21,7 @@ package net.sourceforge.ganttproject.search;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.plugins.PluginManager;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -38,9 +38,9 @@ class SearchDialog {
   }
 
   private final UIFacade myUiFacade;
-  private final IProject myProject;
+  private final Project myProject;
 
-  SearchDialog(IProject project, UIFacade uiFacade) {
+  SearchDialog(Project project, UIFacade uiFacade) {
     myProject = project;
     myUiFacade = uiFacade;
   }

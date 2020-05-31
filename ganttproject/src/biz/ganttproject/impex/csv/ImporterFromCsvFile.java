@@ -25,7 +25,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.importer.BufferProject;
 import net.sourceforge.ganttproject.importer.ImporterBase;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.util.collect.Pair;
 
@@ -66,7 +66,7 @@ public class ImporterFromCsvFile extends ImporterBase {
   @Override
   public void run() {
     File selectedFile = getFile();
-    IProject currentProject = getProject();
+    Project currentProject = getProject();
     BufferProject bufferProject = new BufferProject(currentProject);
     GanttCSVOpen opener = new GanttCSVOpen(selectedFile, bufferProject.getTaskManager(),
         bufferProject.getHumanResourceManager(), bufferProject.getRoleManager(),

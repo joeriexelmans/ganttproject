@@ -22,15 +22,15 @@ import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.calendar.ImportCalendarOption;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.roles.RoleSet;
 
 public class NewProjectWizardWindow extends WizardImpl {
   private I18N myI18n;
   private GPCalendarCalc myCalendar;
-  private IProject myProject;
+  private Project myProject;
 
-  public NewProjectWizardWindow(IProject project, UIFacade uiFacade, I18N i18n) {
+  public NewProjectWizardWindow(Project project, UIFacade uiFacade, I18N i18n) {
     super(uiFacade, i18n.getNewProjectWizardWindowTitle());
     myI18n = i18n;
     myProject = project;
@@ -41,7 +41,7 @@ public class NewProjectWizardWindow extends WizardImpl {
     addPage(roleSetPage);
   }
 
-  public void addProjectNamePage(IProject project) {
+  public void addProjectNamePage(Project project) {
     WizardPage projectNamePage = new ProjectNamePage(project, myI18n);
     addPage(projectNamePage);
   }

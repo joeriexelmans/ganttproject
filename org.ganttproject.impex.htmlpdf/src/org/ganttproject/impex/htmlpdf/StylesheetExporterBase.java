@@ -22,10 +22,11 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.ganttproject.GanttOptions;
 import net.sourceforge.ganttproject.export.ExporterBase;
 import net.sourceforge.ganttproject.gui.UIFacade;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.osgi.service.prefs.Preferences;
 
 import biz.ganttproject.core.option.DefaultEnumerationOption;
@@ -74,8 +75,8 @@ public abstract class StylesheetExporterBase extends ExporterBase {
   }
 
   @Override
-  public void setContext(IProject project, UIFacade uiFacade, Preferences prefs) {
-    super.setContext(project, uiFacade, prefs);
+  public void setContext(Project project, UIFacade uiFacade, GanttOptions options, Preferences prefs) {
+    super.setContext(project, uiFacade, options, prefs);
     createStylesheetOption(getStylesheets());
   }
 

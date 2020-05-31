@@ -28,7 +28,7 @@ import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.view.GPView;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
@@ -43,7 +43,7 @@ class GanttChartTabContentPanel extends ChartTabContentPanel implements GPView {
   private final BaselineDialogAction myBaselineAction;
   private JComponent myComponent;
 
-  GanttChartTabContentPanel(GanttProject app, IProject project, UIFacade uiFacade, TreeTableContainer treeFacade,
+  GanttChartTabContentPanel(GanttProject app, Project project, UIFacade uiFacade, TreeTableContainer treeFacade,
                             JComponent chartComponent, UIConfiguration uiConfiguration) {
     super(project, uiFacade, app.getGanttChart());
     myGanttChart = app.getGanttChart();

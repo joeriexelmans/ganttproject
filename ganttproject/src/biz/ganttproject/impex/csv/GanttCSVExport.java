@@ -37,7 +37,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.io.CSVOptions;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.Role;
@@ -73,7 +73,7 @@ public class GanttCSVExport {
   private final CustomPropertyManager myHumanResourceCustomPropertyManager;
   private final RoleManager myRoleManager;
 
-  public GanttCSVExport(IProject project, CSVOptions csvOptions) {
+  public GanttCSVExport(Project project, CSVOptions csvOptions) {
     this(project.getTaskManager(), project.getHumanResourceManager(), project.getRoleManager(), csvOptions);
   }
 

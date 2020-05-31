@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.view.GPViewManager;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
 
 import javax.swing.*;
@@ -31,7 +31,7 @@ public class EditMenu extends JMenu {
   private final UndoAction myUndoAction;
   private final RedoAction myRedoAction;
 
-  public EditMenu(GanttProject app, IProject project, UIFacade uiFacade, GPViewManager viewManager, Runnable searchUi, String key) {
+  public EditMenu(GanttProject app, Project project, UIFacade uiFacade, GPViewManager viewManager, Runnable searchUi, String key) {
     super(GPAction.createVoidAction(key));
     final GPUndoManager undoManager = app.getUndoManager();
     myUndoAction = new UndoAction(undoManager);

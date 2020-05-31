@@ -30,7 +30,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.export.ExportException;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.util.FileUtil;
 
 import org.xml.sax.SAXException;
@@ -44,10 +44,10 @@ import biz.ganttproject.core.time.CalendarFactory;
  * @author dbarashev (Dmitry Barashev)
  */
 public class HtmlSerializer extends XmlSerializer {
-  private final IProject myProject;
+  private final Project myProject;
   private final UIFacade myUiFacade;
 
-  public HtmlSerializer(IProject project, UIFacade uiFacade) {
+  public HtmlSerializer(Project project, UIFacade uiFacade) {
     myProject = project;
     myUiFacade = uiFacade;
   }

@@ -18,7 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.document;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
@@ -105,7 +105,7 @@ public class ReadOnlyProxyDocument implements Document {
   }
 
   @Override
-  public void read(IProject target) throws IOException, DocumentException {
+  public void read(Project target) throws IOException, DocumentException {
     myDelegate.read(target);
   }
 

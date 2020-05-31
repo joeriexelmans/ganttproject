@@ -26,7 +26,7 @@ import java.util.Locale;
 
 import javax.xml.transform.sax.TransformerHandler;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.util.ColorConvertion;
 
 import org.xml.sax.SAXException;
@@ -42,7 +42,7 @@ public class CalendarSaver extends SaverBase {
 
   private Calendar myCalendar = GregorianCalendar.getInstance(Locale.ENGLISH);
 
-  void save(IProject project, TransformerHandler handler) throws SAXException {
+  void save(Project project, TransformerHandler handler) throws SAXException {
     AttributesImpl attrs = new AttributesImpl();
     addAttribute("base-id", project.getActiveCalendar().getBaseCalendarID(), attrs);
     startElement("calendars", attrs, handler);

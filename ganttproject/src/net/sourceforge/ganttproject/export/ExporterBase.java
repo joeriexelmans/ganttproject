@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.GanttOptions;
+import net.sourceforge.ganttproject.project.Project;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -39,17 +40,17 @@ import biz.ganttproject.core.option.GPOptionGroup;
 
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttExportSettings;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager.ZoomState;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 
 public abstract class ExporterBase implements Exporter {
-  private IProject myProject;
+  private Project myProject;
   private Chart myGanttChart;
   private Chart myResourceChart;
   private UIFacade myUIFacade;
+  private GanttOptions myGanttOptions;
   private Preferences myRootPreferences;
   private DefaultDateOption myExportRangeStart;
   private DefaultDateOption myExportRangeEnd;
@@ -59,11 +60,12 @@ public abstract class ExporterBase implements Exporter {
   static protected Object EXPORT_JOB_FAMILY = new String("Export job family");
 
   @Override
-  public void setContext(IProject project, UIFacade uiFacade, Preferences prefs) {
+  public void setContext(Project project, UIFacade uiFacade, GanttOptions options, Preferences prefs) {
     myGanttChart = uiFacade.getGanttChart();
     myResourceChart = uiFacade.getResourceChart();
     myProject = project;
     myUIFacade = uiFacade;
+    myGanttOptions = options;
     myRootPreferences = prefs;
     myExportRangeStart = new DefaultDateOption("export.range.start", myGanttChart.getStartDate());
     myExportRangeEnd = new DefaultDateOption("export.range.end", myGanttChart.getEndDate());
@@ -85,7 +87,7 @@ public abstract class ExporterBase implements Exporter {
     return myUIFacade;
   }
 
-  public IProject getProject() {
+  public Project getProject() {
     return myProject;
   }
 
@@ -99,6 +101,10 @@ public abstract class ExporterBase implements Exporter {
 
   protected Chart getResourceChart() {
     return myResourceChart;
+  }
+
+  protected GanttOptions getGanttOptions() {
+    return myGanttOptions;
   }
 
   @Override

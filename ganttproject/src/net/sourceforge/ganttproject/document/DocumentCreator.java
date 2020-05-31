@@ -24,7 +24,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.model.GP1XOptionConverter;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.parser.ParserFactory;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -63,7 +63,7 @@ public class DocumentCreator implements DocumentManager {
   private final Logger myLogger = GPLogger.getLogger(DocumentManager.class);
   private final File myDocumentsFolder;
 
-  public DocumentCreator(IGanttProject app, IProject project, UIFacade uiFacade, ParserFactory parserFactory) {
+  public DocumentCreator(IGanttProject app, Project project, UIFacade uiFacade, ParserFactory parserFactory) {
     myUIFacade = uiFacade;
     myParserFactory = parserFactory;
     myWebDavStorage = new WebDavStorageImpl(app, project, uiFacade);

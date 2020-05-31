@@ -59,7 +59,7 @@ import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.CustomColumnsException;
 import net.sourceforge.ganttproject.task.Task.Priority;
@@ -102,7 +102,7 @@ import java.util.regex.Pattern;
 
 class ProjectFileImporter {
   private final GPTimeUnitStack myTimeUnitStack = GPTimeUnitStack.getInstance();
-  private final IProject myTargetProject;
+  private final Project myTargetProject;
   private final ProjectReader myReader;
   private final File myForeignFile;
   private Map<ResourceField, CustomPropertyDefinition> myResourceCustomPropertyMapping;
@@ -136,11 +136,11 @@ class ProjectFileImporter {
     void addYearlyHoliday(Date date, Optional<String> title);
   }
 
-  ProjectFileImporter(IProject nativeProject, TaskTreeUIFacade taskTreeUIFacade, File foreignProjectFile) {
+  ProjectFileImporter(Project nativeProject, TaskTreeUIFacade taskTreeUIFacade, File foreignProjectFile) {
     this(nativeProject, taskTreeUIFacade.getVisibleFields(), foreignProjectFile);
   }
 
-  public ProjectFileImporter(IProject nativeProject, ColumnList taskFields, File foreignProjectFile) {
+  public ProjectFileImporter(Project nativeProject, ColumnList taskFields, File foreignProjectFile) {
     myTargetProject = nativeProject;
     myTaskFields = taskFields;
     myReader = ProjectFileImporter.createReader(foreignProjectFile);

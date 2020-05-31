@@ -33,7 +33,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.language.GanttLanguage.Event;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.CustomColumn;
 import net.sourceforge.ganttproject.task.CustomPropertyEvent;
 import net.sourceforge.ganttproject.task.event.TaskDependencyEvent;
@@ -87,7 +87,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class GPTreeTableBase extends JXTreeTable implements CustomPropertyListener {
   protected final IGanttProject myApp;
-  protected final IProject myProject;
+  protected final Project myProject;
   private final UIFacade myUiFacade;
   private final TableHeaderUiFacadeImpl myTableHeaderFacade = new TableHeaderUiFacadeImpl();
   private final CustomPropertyManager myCustomPropertyManager;
@@ -607,7 +607,7 @@ public abstract class GPTreeTableBase extends JXTreeTable implements CustomPrope
     }
   }
 
-  protected GPTreeTableBase(IGanttProject app, IProject project, UIFacade uiFacade, CustomPropertyManager customPropertyManager, DefaultTreeTableModel model) {
+  protected GPTreeTableBase(IGanttProject app, Project project, UIFacade uiFacade, CustomPropertyManager customPropertyManager, DefaultTreeTableModel model) {
     super(model);
     setTableHeader(new JTableHeader(getColumnModel()) {
       @Override

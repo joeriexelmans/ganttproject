@@ -22,9 +22,10 @@ import java.awt.Component;
 import java.io.File;
 import java.util.List;
 
+import net.sourceforge.ganttproject.GanttOptions;
 import net.sourceforge.ganttproject.gui.UIFacade;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.osgi.service.prefs.Preferences;
 
 import biz.ganttproject.core.option.GPOptionGroup;
@@ -50,7 +51,7 @@ public interface Exporter {
 
   String[] getCommandLineKeys();
 
-  void setContext(IProject project, UIFacade uiFacade, Preferences prefs);
+  void setContext(Project project, UIFacade uiFacade, GanttOptions options, Preferences prefs);
 
   Component getCustomOptionsUI();
 }

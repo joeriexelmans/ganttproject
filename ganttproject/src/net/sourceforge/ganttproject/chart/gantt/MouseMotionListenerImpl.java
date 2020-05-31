@@ -37,16 +37,16 @@ import net.sourceforge.ganttproject.chart.item.TaskProgressChartItem;
 import net.sourceforge.ganttproject.chart.mouse.MouseMotionListenerBase;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.Task;
 
 class MouseMotionListenerImpl extends MouseMotionListenerBase {
   private final ChartComponentBase myChartComponent;
   private GanttChartController myChartController;
-  private final IProject myProject;
+  private final Project myProject;
 
   public MouseMotionListenerImpl(GanttChartController chartImplementation, ChartModelImpl chartModel,
-                                 IProject project, UIFacade uiFacade, ChartComponentBase chartComponent) {
+                                 Project project, UIFacade uiFacade, ChartComponentBase chartComponent) {
     super(uiFacade, chartImplementation);
     myChartController = chartImplementation;
     myChartComponent = chartComponent;

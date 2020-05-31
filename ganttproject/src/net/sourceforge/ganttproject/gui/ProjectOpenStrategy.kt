@@ -44,7 +44,7 @@ import net.sourceforge.ganttproject.action.GPAction
 import net.sourceforge.ganttproject.action.OkAction
 import net.sourceforge.ganttproject.document.Document
 import net.sourceforge.ganttproject.language.GanttLanguage
-import net.sourceforge.ganttproject.project.IProject
+import net.sourceforge.ganttproject.project.Project
 import net.sourceforge.ganttproject.task.TaskImpl
 import net.sourceforge.ganttproject.task.TaskManager
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmCollection
@@ -65,11 +65,11 @@ import kotlin.coroutines.suspendCoroutine
  *
  * @author bard
  */
-internal class ProjectOpenStrategy(app: IGanttProject, project: IProject, uiFacade: UIFacade) : AutoCloseable {
+internal class ProjectOpenStrategy(app: IGanttProject, project: Project, uiFacade: UIFacade) : AutoCloseable {
 
   private val myUiFacade: UIFacade = Preconditions.checkNotNull(uiFacade)
   private val myApp: IGanttProject = Preconditions.checkNotNull(app)
-  private val myProject: IProject = Preconditions.checkNotNull(project)
+  private val myProject: Project = Preconditions.checkNotNull(project)
   private val myDiagnostics: ProjectOpenDiagnosticImpl
   private val myCloseables = Lists.newArrayList<AutoCloseable>()
   private val myEnableAlgorithmsCmd: AutoCloseable

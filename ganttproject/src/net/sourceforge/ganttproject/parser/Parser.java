@@ -7,7 +7,7 @@ import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -33,7 +33,7 @@ public class Parser {
      * @param is Input stream for reading XML data from
      * @throws IOException
      */
-    public final void parse(IProject project, InputStream is) throws IOException {
+    public final void parse(Project project, InputStream is) throws IOException {
         ParsingContext ctx = new ParsingContext();
         GPParser parser = this.createParser(ctx, project);
 
@@ -50,7 +50,7 @@ public class Parser {
     }
 
     // The "overridable" part
-    protected GPParser createParser(ParsingContext ctx, IProject project) {
+    protected GPParser createParser(ParsingContext ctx, Project project) {
         TaskManager taskManager = project.getTaskManager();
         HumanResourceManager hrManager = project.getHumanResourceManager();
         CustomPropertyManager hrCustomPropertyManager = project.getResourceCustomPropertyManager();

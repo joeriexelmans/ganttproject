@@ -23,7 +23,7 @@ import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.document.DocumentsMRU;
 import net.sourceforge.ganttproject.document.webdav.WebDavStorageImpl;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.swing.*;
 
@@ -38,7 +38,7 @@ public class ProjectMenu extends JMenu {
   private final DocumentsMRU myMRU;
   private final OpenProjectAction myOpenProjectAction;
 
-  public ProjectMenu(final GanttProject app, IProject project, DocumentsMRU mru, String key) {
+  public ProjectMenu(final GanttProject app, Project project, DocumentsMRU mru, String key) {
     super(GPAction.createVoidAction(key));
     myNewProjectAction = new NewProjectAction(app);
     mySaveProjectAction = new SaveProjectAction(app);

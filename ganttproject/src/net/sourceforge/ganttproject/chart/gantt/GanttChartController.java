@@ -51,7 +51,7 @@ import net.sourceforge.ganttproject.chart.mouse.MoveTaskInteractions;
 import net.sourceforge.ganttproject.chart.mouse.TimelineFacadeImpl;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
@@ -78,7 +78,7 @@ public class GanttChartController extends AbstractChartImplementation implements
   protected CustomBalloonTip myTooltip;
   private final TaskSelectionManager mySelectionManager;
 
-  public GanttChartController(IGanttProject app, IProject project, UIFacade uiFacade, ChartModelImpl chartModel,
+  public GanttChartController(IGanttProject app, Project project, UIFacade uiFacade, ChartModelImpl chartModel,
                               ChartComponentBase chartComponent, TaskTreePanel tree, ChartViewState chartViewState) {
     super(app, project, uiFacade, chartModel, chartComponent);
     myTree = tree;

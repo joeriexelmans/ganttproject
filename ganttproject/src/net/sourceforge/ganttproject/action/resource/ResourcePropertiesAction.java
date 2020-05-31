@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.GanttDialogPerson;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.ResourceContext;
 
@@ -32,14 +32,14 @@ import java.beans.PropertyChangeListener;
 
 public class ResourcePropertiesAction extends ResourceAction {
   private final IGanttProject myApp;
-  private final IProject myProject;
+  private final Project myProject;
   private final UIFacade myUIFacade;
 
-  public ResourcePropertiesAction(IGanttProject app, IProject project, ResourceContext context, UIFacade uiFacade) {
+  public ResourcePropertiesAction(IGanttProject app, Project project, ResourceContext context, UIFacade uiFacade) {
     this(app, project, context, uiFacade, IconSize.MENU);
   }
 
-  private ResourcePropertiesAction(IGanttProject app, IProject project, ResourceContext context, UIFacade uiFacade, IconSize size) {
+  private ResourcePropertiesAction(IGanttProject app, Project project, ResourceContext context, UIFacade uiFacade, IconSize size) {
     super("resource.properties", null, context, size);
     myApp = app;
     myProject = project;

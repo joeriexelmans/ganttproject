@@ -24,7 +24,8 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.GanttProject;
+import net.sourceforge.ganttproject.project.Project;
 import org.osgi.service.prefs.Preferences;
 
 import biz.ganttproject.core.option.BooleanOption;
@@ -49,7 +50,7 @@ public class ExportFileWizardImpl extends WizardImpl {
   private static Exporter ourLastSelectedExporter;
   private static List<Exporter> ourExporters;
 
-  public ExportFileWizardImpl(UIFacade uiFacade, IGanttProject app, IProject project, Preferences pluginPreferences) {
+  public ExportFileWizardImpl(UIFacade uiFacade, IGanttProject app, Project project, Preferences pluginPreferences) {
     super(uiFacade, language.getText("exportWizard.dialog.title"));
     final Preferences exportNode = pluginPreferences.node("/instance/net.sourceforge.ganttproject/export");
     myApp = app;
@@ -66,7 +67,7 @@ public class ExportFileWizardImpl extends WizardImpl {
     }
     myState.setExporter(ourLastSelectedExporter == null ? ourExporters.get(0) : ourLastSelectedExporter);
     for (Exporter e : ourExporters) {
-      e.setContext(project, uiFacade, pluginPreferences);
+      e.setContext(project, uiFacade, ((GanttProject) app).getGanttOptions(), pluginPreferences);
     }
     addPage(new ExporterChooserPage(ourExporters, myState));
     addPage(new FileChooserPage(myState, project, myApp.getDocument(), this, exportNode));

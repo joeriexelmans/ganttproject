@@ -23,7 +23,7 @@ import biz.ganttproject.core.option.ListOption;
 import biz.ganttproject.core.table.ColumnList;
 import com.google.common.base.Preconditions;
 import net.sourceforge.ganttproject.io.GanttXMLOpen;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.PrjInfos;
 import net.sourceforge.ganttproject.gui.GPColorChooser;
 import net.sourceforge.ganttproject.gui.UIFacade;
@@ -144,7 +144,7 @@ public class ProxyDocument implements Document {
   }
 
   @Override
-  public void read(IProject project) throws IOException {
+  public void read(Project project) throws IOException {
     try {
       ((TaskManagerImpl) project.getTaskManager()).setEventsEnabled(false);
       UIParser parser = new UIParser(myCreator, myUIFacade);

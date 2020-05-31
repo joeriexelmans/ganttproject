@@ -24,7 +24,7 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.GanttDialogProperties;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 
@@ -33,13 +33,13 @@ import java.util.List;
 
 public class TaskPropertiesAction extends TaskActionBase {
 
-  private final IProject myProject;
+  private final Project myProject;
 
-  public TaskPropertiesAction(IProject project, TaskSelectionManager selectionManager, UIFacade uiFacade) {
+  public TaskPropertiesAction(Project project, TaskSelectionManager selectionManager, UIFacade uiFacade) {
     this(project, selectionManager, uiFacade, IconSize.MENU);
   }
 
-  private TaskPropertiesAction(IProject project, TaskSelectionManager selectionManager, UIFacade uiFacade,
+  private TaskPropertiesAction(Project project, TaskSelectionManager selectionManager, UIFacade uiFacade,
       IconSize size) {
     super("task.properties", project.getTaskManager(), selectionManager, uiFacade, null, size);
     myProject = project;

@@ -25,7 +25,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.gui.NotificationChannel;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.util.collect.Pair;
 import net.sourceforge.ganttproject.wizard.WizardPage;
 import org.osgi.service.prefs.Preferences;
@@ -38,7 +38,7 @@ public abstract class ImporterBase implements Importer {
   private final String myID;
   private UIFacade myUiFacade;
   private IGanttProject myApp;
-  private IProject myProject;
+  private Project myProject;
   protected static final GanttLanguage language = GanttLanguage.getInstance();
 
   /**
@@ -83,7 +83,7 @@ public abstract class ImporterBase implements Importer {
   }
 
   @Override
-  public void setContext(IGanttProject app, IProject project, UIFacade uiFacade, Preferences preferences) {
+  public void setContext(IGanttProject app, Project project, UIFacade uiFacade, Preferences preferences) {
     myApp = app;
     myProject = project;
     myUiFacade = uiFacade;
@@ -98,7 +98,7 @@ public abstract class ImporterBase implements Importer {
     return myApp;
   }
 
-  protected IProject getProject() {
+  protected Project getProject() {
     return myProject;
   }
 

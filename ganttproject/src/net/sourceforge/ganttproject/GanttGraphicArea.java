@@ -41,7 +41,7 @@ import net.sourceforge.ganttproject.chart.item.ChartItem;
 import net.sourceforge.ganttproject.gui.UIConfiguration;
 import net.sourceforge.ganttproject.gui.zoom.ZoomManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.CustomPropertyEvent;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -101,7 +101,7 @@ public class GanttGraphicArea extends ChartComponentBase implements GanttChart, 
 
   private final ChartOptionGroup myStateDiffOptions;
 
-  public GanttGraphicArea(GanttProject app, IProject project, TaskTreePanel ttree, TaskManager taskManager, ZoomManager zoomManager, GPUndoManager undoManager) {
+  public GanttGraphicArea(GanttProject app, Project project, TaskTreePanel ttree, TaskManager taskManager, ZoomManager zoomManager, GPUndoManager undoManager) {
     super(app, project, app.getUIFacade(), zoomManager);
     this.setBackground(Color.WHITE);
     myTaskManager = taskManager;

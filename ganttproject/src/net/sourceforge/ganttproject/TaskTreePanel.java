@@ -30,7 +30,7 @@ import net.sourceforge.ganttproject.chart.VisibleNodesFilter;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
 import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.ResourceAssignment;
 import net.sourceforge.ganttproject.task.Task;
@@ -81,7 +81,7 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
   private final GanttProject myApp;
 
   /** The currently opened project */
-  private final IProject myProject;
+  private final Project myProject;
 
   private final TaskManager myTaskManager;
   private final TaskSelectionManager mySelectionManager;
@@ -111,14 +111,14 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
     };
   }
   private static Pair<GanttTreeTable, GanttTreeTableModel> createTreeTable(
-      IGanttProject app, IProject project, Runnable dirtyfier, UIFacade uiFacade) {
+      IGanttProject app, Project project, Runnable dirtyfier, UIFacade uiFacade) {
     GanttTreeTableModel tableModel = new GanttTreeTableModel(project.getTaskManager(),
         project.getTaskManager().getCustomPropertyManager(), uiFacade, dirtyfier);
     GanttTreeTable table = new GanttTreeTable(app, project, uiFacade, tableModel);
     return Pair.create(table, tableModel);
   }
 
-  public TaskTreePanel(final GanttProject app, IProject project, TaskManager taskManager, TaskSelectionManager selectionManager, final UIFacade uiFacade) {
+  public TaskTreePanel(final GanttProject app, Project project, TaskManager taskManager, TaskSelectionManager selectionManager, final UIFacade uiFacade) {
     super(createTreeTable(app, project, createDirtyfier(app), uiFacade));
     myUIFacade = uiFacade;
     myApp = app;

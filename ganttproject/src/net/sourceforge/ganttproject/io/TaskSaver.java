@@ -23,7 +23,7 @@ import com.google.common.base.Charsets;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.CustomColumnsValues;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.dependency.TaskDependency;
@@ -42,7 +42,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 
 class TaskSaver extends SaverBase {
-  void save(IProject project, TransformerHandler handler) throws SAXException, IOException {
+  void save(Project project, TransformerHandler handler) throws SAXException, IOException {
     AttributesImpl attrs = new AttributesImpl();
     if (project.getTaskManager().isZeroMilestones() != null) {
       addAttribute("empty-milestones", project.getTaskManager().isZeroMilestones(), attrs);

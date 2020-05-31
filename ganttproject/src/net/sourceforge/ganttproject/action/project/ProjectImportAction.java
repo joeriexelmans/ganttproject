@@ -23,7 +23,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.importer.ImportFileWizardImpl;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.wizard.AbstractWizard;
 
 import java.awt.event.ActionEvent;
@@ -37,9 +37,9 @@ public class ProjectImportAction extends GPAction {
 
   private final GanttProject myApp;
 
-  private final IProject myProject;
+  private final Project myProject;
 
-  public ProjectImportAction(UIFacade uiFacade, GanttProject app, IProject project) {
+  public ProjectImportAction(UIFacade uiFacade, GanttProject app, Project project) {
     super("project.import");
     myUIFacade = uiFacade;
     myApp = app;

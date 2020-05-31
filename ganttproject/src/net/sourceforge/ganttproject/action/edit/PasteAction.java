@@ -31,7 +31,7 @@ import net.sourceforge.ganttproject.gui.view.GPViewManager;
 import net.sourceforge.ganttproject.importer.BufferProject;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;
 import net.sourceforge.ganttproject.parser.UIParser;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
 
@@ -48,11 +48,11 @@ import java.nio.file.Files;
 public class PasteAction extends GPAction {
   private final GPViewManager myViewmanager;
   private final GPUndoManager myUndoManager;
-  private final IProject myProject;
+  private final Project myProject;
   private final UIFacade myUiFacade;
   private final DocumentManager myDocumentManager;
 
-  public PasteAction(IProject project, UIFacade uiFacade, DocumentManager documentManager, GPViewManager viewManager, GPUndoManager undoManager) {
+  public PasteAction(Project project, UIFacade uiFacade, DocumentManager documentManager, GPViewManager viewManager, GPUndoManager undoManager) {
     super("paste");
     myViewmanager = viewManager;
     myUndoManager = undoManager;
@@ -61,7 +61,7 @@ public class PasteAction extends GPAction {
     myDocumentManager = documentManager;
   }
 
-  private PasteAction(IProject project, UIFacade uiFacade, DocumentManager documentManager,GPViewManager viewmanager, GPUndoManager undoManager, IconSize size) {
+  private PasteAction(Project project, UIFacade uiFacade, DocumentManager documentManager,GPViewManager viewmanager, GPUndoManager undoManager, IconSize size) {
     super("paste", size);
     myViewmanager = viewmanager;
     myUndoManager = undoManager;

@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.importer;
 
 import biz.ganttproject.core.table.ColumnList;
 import net.sourceforge.ganttproject.ProjectStub;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class BufferProject extends ProjectStub {
   private final ColumnList myTaskVisibleFields = new VisibleFieldsImpl();
   private final ColumnList myResourceVisibleFields = new VisibleFieldsImpl();
 
-  public BufferProject(IProject targetProject) {
+  public BufferProject(Project targetProject) {
     getTaskManager().getDependencyHardnessOption().setValue(targetProject.getTaskManager().getDependencyHardnessOption().getValue());
   }
 

@@ -30,7 +30,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.model.OptionPageProvider;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.plugins.PluginManager;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 public class SettingsDialog2 extends AbstractPagesDialog {
   private static List<OptionPageProvider> ourProviders;
@@ -41,7 +41,7 @@ public class SettingsDialog2 extends AbstractPagesDialog {
         OptionPageProvider.class);
   }
 
-  public SettingsDialog2(IGanttProject app, IProject project, UIFacade uifacade, String pageOrderKey) {
+  public SettingsDialog2(IGanttProject app, Project project, UIFacade uifacade, String pageOrderKey) {
     super("settings.app", uifacade, getPages(pageOrderKey, app, project, uifacade));
     for (OptionPageProvider p : ourProviders) {
       if (isPageVisible(p.getPageID())) {
@@ -58,12 +58,12 @@ public class SettingsDialog2 extends AbstractPagesDialog {
     }
   }
 
-  private static List<ListItem> getPages(String pageOrderKey, IGanttProject app, IProject project, UIFacade uiFacade) {
+  private static List<ListItem> getPages(String pageOrderKey, IGanttProject app, Project project, UIFacade uiFacade) {
     return getListItems(ourProviders, pageOrderKey, app, project, uiFacade);
   }
 
   private static List<ListItem> getListItems(List<OptionPageProvider> providers, String pageOrderKey,
-      IGanttProject app, IProject project, UIFacade uiFacade) {
+      IGanttProject app, Project project, UIFacade uiFacade) {
     Map<String, OptionPageProvider> pageId_provider = new HashMap<String, OptionPageProvider>();
     for (OptionPageProvider p : providers) {
       pageId_provider.put(p.getPageID(), p);

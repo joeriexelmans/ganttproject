@@ -29,7 +29,7 @@ import net.sourceforge.ganttproject.chart.overview.ZoomingPanel;
 import net.sourceforge.ganttproject.gui.GanttImagePanel;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -50,7 +50,7 @@ abstract class ChartTabContentPanel {
   private Supplier<Integer> myHeaderHeight;
   private GanttImagePanel myImagePanel;
 
-  ChartTabContentPanel(IProject project, UIFacade uiFacade, TimelineChart chart) {
+  ChartTabContentPanel(Project project, UIFacade uiFacade, TimelineChart chart) {
     NavigationPanel navigationPanel = new NavigationPanel(project, chart, uiFacade);
     ZoomingPanel zoomingPanel = new ZoomingPanel(uiFacade, chart);
     addChartPanel(zoomingPanel.getComponent());

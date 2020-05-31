@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.options.SettingsDialog2;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import java.awt.event.ActionEvent;
 
@@ -32,11 +32,11 @@ import java.awt.event.ActionEvent;
  */
 public class SettingsDialogAction extends GPAction {
   private final IGanttProject myApp;
-  private final IProject myProject;
+  private final Project myProject;
   private final UIFacade myUiFacade;
 
 
-  public SettingsDialogAction(IGanttProject app, IProject project, UIFacade uiFacade) {
+  public SettingsDialogAction(IGanttProject app, Project project, UIFacade uiFacade) {
     super("settings.app");
     myApp = app;
     myProject = project;

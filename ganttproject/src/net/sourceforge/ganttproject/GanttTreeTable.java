@@ -25,7 +25,7 @@ import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.GanttChart;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.task.Task;
 
 import javax.swing.*;
@@ -58,7 +58,7 @@ public class GanttTreeTable extends GPTreeTableBase {
     ID_FORMAT.setGroupingUsed(false);
   }
 
-  GanttTreeTable(IGanttProject app, IProject project, final UIFacade uifacade, GanttTreeTableModel model) {
+  GanttTreeTable(IGanttProject app, Project project, final UIFacade uifacade, GanttTreeTableModel model) {
     super(app, project, uifacade, project.getTaskManager().getCustomPropertyManager(), model);
     myUIfacade = uifacade;
     getTableHeaderUiFacade().createDefaultColumns(TaskDefaultColumn.getColumnStubs());

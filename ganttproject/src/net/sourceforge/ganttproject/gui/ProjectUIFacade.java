@@ -25,7 +25,7 @@ import biz.ganttproject.core.option.GPOptionGroup;
 import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.Document.DocumentException;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 public interface ProjectUIFacade {
   /**
@@ -58,7 +58,7 @@ public interface ProjectUIFacade {
   /**
    * Shows new project wizard.
    */
-  void createProjectWizard(IGanttProject app, IProject project);
+  void createProjectWizard(IGanttProject app, Project project);
 
   GPOptionGroup[] getOptionGroups();
 }

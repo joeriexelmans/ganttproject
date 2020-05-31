@@ -139,7 +139,7 @@ public class CommandLineExportApplication {
 
     prefs.putBoolean("expandResources", myArgs.expandResources);
 
-    exporter.setContext(app.getCurrentProject(), consoleUI, prefs);
+    exporter.setContext(app.getCurrentProject(), consoleUI, app.getGanttOptions(), prefs);
     final CountDownLatch latch = new CountDownLatch(1);
     try {
       ExportFinalizationJob finalizationJob = new ExportFinalizationJob() {

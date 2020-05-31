@@ -21,15 +21,15 @@ package net.sourceforge.ganttproject.action.project;
 import net.sourceforge.ganttproject.GanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.options.SettingsDialog2;
-import net.sourceforge.ganttproject.project.IProject;
+import net.sourceforge.ganttproject.project.Project;
 
 import java.awt.event.ActionEvent;
 
 class ProjectPropertiesAction extends GPAction {
   private final GanttProject myMainFrame;
-  private final IProject myProject;
+  private final Project myProject;
 
-  ProjectPropertiesAction(GanttProject mainFrame, IProject project) {
+  ProjectPropertiesAction(GanttProject mainFrame, Project project) {
     super("project.properties");
     myMainFrame = mainFrame;
     myProject = project;

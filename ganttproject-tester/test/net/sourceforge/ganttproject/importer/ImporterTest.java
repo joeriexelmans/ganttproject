@@ -1,8 +1,10 @@
 package net.sourceforge.ganttproject.importer;
 
 import biz.ganttproject.core.calendar.ImportCalendarOption;
+import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.project.Project;
+import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceMerger;
 import net.sourceforge.ganttproject.test.ProjectTestBase;
 import org.junit.Test;
@@ -10,30 +12,43 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
-import static biz.ganttproject.core.calendar.ImportCalendarOption.Values.*;
 import static net.sourceforge.ganttproject.resource.HumanResourceMerger.MergeResourcesOption.*;
 import static org.junit.Assert.assertEquals;
 
 public class ImporterTest extends ProjectTestBase {
-    @Test
-    public void testImport() throws IOException {
+
+    private void testVariant(ImportCalendarOption calendarOption, HumanResourceMerger.MergeResourcesOption mergeOption, int expectedNumResources) throws IOException {
+        // Project with 2 human resources: Jimmy and Bobby
         Project target = getTestProject("/testproject.xml");
 
         // We start with 2 resources
         assertEquals(2, target.getHumanResourceManager().getResources().size());
 
-        // Project with a single resource defined
+        // Project with a single resource defined: Louis, with custom property 'age' set to '60'.
         Project source = getTestProject("/importable.xml");
-
-        HumanResourceMerger.MergeResourcesOption mergeOption = new HumanResourceMerger.MergeResourcesOption();
-        mergeOption.setValue(BY_NAME);
-
-        ImportCalendarOption calendarOption = new ImportCalendarOption(MERGE);
 
         ImporterFromGanttFile.importProject(target, source, mergeOption, calendarOption);
 
+        // Print custom properties
+        System.out.println("custom properties...");
+        System.out.println(target.getResourceCustomPropertyManager().getDefinitions().size());
+        for (CustomPropertyDefinition customPropertyDef: target.getResourceCustomPropertyManager().getDefinitions()) {
+            System.out.println(customPropertyDef.getName());
+        }
+
+        // Print resources
+        System.out.println("resources...");
+        System.out.println(target.getHumanResourceManager().getResources().size());
+        for (HumanResource hr: target.getHumanResourceManager().getResources()) {
+            System.out.println(hr.getName());
+            for (CustomProperty c: hr.getCustomProperties()) {
+                System.out.println(c.getDefinition().getName());
+                System.out.println(c.getValueAsString());
+            }
+        }
+
         // 1 resource was imported
-        assertEquals(3, target.getHumanResourceManager().getResources().size());
+        assertEquals(expectedNumResources, target.getHumanResourceManager().getResources().size());
 
         // Imported resource had a custom property "age" defined,
         // this should be the only custom property in the merged project
@@ -42,7 +57,39 @@ public class ImporterTest extends ProjectTestBase {
         assertEquals("age", actualCustomProperties.get(0).getName());
 
         // Now check if the property is correctly set on the imported resource
-        assertEquals("age", target.getHumanResourceManager().getResources().get(2).getCustomProperties().get(0).getDefinition().getName());
-        assertEquals("60", target.getHumanResourceManager().getResources().get(2).getCustomProperties().get(0).getValue());
+
+        for (HumanResource hr: target.getHumanResourceManager().getResources()) {
+            if (hr.getName().equals("Louis")) {
+                assertEquals("age", hr.getCustomProperties().get(0).getDefinition().getName());
+                assertEquals("60", hr.getCustomProperties().get(0).getValue());
+            }
+        }
     }
+    
+    // Tests for all possible combinations of merge options
+
+    @Test
+    public void importNameMerge() throws IOException {
+        HumanResourceMerger.MergeResourcesOption o = new HumanResourceMerger.MergeResourcesOption();
+        o.setValue(BY_NAME);
+        testVariant(new ImportCalendarOption(ImportCalendarOption.Values.MERGE), o, 3);
+    }
+
+    // None of the resource have e-mail set, so the following doesn't work
+    @Test
+    public void importEmailMerge() throws IOException {
+        HumanResourceMerger.MergeResourcesOption o = new HumanResourceMerger.MergeResourcesOption();
+        o.setValue(BY_EMAIL);
+        testVariant(new ImportCalendarOption(ImportCalendarOption.Values.MERGE), o, 2);
+    }
+
+    // Doesn't work because resource IDs tend to be non-unique across different projects
+    @Test
+    public void importIdMerge() throws IOException {
+        HumanResourceMerger.MergeResourcesOption o = new HumanResourceMerger.MergeResourcesOption();
+        o.setValue(BY_ID);
+        testVariant(new ImportCalendarOption(ImportCalendarOption.Values.MERGE), o, 2);
+    }
+
+
 }

@@ -123,21 +123,31 @@ public class ImporterFromGanttFile extends ImporterBase {
   }
 
   public static Map<Task, Task> importProject(Project targetProject, Project sourceProject, MergeResourcesOption mergeOption, ImportCalendarOption importCalendarOption) {
+    // Import roles
     targetProject.getRoleManager().importData(sourceProject.getRoleManager());
+
+    // Import calendar
     if (importCalendarOption != null) {
       targetProject.getActiveCalendar().importCalendar(sourceProject.getActiveCalendar(), importCalendarOption);
     }
+
+    // Import resource custom properties
     {
       CustomPropertyManager targetResCustomPropertyMgr = targetProject.getResourceCustomPropertyManager();
       targetResCustomPropertyMgr.importData(sourceProject.getResourceCustomPropertyManager());
     }
+
+    // Import resources
     Map<HumanResource, HumanResource> original2ImportedResource = targetProject.getHumanResourceManager().importData(
             sourceProject.getHumanResourceManager(), new OverwritingMerger(mergeOption));
 
     Map<Task, Task> result = null;
     {
+      // Import task custom properties
       CustomPropertyManager targetCustomColumnStorage = targetProject.getTaskCustomPropertyManager();
       Map<CustomPropertyDefinition, CustomPropertyDefinition> that2thisCustomDefs = targetCustomColumnStorage.importData(sourceProject.getTaskCustomPropertyManager());
+
+      // Import tasks
       TaskManagerImpl origTaskManager = (TaskManagerImpl) targetProject.getTaskManager();
       try {
         origTaskManager.setEventsEnabled(false);

@@ -30,7 +30,7 @@ public abstract class ProjectTestBase {
 
     protected final static Project getTestProject(String resourcePath) throws IOException {
         Parser parser = new Parser(null);
-        InputStream is = ParserTest.class.getResourceAsStream(resourcePath);
+        InputStream is = ProjectTestBase.class.getResourceAsStream(resourcePath);
         Project project = new ProjectStub();
         parser.parse(project, is);
         return project;

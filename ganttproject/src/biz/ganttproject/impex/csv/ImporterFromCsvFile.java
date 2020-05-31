@@ -22,7 +22,7 @@ import biz.ganttproject.core.option.GPOption;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttProject;
-import net.sourceforge.ganttproject.importer.BufferProject;
+import net.sourceforge.ganttproject.project.BufferProject;
 import net.sourceforge.ganttproject.importer.ImporterBase;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;
 import net.sourceforge.ganttproject.project.Project;

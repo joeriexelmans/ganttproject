@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package net.sourceforge.ganttproject;
+package net.sourceforge.ganttproject.project;
 
 import biz.ganttproject.core.option.ColorOption;
 import biz.ganttproject.core.option.DefaultColorOption;
@@ -39,7 +39,7 @@ public class ProjectStub extends Project {
   public static class TaskManagerConfigStub implements TaskManagerConfig {
     private final ColorOption myDefaultTaskColorOption;
 
-    TaskManagerConfigStub() {
+    public TaskManagerConfigStub() {
       myDefaultTaskColorOption = new DefaultTaskColorOption(DEFAULT_TASK_COLOR);
     }
 
@@ -66,8 +66,8 @@ public class ProjectStub extends Project {
     }
   }
 
-  static class DefaultTaskColorOption extends DefaultColorOption implements GP1XOptionConverter {
-    DefaultTaskColorOption() {
+  public static class DefaultTaskColorOption extends DefaultColorOption implements GP1XOptionConverter {
+    public DefaultTaskColorOption() {
       this(DEFAULT_TASK_COLOR);
     }
 

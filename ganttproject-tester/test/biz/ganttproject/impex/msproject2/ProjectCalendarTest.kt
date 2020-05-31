@@ -23,9 +23,9 @@ import biz.ganttproject.core.calendar.WeekendCalendarImpl
 import biz.ganttproject.core.time.CalendarFactory
 import junit.framework.TestCase
 import net.sf.mpxj.ProjectFile
-import net.sourceforge.ganttproject.ProjectStub
+import net.sourceforge.ganttproject.project.ProjectStub
 import net.sourceforge.ganttproject.TestSetupHelper
-import net.sourceforge.ganttproject.importer.BufferProject
+import net.sourceforge.ganttproject.project.BufferProject
 import java.awt.Color
 import java.io.File
 import java.text.DateFormat

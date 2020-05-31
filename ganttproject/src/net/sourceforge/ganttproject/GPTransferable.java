@@ -24,6 +24,7 @@ import net.sourceforge.ganttproject.chart.gantt.ClipboardContents;
 import net.sourceforge.ganttproject.chart.gantt.ClipboardTaskProcessor;
 import net.sourceforge.ganttproject.io.GanttXMLSaver;
 import net.sourceforge.ganttproject.project.Project;
+import net.sourceforge.ganttproject.project.ProjectStub;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;

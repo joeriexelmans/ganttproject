@@ -18,17 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.action.edit;
 
-import com.google.common.io.ByteStreams;
 import net.sourceforge.ganttproject.GPTransferable;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.chart.ChartSelection;
-import net.sourceforge.ganttproject.document.Document;
 import net.sourceforge.ganttproject.document.DocumentManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.view.GPViewManager;
-import net.sourceforge.ganttproject.importer.BufferProject;
+import net.sourceforge.ganttproject.project.BufferProject;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;
 import net.sourceforge.ganttproject.parser.UIParser;
 import net.sourceforge.ganttproject.project.Project;
@@ -40,9 +37,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 //TODO Enable/Disable action depending on clipboard contents
 public class PasteAction extends GPAction {

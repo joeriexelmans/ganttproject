@@ -30,7 +30,7 @@ import biz.ganttproject.core.calendar.ImportCalendarOption;
 import biz.ganttproject.core.option.GPOption;
 import net.sf.mpxj.MPXJException;
 import net.sourceforge.ganttproject.GanttTask;
-import net.sourceforge.ganttproject.importer.BufferProject;
+import net.sourceforge.ganttproject.project.BufferProject;
 import net.sourceforge.ganttproject.importer.Importer;
 import net.sourceforge.ganttproject.importer.ImporterBase;
 import net.sourceforge.ganttproject.importer.ImporterFromGanttFile;

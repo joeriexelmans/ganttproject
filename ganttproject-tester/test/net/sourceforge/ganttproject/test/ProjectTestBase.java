@@ -1,7 +1,7 @@
 package net.sourceforge.ganttproject.test;
 
 import biz.ganttproject.core.time.CalendarFactory;
-import net.sourceforge.ganttproject.ProjectStub;
+import net.sourceforge.ganttproject.project.ProjectStub;
 import net.sourceforge.ganttproject.parser.Parser;
 import net.sourceforge.ganttproject.parser.ParserTest;
 import net.sourceforge.ganttproject.project.Project;

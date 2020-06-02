@@ -112,10 +112,6 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
     new ResourceAssignmentImpl(resource).delete();
   }
 
-  private Task getTask() {
-    return myTask;
-  }
-
   private class ResourceAssignmentImpl implements ResourceAssignment {
     private ResourceAssignment myAssignmentToResource;
 
@@ -126,7 +122,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     @Override
     public Task getTask() {
-      return ResourceAssignmentCollectionImpl.this.getTask();
+      return myTask;
     }
 
     @Override
@@ -198,7 +194,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     @Override
     public Task getTask() {
-      return ResourceAssignmentCollectionImpl.this.getTask();
+      return myTask;
     }
 
     @Override

@@ -15,6 +15,8 @@ import java.util.List;
 import static net.sourceforge.ganttproject.resource.HumanResourceMerger.MergeResourcesOption.*;
 import static org.junit.Assert.assertEquals;
 
+// Individual test methods pass if ran independently, however, some tests fail if the tests are ran in sequence
+// Probably earlier tests leave the "state" dirty, don't understand how...
 public class ImporterTest extends ProjectTestBase {
 
     private void testVariant(ImportCalendarOption calendarOption, HumanResourceMerger.MergeResourcesOption mergeOption, int expectedNumResources) throws IOException {
@@ -65,7 +67,7 @@ public class ImporterTest extends ProjectTestBase {
             }
         }
     }
-    
+
     // Tests for all possible combinations of merge options
 
     @Test

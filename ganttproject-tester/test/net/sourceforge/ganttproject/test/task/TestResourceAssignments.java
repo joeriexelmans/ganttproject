@@ -1,11 +1,8 @@
 package net.sourceforge.ganttproject.test.task;
 
 import biz.ganttproject.core.calendar.AlwaysWorkingTimeCalendarImpl;
-import biz.ganttproject.core.calendar.GPCalendarCalc;
 import biz.ganttproject.core.option.ColorOption;
-import biz.ganttproject.core.time.TimeUnitStack;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
-import junit.framework.TestCase;
 import net.sourceforge.ganttproject.gui.NotificationManager;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
@@ -15,6 +12,7 @@ import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskManagerConfig;
+import org.junit.*;
 
 import java.awt.*;
 import java.net.URL;
@@ -22,15 +20,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestResourceAssignments extends TestCase {
+import static org.junit.Assert.*;
+
+public class TestResourceAssignments {
     private TaskManager myTaskManager;
 
     private HumanResourceManager myHumanResourceManager;
 
-    public TestResourceAssignments(String s) {
-        super(s);
-    }
-
+    @Test
     public void testResourceAppearsInListAfterCreation() {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
@@ -45,6 +42,7 @@ public class TestResourceAssignments extends TestCase {
                 expectedResources, actualResources);
     }
 
+    @Test
     public void testResourceDisappearsFromListAfterAssignmentDeletion() {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
@@ -63,6 +61,7 @@ public class TestResourceAssignments extends TestCase {
                 expectedResources, actualResources);
     }
 
+    @Test
     public void testResourceIsNotAssignedTwice() {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
@@ -77,6 +76,7 @@ public class TestResourceAssignments extends TestCase {
     }
 
 
+    @Test
     public void testAssignmentsDisappearOnTaskDeletion() {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
@@ -89,6 +89,7 @@ public class TestResourceAssignments extends TestCase {
                 assignments.length == 0);
     }
 
+    @Test
     public void testAssignmentsDisappearOnSummaryTaskDeletion() {
         HumanResource res1 = myHumanResourceManager.getById(1);
         TaskManager taskManager = myTaskManager;
@@ -105,6 +106,7 @@ public class TestResourceAssignments extends TestCase {
             assignments.length == 0);
     }
 
+    @Test
     public void testAssignmentDisappearOnResourceDeletion() {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
@@ -132,6 +134,7 @@ public class TestResourceAssignments extends TestCase {
         assertTrue("It is expected that assignment is removed after sequential update+delete via mutator", resources.isEmpty());
     }
 
+    @Test
     public void testResourceAssignmentCollectionMutatorDeletion() {
         Set<HumanResource> actualResources;
         Set<HumanResource> expectedResources;
@@ -184,9 +187,8 @@ public class TestResourceAssignments extends TestCase {
         return result;
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() {
         myHumanResourceManager = new HumanResourceManager(RoleManager.Access
                 .getInstance().getDefaultRole(), null);
         myHumanResourceManager.create("test resource#1", 1);

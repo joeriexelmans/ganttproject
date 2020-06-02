@@ -23,6 +23,10 @@ import java.io.InputStream;
 public class Parser {
     DocumentManager documentManager;
 
+    /**
+     * @param docManager The reason we need a DocumentManager is to handle &lt;portfolio&gt; tags,
+     *                   which require us to load another document.
+     */
     public Parser(DocumentManager docManager) {
         documentManager = docManager;
     }

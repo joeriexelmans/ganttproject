@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
-  private final Map<HumanResource, ResourceAssignment> myAssignments = new LinkedHashMap<HumanResource, ResourceAssignment>();
+  private final Map<HumanResource, LocalAssignment> myAssignments = new LinkedHashMap<HumanResource, LocalAssignment>();
 
   private final TaskImpl myTask;
 
@@ -45,10 +45,10 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
   private ResourceAssignmentCollectionImpl(ResourceAssignmentCollectionImpl collection) {
     myTask = collection.myTask;
-    ResourceAssignment[] assignments = collection.getAssignments();
+    LocalAssignment[] assignments = collection.getAssignments();
     for (int i = 0; i < assignments.length; i++) {
-      ResourceAssignment next = assignments[i];
-      ResourceAssignment copy = new ResourceAssignmentImpl(next.getResource());
+      LocalAssignment next = assignments[i];
+      LocalAssignment copy = new LocalAssignmentImpl(next.getResource());
       copy.setLoad(next.getLoad());
       copy.setCoordinator(next.isCoordinator());
       copy.setRoleForAssignment(next.getRoleForAssignment());
@@ -58,19 +58,19 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
   @Override
   public void clear() {
-    ResourceAssignment[] assignments = getAssignments();
+    LocalAssignment[] assignments = getAssignments();
     for (int i = 0; i < assignments.length; i++) {
       assignments[i].delete();
     }
   }
 
   @Override
-  public ResourceAssignment[] getAssignments() {
-    return myAssignments.values().toArray(new ResourceAssignment[myAssignments.size()]);
+  public LocalAssignment[] getAssignments() {
+    return myAssignments.values().toArray(new LocalAssignment[myAssignments.size()]);
   }
 
   @Override
-  public ResourceAssignment getAssignment(HumanResource resource) {
+  public LocalAssignment getAssignment(HumanResource resource) {
     return myAssignments.get(resource);
   }
 
@@ -84,7 +84,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
   }
 
   @Override
-  public ResourceAssignment addAssignment(HumanResource resource) {
+  public LocalAssignment addAssignment(HumanResource resource) {
     return auxAddAssignment(resource);
   }
 
@@ -93,20 +93,20 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
     myAssignments.remove(resource);
   }
 
-  private ResourceAssignment auxAddAssignment(HumanResource resource) {
-    final ResourceAssignment result = new ResourceAssignmentImpl(resource);
+  private LocalAssignment auxAddAssignment(HumanResource resource) {
+    final LocalAssignment result = new LocalAssignmentImpl(resource);
     addAssignment(result);
     return result;
   }
 
-  private void addAssignment(ResourceAssignment assignment) {
+  private void addAssignment(LocalAssignment assignment) {
     myAssignments.put(assignment.getResource(), assignment);
   }
-  
-  private class ResourceAssignmentImpl implements ResourceAssignment {
-    private ResourceAssignment myAssignmentToResource;
 
-    public ResourceAssignmentImpl(HumanResource resource) {
+  private class LocalAssignmentImpl implements LocalAssignment {
+    private LocalAssignment myAssignmentToResource;
+
+    public LocalAssignmentImpl(HumanResource resource) {
       myAssignmentToResource = resource.createAssignment(this);
       // resource.setAssignmentCollection(ResourceAssignmentCollectionImpl.this);
     }
@@ -168,7 +168,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
     }
   }
 
-  private class ResourceAssignmentStub implements ResourceAssignment {
+  private class LocalAssignmentStub implements LocalAssignment {
     private final HumanResource myResource;
     private final Runnable myOnDelete;
 
@@ -178,7 +178,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     private Role myRoleForAssignment;
 
-    public ResourceAssignmentStub(HumanResource resource, Runnable onDelete) {
+    public LocalAssignmentStub(HumanResource resource, Runnable onDelete) {
       myResource = resource;
       myOnDelete = onDelete;
     }
@@ -241,9 +241,9 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
     private boolean invalidated = false;
 
     @Override
-    public ResourceAssignment addAssignment(final HumanResource resource) {
+    public LocalAssignment addAssignment(final HumanResource resource) {
       Preconditions.checkState( ! invalidated );
-      ResourceAssignment result = new ResourceAssignmentStub(resource, new Runnable() {
+      LocalAssignment result = new LocalAssignmentStub(resource, new Runnable() {
         @Override
         public void run() {
           myQueue.remove(resource);
@@ -277,7 +277,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
           break;
         }
         case MutationInfo.ADD: {
-          ResourceAssignment result = auxAddAssignment(next.myResource);
+          LocalAssignment result = auxAddAssignment(next.myResource);
           result.setLoad(next.myAssignment.getLoad());
           result.setCoordinator(next.myAssignment.isCoordinator());
           result.setRoleForAssignment(next.myAssignment.getRoleForAssignment());
@@ -296,7 +296,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     static final int DELETE = 1;
 
-    private final ResourceAssignment myAssignment;
+    private final LocalAssignment myAssignment;
 
     private final int myOrder;
 
@@ -306,7 +306,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     private final HumanResource myResource;
 
-    public MutationInfo(ResourceAssignment assignment, int operation) {
+    public MutationInfo(LocalAssignment assignment, int operation) {
       myAssignment = assignment;
       myOrder = ourOrder++;
       myOperation = operation;
@@ -340,19 +340,19 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
   public void importData(ResourceAssignmentCollection assignmentCollection) {
     if (myTask.isUnplugged()) {
-      ResourceAssignment[] assignments = assignmentCollection.getAssignments();
+      LocalAssignment[] assignments = assignmentCollection.getAssignments();
       for (int i = 0; i < assignments.length; i++) {
-        ResourceAssignment next = assignments[i];
+        LocalAssignment next = assignments[i];
         addAssignment(next);
       }
     } else {
-      ResourceAssignment[] assignments = assignmentCollection.getAssignments();
+      LocalAssignment[] assignments = assignmentCollection.getAssignments();
       for (int i = 0; i < assignments.length; i++) {
-        ResourceAssignment next = assignments[i];
+        LocalAssignment next = assignments[i];
         HumanResource nextResource = next.getResource();
         HumanResource nextImportedResource = myResourceManager.getById(nextResource.getId());
         if (nextImportedResource != null) {
-          ResourceAssignment copy = new ResourceAssignmentImpl(nextImportedResource);
+          LocalAssignment copy = new LocalAssignmentImpl(nextImportedResource);
           copy.setLoad(next.getLoad());
           copy.setCoordinator(next.isCoordinator());
           copy.setRoleForAssignment(next.getRoleForAssignment());
@@ -364,8 +364,8 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
   @Override
   public HumanResource getCoordinator() {
-    for (Iterator<ResourceAssignment> assignments = myAssignments.values().iterator(); assignments.hasNext();) {
-      ResourceAssignment next = assignments.next();
+    for (Iterator<LocalAssignment> assignments = myAssignments.values().iterator(); assignments.hasNext();) {
+      LocalAssignment next = assignments.next();
       if (next.isCoordinator()) {
         return next.getResource();
       }

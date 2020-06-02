@@ -18,6 +18,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sourceforge.ganttproject.task;
 
+import biz.ganttproject.core.time.TimeDuration;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
 
@@ -26,7 +27,7 @@ import net.sourceforge.ganttproject.roles.Role;
  * 
  * @author bard Date: 05.02.2004
  */
-public interface ResourceAssignment {
+public interface LocalAssignment {
   Task getTask();
 
   HumanResource getResource();

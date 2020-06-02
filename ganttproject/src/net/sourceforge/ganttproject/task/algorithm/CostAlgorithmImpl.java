@@ -21,7 +21,7 @@ package net.sourceforge.ganttproject.task.algorithm;
 import java.math.BigDecimal;
 
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 
@@ -39,7 +39,7 @@ public class CostAlgorithmImpl {
         total = total.add(child.getCost().getValue());
       }
     }
-    for (ResourceAssignment assignment : t.getAssignments()) {
+    for (LocalAssignment assignment : t.getAssignments()) {
       HumanResource resource = assignment.getResource();
       total = total.add(resource.getStandardPayRate()
           .multiply(BigDecimal.valueOf(assignment.getLoad()))

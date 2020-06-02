@@ -30,7 +30,7 @@ import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RolePersistentID;
 import net.sourceforge.ganttproject.roles.RoleSet;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 
@@ -46,7 +46,7 @@ public class AllocationTagHandler extends AbstractTagHandler implements  Parsing
 
   private RoleManager myRoleManager;
 
-  private final HashMap<ResourceAssignment, String> myLateAssigmnent2roleBinding = new HashMap<ResourceAssignment, String>();
+  private final HashMap<LocalAssignment, String> myLateAssigmnent2roleBinding = new HashMap<LocalAssignment, String>();
 
   public AllocationTagHandler(HumanResourceManager resourceMgr, TaskManager taskMgr, RoleManager roleMgr) {
     super("allocation");
@@ -108,11 +108,11 @@ public class AllocationTagHandler extends AbstractTagHandler implements  Parsing
       throw new FileFormatException("Task with id=" + taskId + " not found");
     }
     // TaskMutator mutator = task.createMutator();
-    // ResourceAssignment assignment = mutator.addResource(human);
+    // LocalAssignment assignment = mutator.addResource(human);
     // assignment.setLoad(load);
     // mutator.commit();
 
-    ResourceAssignment assignment = task.getAssignmentCollection().addAssignment(human);
+    LocalAssignment assignment = task.getAssignmentCollection().addAssignment(human);
 
     try {
       if (rolePersistendIDString != null)
@@ -161,8 +161,8 @@ public class AllocationTagHandler extends AbstractTagHandler implements  Parsing
 
   @Override
   public void parsingFinished() {
-    for (Iterator<Entry<ResourceAssignment, String>> lateBindingEntries = myLateAssigmnent2roleBinding.entrySet().iterator(); lateBindingEntries.hasNext();) {
-      Map.Entry<ResourceAssignment, String> nextEntry = lateBindingEntries.next();
+    for (Iterator<Entry<LocalAssignment, String>> lateBindingEntries = myLateAssigmnent2roleBinding.entrySet().iterator(); lateBindingEntries.hasNext();) {
+      Map.Entry<LocalAssignment, String> nextEntry = lateBindingEntries.next();
       String persistentID = nextEntry.getValue();
       Role nextRole = findRole(persistentID);
       if (nextRole != null) {

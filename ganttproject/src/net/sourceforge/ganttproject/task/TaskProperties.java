@@ -114,7 +114,7 @@ public class TaskProperties {
         String coordinators = formatCoordinators(task);
         return coordinators.isEmpty() ? "" : "{" + coordinators + "}";
       } else if (propertyID.equals(ID_TASK_RESOURCES)) {
-        ResourceAssignment[] assignments = task.getAssignments();
+        LocalAssignment[] assignments = task.getAssignments();
         if (assignments.length > 0) {
           sb.append(" ");
           /* Keep coordinators and other resources separate */
@@ -284,10 +284,10 @@ public class TaskProperties {
   }
 
   public static String formatCoordinators(Task t) {
-    ResourceAssignment[] assignments = t.getAssignments();
-    Collection<ResourceAssignment> coordinators = Collections2.filter(Arrays.asList(assignments), new Predicate<ResourceAssignment>() {
+    LocalAssignment[] assignments = t.getAssignments();
+    Collection<LocalAssignment> coordinators = Collections2.filter(Arrays.asList(assignments), new Predicate<LocalAssignment>() {
       @Override
-      public boolean apply(ResourceAssignment input) {
+      public boolean apply(LocalAssignment input) {
         return input.isCoordinator();
       }
     });
@@ -297,10 +297,10 @@ public class TaskProperties {
     return formatResources(coordinators);
   }
 
-  public static String formatResources(Collection<ResourceAssignment> resources) {
-    return Joiner.on(", ").join(Collections2.transform(resources, new Function<ResourceAssignment, String>() {
+  public static String formatResources(Collection<LocalAssignment> resources) {
+    return Joiner.on(", ").join(Collections2.transform(resources, new Function<LocalAssignment, String>() {
         @Override
-        public String apply(ResourceAssignment input) {
+        public String apply(LocalAssignment input) {
           return input.getResource().getName();
         }
       }));

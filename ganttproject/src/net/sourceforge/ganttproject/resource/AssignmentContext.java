@@ -18,8 +18,8 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sourceforge.ganttproject.resource;
 
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 
 public interface AssignmentContext {
-  public ResourceAssignment[] getResourceAssignments();
+  public LocalAssignment[] getResourceAssignments();
 }

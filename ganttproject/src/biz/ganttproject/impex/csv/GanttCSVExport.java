@@ -33,7 +33,6 @@ import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.io.CSVOptions;
 import net.sourceforge.ganttproject.language.GanttLanguage;
@@ -42,7 +41,7 @@ import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.TaskProperties;
@@ -63,7 +62,7 @@ import java.util.Set;
  * @author athomas
  */
 public class GanttCSVExport {
-  private static final Predicate<ResourceAssignment> COORDINATOR_PREDICATE = arg -> arg.isCoordinator();
+  private static final Predicate<LocalAssignment> COORDINATOR_PREDICATE = arg -> arg.isCoordinator();
 
 
   private CSVOptions myCsvOptions;
@@ -199,7 +198,7 @@ public class GanttCSVExport {
               writer.print(Joiner.on('.').join(outlinePath));
               break;
             case COORDINATOR:
-              ResourceAssignment coordinator = Iterables.tryFind(Arrays.asList(task.getAssignments()), COORDINATOR_PREDICATE).orNull();
+              LocalAssignment coordinator = Iterables.tryFind(Arrays.asList(task.getAssignments()), COORDINATOR_PREDICATE).orNull();
               writer.print(coordinator == null ? "" : coordinator.getResource().getName());
               break;
             case PREDECESSORS:
@@ -349,7 +348,7 @@ public class GanttCSVExport {
    */
   private String getAssignments(Task task) {
     StringBuilder res = new StringBuilder();
-    ResourceAssignment[] assignment = task.getAssignments();
+    LocalAssignment[] assignment = task.getAssignments();
     for (int i = 0; i < assignment.length; i++) {
       String assignmentDelimiter = i == assignment.length - 1
               ? ""
@@ -361,7 +360,7 @@ public class GanttCSVExport {
 
   private String buildAssignmentSpec(Task task) {
     List<String> loads = Lists.newArrayList();
-    for (ResourceAssignment ra : task.getAssignments()) {
+    for (LocalAssignment ra : task.getAssignments()) {
       loads.add(String.format("%d:%.2f", ra.getResource().getId(), ra.getLoad()));
     }
     return Joiner.on(';').join(loads);

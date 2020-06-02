@@ -34,7 +34,6 @@ import net.sourceforge.ganttproject.CustomPropertyListener;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
-import net.sourceforge.ganttproject.ProjectEventListener;
 import net.sourceforge.ganttproject.gui.NotificationChannel;
 import net.sourceforge.ganttproject.gui.NotificationItem;
 import net.sourceforge.ganttproject.gui.NotificationManager;
@@ -1142,10 +1141,10 @@ public class TaskManagerImpl implements TaskManager {
       Map<Task, Task> original2importedTask, Map<HumanResource, HumanResource> original2importedResource) {
     Task[] tasks = importedTaskManager.getTasks();
     for (int i = 0; i < tasks.length; i++) {
-      ResourceAssignment[] assignments = tasks[i].getAssignments();
+      LocalAssignment[] assignments = tasks[i].getAssignments();
       for (int j = 0; j < assignments.length; j++) {
         Task task = getTask(original2importedTask.get(tasks[i]).getTaskID());
-        ResourceAssignment assignment = task.getAssignmentCollection().addAssignment(
+        LocalAssignment assignment = task.getAssignmentCollection().addAssignment(
             original2importedResource.get(assignments[j].getResource()));
         assignment.setLoad(assignments[j].getLoad());
         assignment.setCoordinator(assignments[j].isCoordinator());

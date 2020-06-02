@@ -24,37 +24,37 @@ import java.util.Set;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.roles.Role;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 
 public class AssignmentNode extends ResourceTableNode {
   private static final Set<ResourceDefaultColumn> ourApplicableColumns = EnumSet.of(ResourceDefaultColumn.ROLE_IN_TASK);
-  private final ResourceAssignment resourceAssignment;
+  private final LocalAssignment localAssignment;
 
-  public AssignmentNode(ResourceAssignment res) {
+  public AssignmentNode(LocalAssignment res) {
     super(res, ourApplicableColumns);
-    resourceAssignment = res;
+    localAssignment = res;
   }
 
-  public ResourceAssignment getAssignment() {
-    return resourceAssignment;
+  public LocalAssignment getAssignment() {
+    return localAssignment;
   }
 
   public Role getRoleForAssigment() {
-    return resourceAssignment.getRoleForAssignment();
+    return localAssignment.getRoleForAssignment();
   }
 
   public void setRoleForAssigment(Role role) {
-    resourceAssignment.setRoleForAssignment(role);
+    localAssignment.setRoleForAssignment(role);
   }
 
   public Task getTask() {
-    return resourceAssignment.getTask();
+    return localAssignment.getTask();
   }
 
   @Override
   public String toString() {
-    return resourceAssignment.getTask().getName();
+    return localAssignment.getTask().getName();
   }
 
   @Override

@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.gui.TableModelExt;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentCollection;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 
@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author dbarashev (Dmitry Barashev)
  */
-class ResourcesTableModel extends TableModelExt<ResourceAssignment>
+class ResourcesTableModel extends TableModelExt<LocalAssignment>
 {
 
   static enum Column {
@@ -60,14 +60,14 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
     }
   }
 
-  private final List<ResourceAssignment> myAssignments;
+  private final List<LocalAssignment> myAssignments;
 
   private final ResourceAssignmentMutator myMutator;
 
   private boolean isChanged = false;
 
   public ResourcesTableModel(ResourceAssignmentCollection assignmentCollection) {
-    myAssignments = new ArrayList<ResourceAssignment>(Arrays.asList(assignmentCollection.getAssignments()));
+    myAssignments = new ArrayList<LocalAssignment>(Arrays.asList(assignmentCollection.getAssignments()));
     myMutator = assignmentCollection.createMutator();
   }
 
@@ -96,7 +96,7 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
     Object result;
     if (row >= 0) {
       if (row < myAssignments.size()) {
-        ResourceAssignment assignment = myAssignments.get(row);
+        LocalAssignment assignment = myAssignments.get(row);
         switch (col) {
         case 0:
           result = String.valueOf(assignment.getResource().getId());
@@ -149,7 +149,7 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
   }
 
   private void updateAssignment(Object value, int row, int col) {
-    ResourceAssignment updateTarget = myAssignments.get(row);
+    LocalAssignment updateTarget = myAssignments.get(row);
     switch (col) {
     case 4: {
       updateTarget.setRoleForAssignment((Role) value);
@@ -174,7 +174,7 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
         boolean coord = updateTarget.isCoordinator();
         updateTarget.delete();
         myMutator.deleteAssignment(updateTarget.getResource());
-        ResourceAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
+        LocalAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
         newAssignment.setLoad(load);
         newAssignment.setCoordinator(coord);
         myAssignments.set(row, newAssignment);
@@ -189,7 +189,7 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
 
   private void createAssignment(Object value) {
     if (value instanceof HumanResource) {
-      ResourceAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
+      LocalAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
       newAssignment.setLoad(100);
 
       boolean coord = false;
@@ -202,7 +202,7 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
     }
   }
 
-  public List<ResourceAssignment> getResourcesAssignments() {
+  public List<LocalAssignment> getResourcesAssignments() {
     return Collections.unmodifiableList(myAssignments);
   }
 
@@ -215,13 +215,13 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
   }
 
   public void delete(int[] selectedRows) {
-    List<ResourceAssignment> selected = new ArrayList<ResourceAssignment>();
+    List<LocalAssignment> selected = new ArrayList<LocalAssignment>();
     for (int row : selectedRows) {
       if (row < myAssignments.size()) {
         selected.add(myAssignments.get(row));
       }
     }
-    for (ResourceAssignment ra : selected) {
+    for (LocalAssignment ra : selected) {
       ra.delete();
     }
     myAssignments.removeAll(selected);
@@ -229,7 +229,7 @@ class ResourcesTableModel extends TableModelExt<ResourceAssignment>
   }
 
   @Override
-  public List<ResourceAssignment> getAllValues() {
+  public List<LocalAssignment> getAllValues() {
     return myAssignments;
   }
 

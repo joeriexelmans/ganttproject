@@ -32,7 +32,7 @@ import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.CustomColumnsValues;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import org.xml.sax.SAXException;
@@ -209,7 +209,7 @@ public class XmlSerializer extends SaverBase {
           }
         }
         StringBuffer usersS = new StringBuffer();
-        ResourceAssignment[] assignments = t.getAssignments();
+        LocalAssignment[] assignments = t.getAssignments();
         if (assignments.length > 0) {
           for (int j = 0; j < assignments.length; j++) {
             addAttribute("resource-id", assignments[j].getResource().getId(), myAttrs);

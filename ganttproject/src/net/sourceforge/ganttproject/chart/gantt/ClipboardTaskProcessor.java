@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -88,12 +88,12 @@ public class ClipboardTaskProcessor {
   }
 
   private void copyAssignments(ClipboardContents clipboardContents, Map<Task, Task> original2copy) {
-    for (ResourceAssignment ra : clipboardContents.getAssignments()) {
+    for (LocalAssignment ra : clipboardContents.getAssignments()) {
       Task copy = original2copy.get(ra.getTask());
       if (copy == null) {
         continue;
       }
-      ResourceAssignment newAssignment = copy.getAssignmentCollection().addAssignment(ra.getResource());
+      LocalAssignment newAssignment = copy.getAssignmentCollection().addAssignment(ra.getResource());
       newAssignment.setLoad(ra.getLoad());
       newAssignment.setRoleForAssignment(ra.getRoleForAssignment());
       newAssignment.setCoordinator(ra.isCoordinator());

@@ -22,12 +22,8 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.Action;
 import javax.swing.DefaultCellEditor;
-import javax.swing.InputMap;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.KeyStroke;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
@@ -40,7 +36,7 @@ import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.ResourceNode;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RoleManager.RoleEvent;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 
@@ -244,8 +240,8 @@ public class ResourceTreeTable extends GPTreeTableBase {
   }
 
   void swapAssignents(AssignmentNode selected, AssignmentNode sibling) {
-    ResourceAssignment selectedAssignment = selected.getAssignment();
-    ResourceAssignment previousAssignment = sibling.getAssignment();
+    LocalAssignment selectedAssignment = selected.getAssignment();
+    LocalAssignment previousAssignment = sibling.getAssignment();
     selectedAssignment.getResource().swapAssignments(selectedAssignment, previousAssignment);
   }
 }

@@ -47,11 +47,10 @@ import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyHolder;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -421,7 +420,7 @@ class ProjectFileExporter {
   private void exportAssignments(Map<Integer, net.sf.mpxj.Task> id2mpxjTask, Map<Integer, Resource> id2mpxjResource) {
     for (Task t : getTaskManager().getTasks()) {
       net.sf.mpxj.Task mpxjTask = id2mpxjTask.get(convertTaskId(t.getTaskID()));
-      for (ResourceAssignment ra : t.getAssignments()) {
+      for (LocalAssignment ra : t.getAssignments()) {
         Resource mpxjResource = id2mpxjResource.get(ra.getResource().getId());
         net.sf.mpxj.ResourceAssignment mpxjAssignment = mpxjTask.addResourceAssignment(mpxjResource);
         mpxjAssignment.setUnits(ra.getLoad());

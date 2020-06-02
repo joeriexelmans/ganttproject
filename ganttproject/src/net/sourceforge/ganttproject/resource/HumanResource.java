@@ -28,7 +28,7 @@ import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.task.CustomColumnsException;
 import net.sourceforge.ganttproject.task.CustomColumnsValues;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 
 import javax.swing.*;
@@ -65,7 +65,7 @@ public class HumanResource implements CustomPropertyHolder {
 
   private final DefaultListModel<GanttDaysOff> myDaysOffList = new DefaultListModel<>();
 
-  private final List<ResourceAssignment> myAssignments = new ArrayList<>();
+  private final List<LocalAssignment> myAssignments = new ArrayList<>();
 
   private final CustomColumnsValues myCustomProperties;
 
@@ -108,9 +108,9 @@ public class HumanResource implements CustomPropertyHolder {
    * associated to it's Tasks
    */
   private void removeAllAssignments() {
-    List<ResourceAssignment> copy = new ArrayList<>(myAssignments);
-    for (ResourceAssignment aCopy : copy) {
-      ResourceAssignmentImpl next = (ResourceAssignmentImpl) aCopy;
+    List<LocalAssignment> copy = new ArrayList<>(myAssignments);
+    for (LocalAssignment aCopy : copy) {
+      LocalAssignmentImpl next = (LocalAssignmentImpl) aCopy;
       next.myAssignmentToTask.delete();
     }
     resetLoads();
@@ -209,16 +209,16 @@ public class HumanResource implements CustomPropertyHolder {
     }
   }
 
-  public ResourceAssignment createAssignment(ResourceAssignment assignmentToTask) {
-    ResourceAssignment result = new ResourceAssignmentImpl(assignmentToTask);
+  public LocalAssignment createAssignment(LocalAssignment assignmentToTask) {
+    LocalAssignment result = new LocalAssignmentImpl(assignmentToTask);
     myAssignments.add(result);
     resetLoads();
     fireAssignmentsChanged();
     return result;
   }
 
-  public ResourceAssignment[] getAssignments() {
-    return myAssignments.toArray(new ResourceAssignment[0]);
+  public LocalAssignment[] getAssignments() {
+    return myAssignments.toArray(new LocalAssignment[0]);
   }
 
   public HumanResource unpluggedClone() {
@@ -291,7 +291,7 @@ public class HumanResource implements CustomPropertyHolder {
     fireAssignmentsChanged();
   }
 
-  public void swapAssignments(ResourceAssignment a1, ResourceAssignment a2) {
+  public void swapAssignments(LocalAssignment a1, LocalAssignment a2) {
     Collections.swap(myAssignments, myAssignments.indexOf(a1), myAssignments.indexOf(a2));
     resetLoads();
     fireAssignmentsChanged();
@@ -307,7 +307,7 @@ public class HumanResource implements CustomPropertyHolder {
 
   public double getTotalLoad() {
     double totalLoad = 0.0;
-    for (ResourceAssignment assignment : myAssignments) {
+    for (LocalAssignment assignment : myAssignments) {
       totalLoad = totalLoad + assignment.getLoad() * assignment.getTask().getDuration().getLength() / 100.0;
     }
     return totalLoad;
@@ -337,9 +337,9 @@ public class HumanResource implements CustomPropertyHolder {
     return name;
   }
 
-  private class ResourceAssignmentImpl implements ResourceAssignment {
+  private class LocalAssignmentImpl implements LocalAssignment {
 
-    private final ResourceAssignment myAssignmentToTask;
+    private final LocalAssignment myAssignmentToTask;
 
     private float myLoad;
 
@@ -347,7 +347,7 @@ public class HumanResource implements CustomPropertyHolder {
 
     private Role myRoleForAssignment;
 
-    private ResourceAssignmentImpl(ResourceAssignment assignmentToTask) {
+    private LocalAssignmentImpl(LocalAssignment assignmentToTask) {
       myAssignmentToTask = assignmentToTask;
     }
 

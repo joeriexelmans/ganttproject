@@ -37,7 +37,7 @@ import net.sourceforge.ganttproject.resource.ResourceContext;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceNode;
 import net.sourceforge.ganttproject.resource.ResourceListener;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import net.sourceforge.ganttproject.util.collect.Pair;
@@ -325,8 +325,8 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
   }
 
   @Override
-  public ResourceAssignment[] getResourceAssignments() {
-    ResourceAssignment[] res = null;
+  public LocalAssignment[] getResourceAssignments() {
+    LocalAssignment[] res = null;
     DefaultMutableTreeTableNode[] tNodes = getSelectedNodes();
     if (tNodes != null) {
       int nbAssign = 0;
@@ -336,10 +336,10 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
         }
       }
 
-      res = new ResourceAssignment[nbAssign];
+      res = new LocalAssignment[nbAssign];
       for (int i = 0; i < nbAssign; i++) {
         if (tNodes[i] instanceof AssignmentNode) {
-          res[i] = (ResourceAssignment) ((AssignmentNode) tNodes[i]).getUserObject();
+          res[i] = (LocalAssignment) ((AssignmentNode) tNodes[i]).getUserObject();
         }
       }
     }

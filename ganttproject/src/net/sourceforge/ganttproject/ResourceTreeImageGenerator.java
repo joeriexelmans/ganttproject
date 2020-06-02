@@ -32,7 +32,7 @@ import biz.ganttproject.core.chart.render.TextLengthCalculatorImpl;
 import net.sourceforge.ganttproject.font.Fonts;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 
 class ResourceTreeImageGenerator {
   private HumanResourceManager myResourceManager;
@@ -76,7 +76,7 @@ class ResourceTreeImageGenerator {
       if (nameWidth > width) {
         width = nameWidth;
       }
-      ResourceAssignment[] assignments = hr.getAssignments();
+      LocalAssignment[] assignments = hr.getAssignments();
       if (assignments != null) {
         for (int i = 0; i < assignments.length; i++) {
           if (isAssignmentVisible(assignments[i])) {
@@ -129,7 +129,7 @@ class ResourceTreeImageGenerator {
       }
       {
         // paint assigned task names
-        ResourceAssignment[] assignments = hr.getAssignments();
+        LocalAssignment[] assignments = hr.getAssignments();
         if (assignments != null) {
           for (int i = 0; i < assignments.length; i++) {
             if (isAssignmentVisible(assignments[i])) {
@@ -151,7 +151,7 @@ class ResourceTreeImageGenerator {
     }
   }
 
-  protected boolean isAssignmentVisible(ResourceAssignment assignment) {
+  protected boolean isAssignmentVisible(LocalAssignment assignment) {
     return true;
   }
 }

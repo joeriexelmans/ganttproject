@@ -34,7 +34,6 @@ import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.chart.MilestoneTaskFakeActivity;
 import net.sourceforge.ganttproject.document.AbstractURLDocument;
 import net.sourceforge.ganttproject.document.Document;
-import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmCollection;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmException;
 import net.sourceforge.ganttproject.task.algorithm.CostAlgorithmImpl;
@@ -469,7 +468,7 @@ public class TaskImpl implements Task {
   }
 
   @Override
-  public ResourceAssignment[] getAssignments() {
+  public LocalAssignment[] getAssignments() {
     return myAssignments.getAssignments();
   }
 

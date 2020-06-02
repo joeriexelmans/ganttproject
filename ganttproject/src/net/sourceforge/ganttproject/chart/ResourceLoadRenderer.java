@@ -32,7 +32,7 @@ import biz.ganttproject.core.chart.grid.OffsetLookup;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.LoadDistribution;
 import net.sourceforge.ganttproject.resource.LoadDistribution.Load;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 
 import java.awt.*;
@@ -94,9 +94,9 @@ class ResourceLoadRenderer extends ChartRendererBase {
     int yPos2 = ypos;
     Map<Task, List<Load>> task2loads = distribution.getSeparatedTaskLoads();
 
-    ResourceAssignment[] assignments = distribution.getResource().getAssignments();
+    LocalAssignment[] assignments = distribution.getResource().getAssignments();
     for (int i = 0; i < assignments.length; i++) {
-      ResourceAssignment assignment = assignments[i];
+      LocalAssignment assignment = assignments[i];
       List<Load> nextLoads = task2loads.get(assignment.getTask());
       yPos2 += getConfig().getRowHeight();
       if (nextLoads == null) {

@@ -21,7 +21,7 @@ package net.sourceforge.ganttproject.action.resource;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 
@@ -46,7 +46,7 @@ public class AssignmentToggleAction extends GPAction {
 
   private void createAssignment() {
     ResourceAssignmentMutator mutator = myTask.getAssignmentCollection().createMutator();
-    ResourceAssignment newAssignment = mutator.addAssignment(myHumanResource);
+    LocalAssignment newAssignment = mutator.addAssignment(myHumanResource);
     newAssignment.setLoad(100);
     newAssignment.setRoleForAssignment(newAssignment.getResource().getRole());
     mutator.commit();

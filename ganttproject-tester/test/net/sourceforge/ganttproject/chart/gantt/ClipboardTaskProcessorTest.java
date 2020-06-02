@@ -27,7 +27,7 @@ import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.TestSetupHelper.TaskManagerBuilder;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 
@@ -125,7 +125,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
 
     HumanResource res1 = new HumanResource("Joe", 1, hrMgr);
     hrMgr.add(res1);
-    ResourceAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
+    LocalAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
     assgn1.setLoad(100f);
 
     ClipboardContents contents = new ClipboardContents(taskManager);
@@ -133,7 +133,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
     contents.copy();
     ClipboardTaskProcessor clipboardProcessor = new ClipboardTaskProcessor(taskManager);
     List<Task> pasted = clipboardProcessor.pasteAsSibling(taskManager.getRootTask(), contents);
-    ResourceAssignment[] newAssignments = pasted.get(0).getAssignments();
+    LocalAssignment[] newAssignments = pasted.get(0).getAssignments();
     assertEquals(1, newAssignments.length);
     assertEquals(res1, newAssignments[0].getResource());
     assertEquals(100f, newAssignments[0].getLoad());
@@ -148,7 +148,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
 
     HumanResource res1 = new HumanResource("Joe", 1, hrMgr);
     hrMgr.add(res1);
-    ResourceAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
+    LocalAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
     assgn1.setLoad(100f);
 
     ClipboardContents contents = new ClipboardContents(taskManager);
@@ -159,7 +159,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
 
     ClipboardTaskProcessor clipboardProcessor = new ClipboardTaskProcessor(taskManager);
     List<Task> pasted = clipboardProcessor.pasteAsSibling(taskManager.getRootTask(), contents);
-    ResourceAssignment[] newAssignments = pasted.get(0).getAssignments();
+    LocalAssignment[] newAssignments = pasted.get(0).getAssignments();
     assertEquals(1, newAssignments.length);
     assertEquals(res1, newAssignments[0].getResource());
     assertEquals(100f, newAssignments[0].getLoad());
@@ -174,7 +174,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
 
     HumanResource res1 = new HumanResource("Joe", 1, hrMgr);
     hrMgr.add(res1);
-    ResourceAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
+    LocalAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
     assgn1.setLoad(100f);
 
     ClipboardContents contents = new ClipboardContents(taskManager);
@@ -184,7 +184,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
     clipboardProcessor.setTruncateAssignments(true);
 
     List<Task> pasted = clipboardProcessor.pasteAsSibling(taskManager.getRootTask(), contents);
-    ResourceAssignment[] newAssignments = pasted.get(0).getAssignments();
+    LocalAssignment[] newAssignments = pasted.get(0).getAssignments();
     assertEquals(0, newAssignments.length);
   }
 

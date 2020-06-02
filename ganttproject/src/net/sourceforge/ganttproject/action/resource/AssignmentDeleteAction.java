@@ -24,7 +24,7 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade.Choice;
 import net.sourceforge.ganttproject.resource.AssignmentContext;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.util.StringUtils;
 
 /**
@@ -43,7 +43,7 @@ public class AssignmentDeleteAction extends GPAction {
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    final ResourceAssignment[] context = myContext.getResourceAssignments();
+    final LocalAssignment[] context = myContext.getResourceAssignments();
     if (context != null && context.length > 0) {
       Choice choice = myUIFacade.showConfirmationDialog(getI18n("msg23") + " " + StringUtils.getDisplayNames(context)
           + "?", getI18n("warning"));
@@ -59,8 +59,8 @@ public class AssignmentDeleteAction extends GPAction {
     }
   }
 
-  private void deleteAssignments(ResourceAssignment[] context) {
-    for (ResourceAssignment ra : context) {
+  private void deleteAssignments(LocalAssignment[] context) {
+    for (LocalAssignment ra : context) {
       ra.delete();
       ra.getTask().getAssignmentCollection().deleteAssignment(ra.getResource());
     }

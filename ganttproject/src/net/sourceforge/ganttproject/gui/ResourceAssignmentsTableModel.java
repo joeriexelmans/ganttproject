@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.gui;
 
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 
@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * @author Oleg Kushnikov
  */
-public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignment> {
+public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment> {
   enum Column {
     ID("id", String.class),
     NAME("taskname", String.class),
@@ -52,8 +52,8 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
     }
   }
 
-  private final List<ResourceAssignment> myAssignments;
-  private final List<ResourceAssignment> myAssignmentsToDelete = new ArrayList<>();
+  private final List<LocalAssignment> myAssignments;
+  private final List<LocalAssignment> myAssignmentsToDelete = new ArrayList<>();
   private final HumanResource myResource;
   private final Map<Task, ResourceAssignmentMutator> myTask2MutatorMap = new HashMap<>();
 
@@ -101,7 +101,7 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
     if (row == myAssignments.size()) {
       return null;
     }
-    ResourceAssignment ra = myAssignments.get(row);
+    LocalAssignment ra = myAssignments.get(row);
     Column column = Column.values()[col];
     switch (column) {
       case ID: {
@@ -136,7 +136,7 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
 
   private void updateAssignment(Object val, int row, int col) {
     Column column = Column.values()[col];
-    ResourceAssignment ra = myAssignments.get(row);
+    LocalAssignment ra = myAssignments.get(row);
     switch (column) {
       case UNIT:
         ra.setLoad((Float)val);
@@ -148,7 +148,7 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
   private void createAssignment(Object value) {
     Task task = ((Task) value);
     ResourceAssignmentMutator mutator = getMutator(task);
-    ResourceAssignment ra = mutator.addAssignment(myResource);
+    LocalAssignment ra = mutator.addAssignment(myResource);
     ra.setLoad(100);
     myAssignments.add(ra);
     fireTableRowsInserted(myAssignments.size(), myAssignments.size());
@@ -163,16 +163,16 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
     return mutator;
   }
 
-  List<ResourceAssignment> getResourcesAssignments() {
+  List<LocalAssignment> getResourcesAssignments() {
     return Collections.unmodifiableList(myAssignments);
   }
 
   @Override
   public void delete(int[] selectedRows) {
-    List<ResourceAssignment> selected = new ArrayList<>();
+    List<LocalAssignment> selected = new ArrayList<>();
     for (int row : selectedRows) {
       if (row < myAssignments.size()) {
-        ResourceAssignment ra = myAssignments.get(row);
+        LocalAssignment ra = myAssignments.get(row);
         ResourceAssignmentMutator mutator = getMutator(ra.getTask());
         mutator.deleteAssignment(myResource);
         myAssignmentsToDelete.add(ra);
@@ -184,7 +184,7 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
   }
 
   @Override
-  public List<ResourceAssignment> getAllValues() {
+  public List<LocalAssignment> getAllValues() {
     return myAssignments;
   }
 
@@ -192,7 +192,7 @@ public class ResourceAssignmentsTableModel extends TableModelExt<ResourceAssignm
     for (ResourceAssignmentMutator m : myTask2MutatorMap.values()) {
       m.commit();
     }
-    for (ResourceAssignment ra : myAssignmentsToDelete) {
+    for (LocalAssignment ra : myAssignmentsToDelete) {
       if (!myAssignments.contains(ra)) {
         ra.delete();
       }

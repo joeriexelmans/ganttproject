@@ -23,13 +23,12 @@ import java.util.List;
 import javax.xml.transform.sax.TransformerHandler;
 
 import net.sourceforge.ganttproject.project.Project;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-import net.sourceforge.ganttproject.IGanttProject;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
 
 class AssignmentSaver extends SaverBase {
   void save(Project project, TransformerHandler handler) throws SAXException {
@@ -37,7 +36,7 @@ class AssignmentSaver extends SaverBase {
     List<HumanResource> resources = project.getHumanResourceManager().getResources();
     for (int i = 0; i < resources.size(); i++) {
       HumanResource resource = resources.get(i);
-      ResourceAssignment[] assignments = resource.getAssignments();
+      LocalAssignment[] assignments = resource.getAssignments();
       for (int j = 0; j < assignments.length; j++) {
         saveAssignment(handler, assignments[j]);
       }
@@ -45,7 +44,7 @@ class AssignmentSaver extends SaverBase {
     endElement("allocations", handler);
   }
 
-  void saveAssignment(TransformerHandler handler, ResourceAssignment next) throws SAXException {
+  void saveAssignment(TransformerHandler handler, LocalAssignment next) throws SAXException {
     AttributesImpl attrs = new AttributesImpl();
     Role roleForAssignment = next.getRoleForAssignment();
     if (roleForAssignment == null) {

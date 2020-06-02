@@ -16,7 +16,7 @@ import javax.swing.DefaultListModel;
 
 import biz.ganttproject.core.calendar.GanttDaysOff;
 
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskActivity;
 
@@ -61,7 +61,7 @@ public class LoadDistribution {
     myLoads.add(new Load(null, null, 0, null));
     myDaysOff.add(new Load(null, null, 0, null));
     myResource = resource;
-    ResourceAssignment[] assignments = myResource.getAssignments();
+    LocalAssignment[] assignments = myResource.getAssignments();
     for (int j = 0; j < assignments.length; j++) {
       processAssignment(assignments[j]);
     }
@@ -83,7 +83,7 @@ public class LoadDistribution {
     addLoad(dayOff.getStart().getTime(), dayOffEnd, -1, myDaysOff, null);
   }
 
-  private void processAssignment(ResourceAssignment assignment) {
+  private void processAssignment(LocalAssignment assignment) {
     Task task = assignment.getTask();
     for (TaskActivity ta : task.getActivities()) {
       processActivity(ta, assignment.getLoad());

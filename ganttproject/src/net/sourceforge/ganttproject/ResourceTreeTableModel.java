@@ -18,7 +18,6 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sourceforge.ganttproject;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -33,10 +32,9 @@ import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceNode;
 import net.sourceforge.ganttproject.resource.ResourceTableNode;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
-import net.sourceforge.ganttproject.task.event.TaskHierarchyEvent;
 import net.sourceforge.ganttproject.task.event.TaskListenerAdapter;
 import net.sourceforge.ganttproject.task.event.TaskScheduleEvent;
 
@@ -78,7 +76,7 @@ public class ResourceTreeTableModel extends DefaultTreeTableModel {
         List<Task> subtree = Lists.newArrayList(myTaskManager.getTaskHierarchy().getDeepNestedTasks(e.getTask()));
         subtree.add(e.getTask());
         for (Task t : subtree) {
-          for (ResourceAssignment ra : t.getAssignments()) {
+          for (LocalAssignment ra : t.getAssignments()) {
             affected.add(ra.getResource());
           }
         }
@@ -97,7 +95,7 @@ public class ResourceTreeTableModel extends DefaultTreeTableModel {
     return index;
   }
 
-  public MutableTreeTableNode getNodeForAssigment(ResourceAssignment assignement) {
+  public MutableTreeTableNode getNodeForAssigment(LocalAssignment assignement) {
     for (MutableTreeTableNode an : ImmutableList.copyOf(Iterators.forEnumeration(getNodeForResource(
         assignement.getResource()).children()))) {
       if (assignement.equals(an.getUserObject())) {
@@ -320,7 +318,7 @@ public class ResourceTreeTableModel extends DefaultTreeTableModel {
   private void buildAssignmentsSubtree(ResourceNode resourceNode) {
     HumanResource resource = resourceNode.getResource();
     resourceNode.removeAllChildren();
-    ResourceAssignment[] assignments = resource.getAssignments();
+    LocalAssignment[] assignments = resource.getAssignments();
     int[] indices = new int[assignments.length];
     TreeNode[] children = new TreeNode[assignments.length];
     if (assignments.length > 0) {

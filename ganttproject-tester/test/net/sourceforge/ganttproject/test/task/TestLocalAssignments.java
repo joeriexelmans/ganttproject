@@ -7,11 +7,8 @@ import net.sourceforge.ganttproject.gui.NotificationManager;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
-import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
-import net.sourceforge.ganttproject.task.Task;
-import net.sourceforge.ganttproject.task.TaskManager;
-import net.sourceforge.ganttproject.task.TaskManagerConfig;
+import net.sourceforge.ganttproject.task.*;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import org.junit.*;
 
 import java.awt.*;
@@ -22,7 +19,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class TestResourceAssignments {
+public class TestLocalAssignments {
     private TaskManager myTaskManager;
 
     private HumanResourceManager myHumanResourceManager;
@@ -49,7 +46,7 @@ public class TestResourceAssignments {
         HumanResource res1 = myHumanResourceManager.getById(1);
         HumanResource res2 = myHumanResourceManager.getById(2);
         task.getAssignmentCollection().addAssignment(res1);
-        ResourceAssignment asgn2 = task.getAssignmentCollection()
+        LocalAssignment asgn2 = task.getAssignmentCollection()
                 .addAssignment(res2);
 
         asgn2.delete();
@@ -83,7 +80,7 @@ public class TestResourceAssignments {
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         task.delete();
-        ResourceAssignment[] assignments = res1.getAssignments();
+        LocalAssignment[] assignments = res1.getAssignments();
         assertTrue(
                 "Resource is expected to have no assignments after task deletion",
                 assignments.length == 0);
@@ -100,7 +97,7 @@ public class TestResourceAssignments {
         childTask.getAssignmentCollection().addAssignment(res1);
 
         taskManager.deleteTask(summaryTask);
-        ResourceAssignment[] assignments = res1.getAssignments();
+        LocalAssignment[] assignments = res1.getAssignments();
         assertTrue(
             "Resource is expected to have no assignments after summary task deletion",
             assignments.length == 0);
@@ -123,7 +120,7 @@ public class TestResourceAssignments {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
-        ResourceAssignment assignment = task.getAssignmentCollection().addAssignment(res1);
+        LocalAssignment assignment = task.getAssignmentCollection().addAssignment(res1);
         ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
         assignment.delete();
         assignment = mutator.addAssignment(res1);
@@ -190,9 +187,9 @@ public class TestResourceAssignments {
 
     private Set<HumanResource> extractResources(Task task) {
         Set<HumanResource> result = new HashSet<HumanResource>();
-        ResourceAssignment[] assignments = task.getAssignments();
+        LocalAssignment[] assignments = task.getAssignments();
         for (int i = 0; i < assignments.length; i++) {
-            ResourceAssignment next = assignments[i];
+            LocalAssignment next = assignments[i];
             result.add(next.getResource());
             assertEquals("Unexpected task is owning resource assignment="
                     + next, task, next.getTask());

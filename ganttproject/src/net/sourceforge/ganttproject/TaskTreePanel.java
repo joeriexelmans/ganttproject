@@ -32,11 +32,8 @@ import net.sourceforge.ganttproject.gui.TaskTreeUIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
-import net.sourceforge.ganttproject.task.Task;
-import net.sourceforge.ganttproject.task.TaskManager;
-import net.sourceforge.ganttproject.task.TaskNode;
-import net.sourceforge.ganttproject.task.TaskSelectionManager;
+import net.sourceforge.ganttproject.task.*;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.TaskSelectionManager.Listener;
 import net.sourceforge.ganttproject.task.event.TaskHierarchyEvent;
 import net.sourceforge.ganttproject.task.event.TaskListenerAdapter;
@@ -329,8 +326,8 @@ public class TaskTreePanel extends TreeTableContainer<Task, GanttTreeTable, Gant
         actions.add(assignmentAction);
       }
 
-      ResourceAssignment[] assignments = task.getAssignmentCollection().getAssignments();
-      for (ResourceAssignment ra : assignments) {
+      LocalAssignment[] assignments = task.getAssignmentCollection().getAssignments();
+      for (LocalAssignment ra : assignments) {
         AssignmentToggleAction assignmentAction = human2action.get(ra.getResource());
         assignmentAction.putValue(Action.SELECTED_KEY, true);
       }

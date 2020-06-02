@@ -25,7 +25,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -59,7 +59,7 @@ public class ClipboardContents {
   private final List<TaskDependency> myIntraDeps = Lists.newArrayList();
   private final List<TaskDependency> myIncomingDeps = Lists.newArrayList();
   private final List<TaskDependency> myOutgoingDeps = Lists.newArrayList();
-  private final List<ResourceAssignment> myAssignments = Lists.newArrayList();
+  private final List<LocalAssignment> myAssignments = Lists.newArrayList();
   private final Multimap<Task, Task> myNestedTasks = LinkedHashMultimap.create();
   private final TaskManager myTaskManager;
   private boolean isCut;
@@ -153,7 +153,7 @@ public class ClipboardContents {
   public List<TaskDependency> getOutgoingDeps() {
     return myOutgoingDeps;
   }
-  public List<ResourceAssignment> getAssignments() {
+  public List<LocalAssignment> getAssignments() {
     return myAssignments;
   }
 
@@ -169,7 +169,7 @@ public class ClipboardContents {
       myTaskManager.deleteTask(t);
       t.delete();
     }
-    for (ResourceAssignment ra : myAssignments) {
+    for (LocalAssignment ra : myAssignments) {
       myResources.add(ra.getResource());
     }
   }

@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.resource;
 
 import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.task.CustomColumnsManager;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.test.task.TaskTestCase;
@@ -52,7 +52,7 @@ public class LoadDistributionTest extends TaskTestCase {
 
     Task task = createTask(TestSetupHelper.newMonday(), 1);
     ResourceAssignmentMutator mutableAssignments = task.getAssignmentCollection().createMutator();
-    ResourceAssignment assignment = mutableAssignments.addAssignment(humanResource);
+    LocalAssignment assignment = mutableAssignments.addAssignment(humanResource);
     assignment.setLoad(100.0f);
     mutableAssignments.commit();
 

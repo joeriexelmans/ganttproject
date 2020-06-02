@@ -33,16 +33,11 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.task.CustomColumnsException;
-import net.sourceforge.ganttproject.task.ResourceAssignment;
-import net.sourceforge.ganttproject.task.Task;
-import net.sourceforge.ganttproject.task.TaskManager;
-import net.sourceforge.ganttproject.task.TaskNode;
-import net.sourceforge.ganttproject.task.TaskProperties;
+import net.sourceforge.ganttproject.task.*;
+import net.sourceforge.ganttproject.task.LocalAssignment;
 import net.sourceforge.ganttproject.task.dependency.TaskDependency;
 import net.sourceforge.ganttproject.task.dependency.TaskDependencyException;
 
@@ -60,11 +55,8 @@ import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Comparator;
 
 /**
@@ -289,11 +281,11 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
         res = new Integer(tn.getCompletionPercentage());
         break;
       case COORDINATOR:
-        ResourceAssignment[] tAssign = t.getAssignments();
+        LocalAssignment[] tAssign = t.getAssignments();
         StringBuffer sb = new StringBuffer();
         int nb = 0;
         for (int i = 0; i < tAssign.length; i++) {
-          ResourceAssignment resAss = tAssign[i];
+          LocalAssignment resAss = tAssign[i];
           if (resAss.isCoordinator()) {
             sb.append(nb++ == 0 ? "" : ", ").append(resAss.getResource().getName());
           }
@@ -317,9 +309,9 @@ public class GanttTreeTableModel extends DefaultTreeTableModel implements TableC
         res = t.getColor();
         break;
       case RESOURCES:
-    	List<String> resources = Lists.transform(Arrays.asList(t.getAssignments()), new Function<ResourceAssignment, String>() {
+    	List<String> resources = Lists.transform(Arrays.asList(t.getAssignments()), new Function<LocalAssignment, String>() {
 			@Override
-			public String apply(ResourceAssignment ra) {
+			public String apply(LocalAssignment ra) {
 				return ra.getResource().getName();
 			}
     	});

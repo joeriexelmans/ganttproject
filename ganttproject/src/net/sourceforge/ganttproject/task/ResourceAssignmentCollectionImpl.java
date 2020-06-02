@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.task;
 
+import biz.ganttproject.core.time.GanttCalendar;
 import com.google.common.base.Preconditions;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
@@ -117,6 +118,16 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
     }
 
     @Override
+    public GanttCalendar getStart() {
+      return myTask.getStart();
+    }
+
+    @Override
+    public GanttCalendar getEnd() {
+      return myTask.getEnd();
+    }
+
+    @Override
     public HumanResource getResource() {
       return myAssignmentToResource.getResource();
     }
@@ -126,7 +137,6 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
       return myAssignmentToResource.getLoad();
     }
 
-    // TODO transaction
     @Override
     public void setLoad(float load) {
       myAssignmentToResource.setLoad(load);
@@ -186,6 +196,16 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
     @Override
     public Task getTask() {
       return myTask;
+    }
+
+    @Override
+    public GanttCalendar getStart() {
+      return myTask.getStart();
+    }
+
+    @Override
+    public GanttCalendar getEnd() {
+      return myTask.getEnd();
     }
 
     @Override

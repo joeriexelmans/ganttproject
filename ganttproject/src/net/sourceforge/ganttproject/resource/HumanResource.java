@@ -19,6 +19,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 package net.sourceforge.ganttproject.resource;
 
 import biz.ganttproject.core.calendar.GanttDaysOff;
+import biz.ganttproject.core.time.GanttCalendar;
 import com.google.common.base.Strings;
 import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
@@ -26,10 +27,7 @@ import net.sourceforge.ganttproject.CustomPropertyHolder;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.roles.Role;
-import net.sourceforge.ganttproject.task.CustomColumnsException;
-import net.sourceforge.ganttproject.task.CustomColumnsValues;
-import net.sourceforge.ganttproject.task.LocalAssignment;
-import net.sourceforge.ganttproject.task.Task;
+import net.sourceforge.ganttproject.task.*;
 
 import javax.swing.*;
 import java.math.BigDecimal;
@@ -342,13 +340,11 @@ public class HumanResource implements CustomPropertyHolder {
   }
 
   private class LocalAssignmentImpl implements LocalAssignment {
-
+    // Delegate
     private final LocalAssignment myAssignmentToTask;
 
     private float myLoad;
-
     private boolean myCoordinator;
-
     private Role myRoleForAssignment;
 
     private LocalAssignmentImpl(LocalAssignment assignmentToTask) {
@@ -358,6 +354,16 @@ public class HumanResource implements CustomPropertyHolder {
     @Override
     public Task getTask() {
       return myAssignmentToTask.getTask();
+    }
+
+    @Override
+    public GanttCalendar getStart() {
+      return myAssignmentToTask.getStart();
+    }
+
+    @Override
+    public GanttCalendar getEnd() {
+      return myAssignmentToTask.getEnd();
     }
 
     @Override
@@ -395,7 +401,6 @@ public class HumanResource implements CustomPropertyHolder {
 
     @Override
     public Role getRoleForAssignment() {
-
       return myRoleForAssignment;
     }
 

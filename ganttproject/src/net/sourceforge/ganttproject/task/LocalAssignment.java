@@ -18,26 +18,18 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.sourceforge.ganttproject.task;
 
+import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeDuration;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
 
+import java.util.List;
+
 /**
- * Created by IntelliJ IDEA.
- * 
  * @author bard Date: 05.02.2004
  */
-public interface LocalAssignment {
+public interface LocalAssignment extends Assignment {
   Task getTask();
-
-  HumanResource getResource();
-
-  float getLoad();
-
-  void setLoad(float load);
-
-  /** Deletes this assignment */
-  void delete();
 
   void setCoordinator(boolean responsible);
 
@@ -46,4 +38,6 @@ public interface LocalAssignment {
   Role getRoleForAssignment();
 
   void setRoleForAssignment(Role role);
+
+  void delete();
 }

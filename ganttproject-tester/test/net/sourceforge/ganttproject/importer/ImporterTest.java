@@ -21,13 +21,13 @@ public class ImporterTest extends ProjectTestBase {
 
     private void testVariant(ImportCalendarOption calendarOption, HumanResourceMerger.MergeResourcesOption mergeOption, int expectedNumResources) throws IOException {
         // Project with 2 human resources: Jimmy and Bobby
-        Project target = getTestProject("/testproject.xml");
+        Project target = loadTestProject("/testproject.xml");
 
         // We start with 2 resources
         assertEquals(2, target.getHumanResourceManager().getResources().size());
 
         // Project with a single resource defined: Louis, with custom property 'age' set to '60'.
-        Project source = getTestProject("/importable.xml");
+        Project source = loadTestProject("/importable.xml");
 
         ImporterFromGanttFile.importProject(target, source, mergeOption, calendarOption);
 

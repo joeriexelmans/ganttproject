@@ -28,7 +28,7 @@ public abstract class ProjectTestBase {
         };
     }
 
-    protected final static Project getTestProject(String resourcePath) throws IOException {
+    protected final static Project loadTestProject(String resourcePath) throws IOException {
         Parser parser = new Parser(null);
         InputStream is = ProjectTestBase.class.getResourceAsStream(resourcePath);
         Project project = new ProjectStub();

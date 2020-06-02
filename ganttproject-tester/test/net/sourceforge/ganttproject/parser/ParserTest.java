@@ -21,7 +21,7 @@ public class ParserTest extends ProjectTestBase {
 
     @Test
     public void parseFile() throws IOException {
-        Project project = getTestProject("/testproject.xml");
+        Project project = loadTestProject("/testproject.xml");
 
         // task and resource count
         assertEquals(5, project.getTaskManager().getTaskCount());
@@ -45,7 +45,7 @@ public class ParserTest extends ProjectTestBase {
 
     @Test
     public void unparse() throws IOException, InterruptedException {
-        Project project = getTestProject("/testproject.xml");
+        Project project = loadTestProject("/testproject.xml");
 
         // now serialize it
         GanttXMLSaver saver = new GanttXMLSaver(project);

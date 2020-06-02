@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.task;
 
+import com.google.common.base.Preconditions;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.Role;
@@ -247,9 +248,11 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
   private class ResourceAssignmentMutatorImpl implements ResourceAssignmentMutator {
     private Map<HumanResource, MutationInfo> myQueue = new HashMap<HumanResource, MutationInfo>();
+    private boolean invalidated = false;
 
     @Override
     public ResourceAssignment addAssignment(final HumanResource resource) {
+      Preconditions.checkState( ! invalidated );
       ResourceAssignment result = new ResourceAssignmentStub(resource, new Runnable() {
         @Override
         public void run() {
@@ -262,6 +265,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     @Override
     public void deleteAssignment(HumanResource resource) {
+      Preconditions.checkState( ! invalidated );
       MutationInfo info = myQueue.get(resource);
       if (info == null) {
         myQueue.put(resource, new MutationInfo(resource, MutationInfo.DELETE));
@@ -272,6 +276,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
     @Override
     public void commit() {
+      Preconditions.checkState( ! invalidated );
       List<MutationInfo> mutations = new ArrayList<MutationInfo>(myQueue.values());
       Collections.sort(mutations);
       for (int i = 0; i < mutations.size(); i++) {
@@ -291,6 +296,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
           break;
         }
       }
+      invalidated = true;
     }
 
   }

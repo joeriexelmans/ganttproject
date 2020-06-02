@@ -32,10 +32,10 @@ public class TestResourceAssignments extends TestCase {
     }
 
     public void testResourceAppearsInListAfterCreation() {
-        TaskManager taskManager = getTaskManager();
+        TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
-        HumanResource res1 = getResourceManager().getById(1);
-        HumanResource res2 = getResourceManager().getById(2);
+        HumanResource res1 = myHumanResourceManager.getById(1);
+        HumanResource res2 = myHumanResourceManager.getById(2);
         task.getAssignmentCollection().addAssignment(res1);
         task.getAssignmentCollection().addAssignment(res2);
         Set<HumanResource> actualResources = extractResources(task);
@@ -46,10 +46,10 @@ public class TestResourceAssignments extends TestCase {
     }
 
     public void testResourceDisappearsFromListAfterAssignmentDeletion() {
-        TaskManager taskManager = getTaskManager();
+        TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
-        HumanResource res1 = getResourceManager().getById(1);
-        HumanResource res2 = getResourceManager().getById(2);
+        HumanResource res1 = myHumanResourceManager.getById(1);
+        HumanResource res2 = myHumanResourceManager.getById(2);
         task.getAssignmentCollection().addAssignment(res1);
         ResourceAssignment asgn2 = task.getAssignmentCollection()
                 .addAssignment(res2);
@@ -64,9 +64,9 @@ public class TestResourceAssignments extends TestCase {
     }
 
     public void testResourceIsNotAssignedTwice() {
-        TaskManager taskManager = getTaskManager();
+        TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
-        HumanResource res1 = getResourceManager().getById(1);
+        HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         task.getAssignmentCollection().addAssignment(res1);
         Set<HumanResource> actualResources = extractResources(task);
@@ -78,9 +78,9 @@ public class TestResourceAssignments extends TestCase {
 
 
     public void testAssignmentsDisappearOnTaskDeletion() {
-        TaskManager taskManager = getTaskManager();
+        TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
-        HumanResource res1 = getResourceManager().getById(1);
+        HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         task.delete();
         ResourceAssignment[] assignments = res1.getAssignments();
@@ -90,8 +90,8 @@ public class TestResourceAssignments extends TestCase {
     }
 
     public void testAssignmentsDisappearOnSummaryTaskDeletion() {
-        HumanResource res1 = getResourceManager().getById(1);
-        TaskManager taskManager = getTaskManager();
+        HumanResource res1 = myHumanResourceManager.getById(1);
+        TaskManager taskManager = myTaskManager;
         Task summaryTask = taskManager.createTask();
         summaryTask.getAssignmentCollection().addAssignment(res1);
 
@@ -106,9 +106,9 @@ public class TestResourceAssignments extends TestCase {
     }
 
     public void testAssignmentDisappearOnResourceDeletion() {
-        TaskManager taskManager = getTaskManager();
+        TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
-        HumanResource res1 = getResourceManager().getById(1);
+        HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         res1.delete();
         Set<HumanResource> resources = extractResources(task);
@@ -117,9 +117,9 @@ public class TestResourceAssignments extends TestCase {
 
     // See https://github.com/bardsoftware/ganttproject/issues/612
     public void testAssignmentUpdateAndDelete() {
-        TaskManager taskManager = getTaskManager();
+        TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
-        HumanResource res1 = getResourceManager().getById(1);
+        HumanResource res1 = myHumanResourceManager.getById(1);
         ResourceAssignment assignment = task.getAssignmentCollection().addAssignment(res1);
         ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
         assignment.delete();
@@ -149,8 +149,8 @@ public class TestResourceAssignments extends TestCase {
         super.setUp();
         myHumanResourceManager = new HumanResourceManager(RoleManager.Access
                 .getInstance().getDefaultRole(), null);
-        getResourceManager().create("test resource#1", 1);
-        getResourceManager().create("test resource#2", 2);
+        myHumanResourceManager.create("test resource#1", 1);
+        myHumanResourceManager.create("test resource#2", 2);
         myTaskManager = newTaskManager();
     }
 
@@ -182,13 +182,5 @@ public class TestResourceAssignments extends TestCase {
               return null;
             }
         });
-    }
-
-    private TaskManager getTaskManager() {
-        return myTaskManager;
-    }
-
-    private HumanResourceManager getResourceManager() {
-        return myHumanResourceManager;
     }
 }

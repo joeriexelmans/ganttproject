@@ -48,6 +48,22 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
     }
 
     @Test
+    public void setValueReassign() {
+        Task task = myTaskManager.createTask();
+        HumanResource res1 = myHumanResourceManager.getById(1);
+        HumanResource res2 = myHumanResourceManager.getById(2);
+        Assignment a = task.getAssignmentCollection().addAssignment(res1);
+        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+
+        // update load:
+        model.setValueAt(res2, 0, 1);
+        model.commit();
+
+        assertEquals(1, task.getAssignmentCollection().getAssignments().length);
+        assertEquals(res2, task.getAssignmentCollection().getAssignments()[0].getResource());
+    }
+
+    @Test
     public void setValueRemoveAssignment() {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);

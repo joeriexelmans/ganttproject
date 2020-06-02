@@ -41,10 +41,10 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
 
         // update load:
-        model.setValueAt(0.5, 0, 2);
+        model.setValueAt(0.5f, 0, 2);
         model.commit();
 
-        assertEquals(0.5, a.getLoad(), 0.0000001);
+        assertEquals(0.5f, a.getLoad(), 0.0000001f);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         Assignment a = task.getAssignmentCollection().addAssignment(res1);
         ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
 
-        // update load:
+        // re-assign to another resource:
         model.setValueAt(res2, 0, 1);
         model.commit();
 

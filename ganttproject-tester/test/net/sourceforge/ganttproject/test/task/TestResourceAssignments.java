@@ -118,6 +118,7 @@ public class TestResourceAssignments {
     }
 
     // See https://github.com/bardsoftware/ganttproject/issues/612
+    @Test
     public void testAssignmentUpdateAndDelete() {
         TaskManager taskManager = myTaskManager;
         Task task = taskManager.createTask();
@@ -173,6 +174,18 @@ public class TestResourceAssignments {
         expectedResources = new HashSet<HumanResource>();
         assertEquals("Unexpected set of resources assigned to task=" + task,
                 expectedResources, actualResources);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testResourceAssignmentCollectionMutatorInvalidation() {
+        TaskManager taskManager = myTaskManager;
+        Task task = taskManager.createTask();
+        HumanResource res1 = myHumanResourceManager.getById(1);
+        ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
+        mutator.addAssignment(res1);
+        mutator.commit();
+
+        mutator.deleteAssignment(res1); // should throw IllegalStateException
     }
 
     private Set<HumanResource> extractResources(Task task) {

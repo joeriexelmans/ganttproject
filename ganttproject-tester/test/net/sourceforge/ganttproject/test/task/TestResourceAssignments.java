@@ -132,6 +132,46 @@ public class TestResourceAssignments extends TestCase {
         assertTrue("It is expected that assignment is removed after sequential update+delete via mutator", resources.isEmpty());
     }
 
+    public void testResourceAssignmentCollectionMutatorDeletion() {
+        Set<HumanResource> actualResources;
+        Set<HumanResource> expectedResources;
+
+        TaskManager taskManager = myTaskManager;
+        Task task = taskManager.createTask();
+        HumanResource res1 = myHumanResourceManager.getById(1);
+
+        // First we check assign followed by delete
+        ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
+        mutator.addAssignment(res1);
+        mutator.deleteAssignment(res1);
+        mutator.commit();
+
+        actualResources = extractResources(task);
+        expectedResources = new HashSet<HumanResource>();
+        assertEquals("Unexpected set of resources assigned to task=" + task,
+                expectedResources, actualResources);
+
+        // Then we check assign + commit, delete + commit
+        ResourceAssignmentMutator mutator2 = task.getAssignmentCollection().createMutator();
+        mutator2.addAssignment(res1);
+        mutator2.commit();
+
+        actualResources = extractResources(task);
+        expectedResources = new HashSet<HumanResource>(
+                Arrays.asList(res1));
+        assertEquals("Unexpected set of resources assigned to task=" + task,
+                expectedResources, actualResources);
+
+        ResourceAssignmentMutator mutator3 = task.getAssignmentCollection().createMutator();
+        mutator3.deleteAssignment(res1);
+        mutator3.commit();
+
+        actualResources = extractResources(task);
+        expectedResources = new HashSet<HumanResource>();
+        assertEquals("Unexpected set of resources assigned to task=" + task,
+                expectedResources, actualResources);
+    }
+
     private Set<HumanResource> extractResources(Task task) {
         Set<HumanResource> result = new HashSet<HumanResource>();
         ResourceAssignment[] assignments = task.getAssignments();

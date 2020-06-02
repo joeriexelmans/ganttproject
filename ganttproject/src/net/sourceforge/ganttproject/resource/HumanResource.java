@@ -217,6 +217,10 @@ public class HumanResource implements CustomPropertyHolder {
     return result;
   }
 
+  /**
+   * Caller will get a copy of the list of assignments.
+   * Mutating the returned list therefore has no effect on the assignments of the resource.
+   */
   public LocalAssignment[] getAssignments() {
     return myAssignments.toArray(new LocalAssignment[0]);
   }

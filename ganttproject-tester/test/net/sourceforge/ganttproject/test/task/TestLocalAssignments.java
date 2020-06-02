@@ -19,10 +19,7 @@ import java.util.Set;
 
 import static org.junit.Assert.*;
 
-public class TestLocalAssignments {
-    private TaskManager myTaskManager;
-
-    private HumanResourceManager myHumanResourceManager;
+public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test
     public void testResourceAppearsInListAfterCreation() {
@@ -197,42 +194,4 @@ public class TestLocalAssignments {
         return result;
     }
 
-    @Before
-    public void setUp() {
-        myHumanResourceManager = new HumanResourceManager(RoleManager.Access
-                .getInstance().getDefaultRole(), null);
-        myHumanResourceManager.create("test resource#1", 1);
-        myHumanResourceManager.create("test resource#2", 2);
-        myTaskManager = newTaskManager();
-    }
-
-    private TaskManager newTaskManager() {
-        return TaskManager.Access.newInstance(
-                null,
-                myHumanResourceManager,
-                new AlwaysWorkingTimeCalendarImpl(),
-                GPTimeUnitStack.getInstance(),
-                new TaskManagerConfig() {
-
-            @Override
-            public Color getDefaultColor() {
-                return null;
-            }
-
-          @Override
-          public ColorOption getDefaultColorOption() {
-            return null;
-          }
-
-            @Override
-            public URL getProjectDocumentURL() {
-                return null;
-            }
-
-            @Override
-            public NotificationManager getNotificationManager() {
-              return null;
-            }
-        });
-    }
 }

@@ -102,17 +102,7 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
   private void addAssignment(ResourceAssignment assignment) {
     myAssignments.put(assignment.getResource(), assignment);
   }
-
-  /**
-   * Removes the assignments related to the given resource.
-   *
-   * @param resource
-   *          Assigned resource
-   */
-  public void removeAssignment(HumanResource resource) {
-    new ResourceAssignmentImpl(resource).delete();
-  }
-
+  
   private class ResourceAssignmentImpl implements ResourceAssignment {
     private ResourceAssignment myAssignmentToResource;
 

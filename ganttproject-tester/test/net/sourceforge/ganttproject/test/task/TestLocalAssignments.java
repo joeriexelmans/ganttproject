@@ -1,18 +1,10 @@
 package net.sourceforge.ganttproject.test.task;
 
-import biz.ganttproject.core.calendar.AlwaysWorkingTimeCalendarImpl;
-import biz.ganttproject.core.option.ColorOption;
-import biz.ganttproject.core.time.impl.GPTimeUnitStack;
-import net.sourceforge.ganttproject.gui.NotificationManager;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.*;
 import net.sourceforge.ganttproject.task.LocalAssignment;
 import org.junit.*;
 
-import java.awt.*;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,8 +15,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test
     public void testResourceAppearsInListAfterCreation() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         HumanResource res2 = myHumanResourceManager.getById(2);
         task.getAssignmentCollection().addAssignment(res1);
@@ -38,8 +29,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test
     public void testResourceDisappearsFromListAfterAssignmentDeletion() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         HumanResource res2 = myHumanResourceManager.getById(2);
         task.getAssignmentCollection().addAssignment(res1);
@@ -57,8 +47,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test
     public void testResourceIsNotAssignedTwice() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         task.getAssignmentCollection().addAssignment(res1);
@@ -72,8 +61,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test
     public void testAssignmentsDisappearOnTaskDeletion() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         task.delete();
@@ -86,14 +74,13 @@ public class TestLocalAssignments extends AssignmentTestCase {
     @Test
     public void testAssignmentsDisappearOnSummaryTaskDeletion() {
         HumanResource res1 = myHumanResourceManager.getById(1);
-        TaskManager taskManager = myTaskManager;
-        Task summaryTask = taskManager.createTask();
+        Task summaryTask = myTaskManager.createTask();
         summaryTask.getAssignmentCollection().addAssignment(res1);
 
-        Task childTask = taskManager.newTaskBuilder().withParent(summaryTask).build();
+        Task childTask = myTaskManager.newTaskBuilder().withParent(summaryTask).build();
         childTask.getAssignmentCollection().addAssignment(res1);
 
-        taskManager.deleteTask(summaryTask);
+        myTaskManager.deleteTask(summaryTask);
         LocalAssignment[] assignments = res1.getAssignments();
         assertTrue(
             "Resource is expected to have no assignments after summary task deletion",
@@ -102,8 +89,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test
     public void testAssignmentDisappearOnResourceDeletion() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
         res1.delete();
@@ -114,8 +100,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
     // See https://github.com/bardsoftware/ganttproject/issues/612
     @Test
     public void testAssignmentUpdateAndDelete() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         LocalAssignment assignment = task.getAssignmentCollection().addAssignment(res1);
         ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
@@ -134,8 +119,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
         Set<HumanResource> actualResources;
         Set<HumanResource> expectedResources;
 
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
 
         // First we check assign followed by delete
@@ -172,8 +156,7 @@ public class TestLocalAssignments extends AssignmentTestCase {
 
     @Test(expected = IllegalStateException.class)
     public void testResourceAssignmentCollectionMutatorInvalidation() {
-        TaskManager taskManager = myTaskManager;
-        Task task = taskManager.createTask();
+        Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
         mutator.addAssignment(res1);

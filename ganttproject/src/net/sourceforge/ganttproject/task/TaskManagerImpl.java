@@ -34,6 +34,7 @@ import net.sourceforge.ganttproject.CustomPropertyListener;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.gui.NotificationChannel;
 import net.sourceforge.ganttproject.gui.NotificationItem;
 import net.sourceforge.ganttproject.gui.NotificationManager;

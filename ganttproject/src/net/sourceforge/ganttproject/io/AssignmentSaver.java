@@ -23,7 +23,7 @@ import java.util.List;
 import javax.xml.transform.sax.TransformerHandler;
 
 import net.sourceforge.ganttproject.project.Project;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 

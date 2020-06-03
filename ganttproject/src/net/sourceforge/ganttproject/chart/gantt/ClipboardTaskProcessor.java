@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.language.GanttLanguage;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 import net.sourceforge.ganttproject.task.TaskManager;

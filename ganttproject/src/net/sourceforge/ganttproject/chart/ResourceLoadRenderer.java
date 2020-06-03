@@ -32,7 +32,7 @@ import biz.ganttproject.core.chart.grid.OffsetLookup;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.LoadDistribution;
 import net.sourceforge.ganttproject.resource.LoadDistribution.Load;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 
 import java.awt.*;

@@ -21,7 +21,7 @@ package net.sourceforge.ganttproject.action.resource;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 

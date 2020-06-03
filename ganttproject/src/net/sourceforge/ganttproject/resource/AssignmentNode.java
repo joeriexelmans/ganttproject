@@ -24,7 +24,7 @@ import java.util.Set;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.ResourceDefaultColumn;
 import net.sourceforge.ganttproject.roles.Role;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 
 public class AssignmentNode extends ResourceTableNode {

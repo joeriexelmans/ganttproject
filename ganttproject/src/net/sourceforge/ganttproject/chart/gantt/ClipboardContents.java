@@ -25,7 +25,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskContainmentHierarchyFacade;
 import net.sourceforge.ganttproject.task.TaskManager;

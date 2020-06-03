@@ -27,7 +27,7 @@ import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.TestSetupHelper.TaskManagerBuilder;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 

@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.gui;
 
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 

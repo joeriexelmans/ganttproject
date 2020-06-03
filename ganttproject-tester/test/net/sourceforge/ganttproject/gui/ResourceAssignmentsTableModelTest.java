@@ -1,7 +1,7 @@
 package net.sourceforge.ganttproject.gui;
 
 import net.sourceforge.ganttproject.resource.HumanResource;
-import net.sourceforge.ganttproject.task.Assignment;
+import net.sourceforge.ganttproject.assignment.Assignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.test.task.AssignmentTestCase;
 import org.junit.Test;

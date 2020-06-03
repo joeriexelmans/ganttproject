@@ -24,7 +24,7 @@ import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade.Choice;
 import net.sourceforge.ganttproject.resource.AssignmentContext;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.util.StringUtils;
 
 /**

@@ -20,7 +20,7 @@ package net.sourceforge.ganttproject.resource;
 
 import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.task.CustomColumnsManager;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.test.task.TaskTestCase;

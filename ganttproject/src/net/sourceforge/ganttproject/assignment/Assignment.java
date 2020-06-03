@@ -1,4 +1,4 @@
-package net.sourceforge.ganttproject.task;
+package net.sourceforge.ganttproject.assignment;
 
 import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeDuration;

@@ -22,7 +22,7 @@ import net.sourceforge.ganttproject.gui.TableModelExt;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentCollection;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
 

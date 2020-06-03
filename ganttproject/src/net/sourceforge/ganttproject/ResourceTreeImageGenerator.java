@@ -32,7 +32,7 @@ import biz.ganttproject.core.chart.render.TextLengthCalculatorImpl;
 import net.sourceforge.ganttproject.font.Fonts;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 
 class ResourceTreeImageGenerator {
   private HumanResourceManager myResourceManager;

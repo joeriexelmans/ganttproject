@@ -20,6 +20,8 @@ package net.sourceforge.ganttproject.task;
 
 import biz.ganttproject.core.time.GanttCalendar;
 import com.google.common.base.Preconditions;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.Role;

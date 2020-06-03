@@ -33,7 +33,7 @@ import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.*;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.TaskSelectionManager.Listener;
 import net.sourceforge.ganttproject.task.event.TaskHierarchyEvent;
 import net.sourceforge.ganttproject.task.event.TaskListenerAdapter;

@@ -25,6 +25,7 @@ import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyHolder;
 import net.sourceforge.ganttproject.CustomPropertyManager;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.task.*;

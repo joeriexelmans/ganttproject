@@ -37,7 +37,7 @@ import net.sourceforge.ganttproject.resource.ResourceContext;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceNode;
 import net.sourceforge.ganttproject.resource.ResourceListener;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskSelectionManager;
 import net.sourceforge.ganttproject.util.collect.Pair;

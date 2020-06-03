@@ -2,7 +2,7 @@ package net.sourceforge.ganttproject.test.task;
 
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.*;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import org.junit.*;
 
 import java.util.Arrays;

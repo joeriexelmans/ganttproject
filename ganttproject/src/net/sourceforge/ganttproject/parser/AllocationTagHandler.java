@@ -30,7 +30,7 @@ import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.roles.RolePersistentID;
 import net.sourceforge.ganttproject.roles.RoleSet;
-import net.sourceforge.ganttproject.task.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 

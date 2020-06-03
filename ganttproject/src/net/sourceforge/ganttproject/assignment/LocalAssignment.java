@@ -16,16 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.sourceforge.ganttproject.task;
+package net.sourceforge.ganttproject.assignment;
 
-import biz.ganttproject.core.time.GanttCalendar;
-import biz.ganttproject.core.time.TimeDuration;
-import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
-
-import java.util.List;
+import net.sourceforge.ganttproject.task.Task;
 
 /**
+ * An assignment from a resource to a task in the project.
+ *
  * @author bard Date: 05.02.2004
  */
 public interface LocalAssignment extends Assignment {
@@ -38,6 +36,4 @@ public interface LocalAssignment extends Assignment {
   Role getRoleForAssignment();
 
   void setRoleForAssignment(Role role);
-
-  void delete();
 }

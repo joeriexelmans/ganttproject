@@ -31,6 +31,7 @@ import biz.ganttproject.core.time.TimeDurationImpl;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import com.google.common.collect.ImmutableList;
 import net.sourceforge.ganttproject.GPLogger;
+import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.chart.MilestoneTaskFakeActivity;
 import net.sourceforge.ganttproject.document.AbstractURLDocument;
 import net.sourceforge.ganttproject.document.Document;

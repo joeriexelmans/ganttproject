@@ -73,8 +73,7 @@ class ResourcesTableModel extends TableModelExt<LocalAssignment>
     myMutator = myAssignmentManager.createMutator();
     myTask = task;
 
-    myAssignments = myAssignmentManager.getTaskAssignments(task);
-//    myAssignments = new ArrayList<LocalAssignment>(Arrays.asList(task.getAssignments()));
+    myAssignments = new ArrayList(myAssignmentManager.getTaskAssignments(task)); // copy
   }
 
   @Override

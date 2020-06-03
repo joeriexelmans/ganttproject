@@ -71,7 +71,7 @@ public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment
     myMutator = myAssignmentManager.createMutator();
     myResource = person;
 
-    myAssignments = assignmentManager.getResourceAssignments(person);
+    myAssignments = new ArrayList(assignmentManager.getResourceAssignments(person)); // copy
   }
 
   @Override

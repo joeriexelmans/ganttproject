@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Table model of a table of resources assigned to a task.
+ * Table model of a table of resources assigned to a specific task.
  *
  * @author dbarashev (Dmitry Barashev)
  */
@@ -61,9 +61,7 @@ class ResourcesTableModel extends TableModelExt<LocalAssignment>
   }
 
   private final List<LocalAssignment> myAssignments;
-
   private final ResourceAssignmentMutator myMutator;
-
   private boolean isChanged = false;
 
   public ResourcesTableModel(ResourceAssignmentCollection assignmentCollection) {

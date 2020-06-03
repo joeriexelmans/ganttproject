@@ -27,6 +27,7 @@ import net.sourceforge.ganttproject.task.Task;
 import java.util.*;
 
 /**
+ * Table model for table of tasks a specific resource is assigned to.
  * @author Oleg Kushnikov
  */
 public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment> {

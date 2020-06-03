@@ -162,68 +162,60 @@ public class TaskImpl implements Task {
     customValues = new CustomColumnsValues(myManager.getCustomPropertyManager());
   }
 
-  protected TaskImpl(TaskImpl copy, boolean isUnplugged) {
+  protected TaskImpl(TaskImpl other, boolean isUnplugged) {
     this.isUnplugged = isUnplugged;
-    myAssignmentManager = copy.myAssignmentManager;
-    myManager = copy.myManager;
+    myAssignmentManager = other.myAssignmentManager;
+    myManager = other.myManager;
     // Use a new (unique) ID for the cloned task
     myID = myManager.getAndIncrementId();
 
     if (!isUnplugged) {
       myTaskHierarchyItem = myManager.getHierarchyManager().createItem(this);
     } else {
-      myTaskHierarchyItem = copy.myTaskHierarchyItem;
+      myTaskHierarchyItem = other.myTaskHierarchyItem;
     }
-//    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
-//    myAssignments.importData(copy.getAssignmentCollection());
 
-    // Original method: ResourceAssignmentCollectionImpl.import
-    /*
-    if (myTask.isUnplugged()) {
-      LocalAssignment[] assignments = assignmentCollection.getAssignments();
-      for (int i = 0; i < assignments.length; i++) {
-        LocalAssignment next = assignments[i];
-        addAssignment(next);
+    // Import assignments from other
+    // Original method was: ResourceAssignmentCollectionImpl.import (removed)
+    if (isUnplugged()) {
+      for (LocalAssignment assignment: myAssignmentManager.getTaskAssignments(other)) {
+        myAssignmentManager.createAssignment(this, assignment.getResource());
       }
     } else {
-      LocalAssignment[] assignments = assignmentCollection.getAssignments();
-      for (int i = 0; i < assignments.length; i++) {
-        LocalAssignment ass = assignments[i];
-        HumanResource res = ass.getResource();
-        HumanResource importedRes = myResourceManager.getById(res.getId());
+      for (LocalAssignment assignment: myAssignmentManager.getTaskAssignments(other)) {
+        HumanResource res = assignment.getResource();
+        HumanResource importedRes = myManager.getHumanResourceManager().getById(res.getId());
         if (importedRes != null) {
-          LocalAssignment copy = new LocalAssignmentImpl(importedRes);
-          copy.setLoad(ass.getLoad());
-          copy.setCoordinator(ass.isCoordinator());
-          copy.setRoleForAssignment(ass.getRoleForAssignment());
-          addAssignment(copy);
+          LocalAssignment newAssignment = myAssignmentManager.createAssignment(this, res);
+          newAssignment.setLoad(assignment.getLoad());
+          newAssignment.setCoordinator(assignment.isCoordinator());
+          newAssignment.setRoleForAssignment(assignment.getRoleForAssignment());
         }
       }
     }
-    */
 
-    myName = copy.myName;
-    myWebLink = copy.myWebLink;
-    isMilestone = copy.isMilestone;
-    isProjectTask = copy.isProjectTask;
-    myPriority = copy.myPriority;
-    myStart = copy.myStart;
-    myEnd = copy.myEnd;
-    myThird = copy.myThird;
-    myThirdDateConstraint = copy.myThirdDateConstraint;
-    myCompletionPercentage = copy.myCompletionPercentage;
-    myLength = copy.myLength;
-    myShape = copy.myShape;
-    myColor = copy.myColor;
-    myNotes = copy.myNotes;
-    bExpand = copy.bExpand;
-    myCost.setValue(copy.myCost);
+    myName = other.myName;
+    myWebLink = other.myWebLink;
+    isMilestone = other.isMilestone;
+    isProjectTask = other.isProjectTask;
+    myPriority = other.myPriority;
+    myStart = other.myStart;
+    myEnd = other.myEnd;
+    myThird = other.myThird;
+    myThirdDateConstraint = other.myThirdDateConstraint;
+    myCompletionPercentage = other.myCompletionPercentage;
+    myLength = other.myLength;
+    myShape = other.myShape;
+    myColor = other.myColor;
+    myNotes = other.myNotes;
+    bExpand = other.bExpand;
+    myCost.setValue(other.myCost);
 
     myDependencySlice = new TaskDependencySliceImpl(this, myManager.getDependencyCollection(), TaskDependencySlice.COMPLETE_SLICE_FXN);
     myDependencySliceAsDependant = new TaskDependencySliceAsDependant(this, myManager.getDependencyCollection());
     myDependencySliceAsDependee = new TaskDependencySliceAsDependee(this, myManager.getDependencyCollection());
 
-    customValues = (CustomColumnsValues) copy.getCustomValues().clone();
+    customValues = (CustomColumnsValues) other.getCustomValues().clone();
 
     recalculateActivities();
   }

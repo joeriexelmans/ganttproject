@@ -47,7 +47,7 @@ public class TestSetupHelper {
         }
 
         public TaskManager build() {
-            return TaskManager.Access.newInstance(null, myResourceManager, new AssignmentManager(), myGPCalendar, myTimeUnitStack, myConfig);
+            return TaskManager.Access.newInstance(null, myResourceManager, myAssignmentManager, myGPCalendar, myTimeUnitStack, myConfig);
         }
     }
 

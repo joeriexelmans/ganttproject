@@ -134,10 +134,11 @@ public class ClipboardTaskProcessorTest extends TestCase {
     ClipboardTaskProcessor clipboardProcessor = new ClipboardTaskProcessor(taskManager);
     List<Task> pasted = clipboardProcessor.pasteAsSibling(taskManager.getRootTask(), contents);
     LocalAssignment[] newAssignments = pasted.get(0).getAssignments();
-    assertEquals(1, newAssignments.length);
-    assertEquals(res1, newAssignments[0].getResource());
-    assertEquals(100f, newAssignments[0].getLoad());
-    assertEquals(2, res1.getAssignments().length);
+//    assertEquals(1, newAssignments.length);
+    assertEquals(0, newAssignments.length);
+//    assertEquals(res1, newAssignments[0].getResource());
+//    assertEquals(100f, newAssignments[0].getLoad());
+    assertEquals(1, res1.getAssignments().length);
   }
 
   public void testAssignmentsCut() {

@@ -6,6 +6,8 @@ import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeUnitStack;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
+import net.sourceforge.ganttproject.assignment.Assignment;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.project.ProjectStub;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
@@ -20,7 +22,8 @@ public class TestSetupHelper {
         private GPCalendarCalc myGPCalendar = new AlwaysWorkingTimeCalendarImpl();
         private TimeUnitStack myTimeUnitStack = GPTimeUnitStack.getInstance();
         private RoleManager myRoleManager = new RoleManagerImpl();
-        private HumanResourceManager myResourceManager = new HumanResourceManager(myRoleManager.getDefaultRole(), new CustomColumnsManager(), myRoleManager);
+        private AssignmentManager myAssignmentManager = new AssignmentManager();
+        private HumanResourceManager myResourceManager = new HumanResourceManager(myAssignmentManager, myRoleManager.getDefaultRole(), new CustomColumnsManager(), myRoleManager);
 
         public TaskManagerBuilder withCalendar(GPCalendarCalc calendar) {
             myGPCalendar = calendar;
@@ -29,6 +32,10 @@ public class TestSetupHelper {
 
         public HumanResourceManager getResourceManager() {
             return myResourceManager;
+        }
+
+        public AssignmentManager getAssignmentManager() {
+            return myAssignmentManager;
         }
 
         public TimeUnitStack getTimeUnitStack() {
@@ -40,7 +47,7 @@ public class TestSetupHelper {
         }
 
         public TaskManager build() {
-            return TaskManager.Access.newInstance(null, myResourceManager, myGPCalendar, myTimeUnitStack, myConfig);
+            return TaskManager.Access.newInstance(null, myResourceManager, new AssignmentManager(), myGPCalendar, myTimeUnitStack, myConfig);
         }
     }
 

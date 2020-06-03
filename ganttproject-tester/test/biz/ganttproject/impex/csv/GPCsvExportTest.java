@@ -38,7 +38,7 @@ public class GPCsvExportTest extends TaskTestCase {
   }
 
   public void testResourceCustomFields() throws Exception {
-    HumanResourceManager hrManager = new HumanResourceManager(null, new CustomColumnsManager());
+    HumanResourceManager hrManager = new HumanResourceManager(null, null, new CustomColumnsManager());
     TaskManager taskManager = getTaskManager();
     RoleManager roleManager = new RoleManagerImpl();
     CSVOptions csvOptions = enableOnly("id");
@@ -48,9 +48,9 @@ public class GPCsvExportTest extends TaskTestCase {
         CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop2", null);
     CustomPropertyDefinition prop3 = hrManager.getCustomPropertyManager().createDefinition(
         CustomPropertyManager.PropertyTypeEncoder.encodeFieldType(String.class), "prop3", null);
-    hrManager.add(new HumanResource("HR1", 1, hrManager));
-    hrManager.add(new HumanResource("HR2", 2, hrManager));
-    hrManager.add(new HumanResource("HR3", 3, hrManager));
+    hrManager.add(new HumanResource("HR1", 1, hrManager, null));
+    hrManager.add(new HumanResource("HR2", 2, hrManager, null));
+    hrManager.add(new HumanResource("HR3", 3, hrManager, null));
     hrManager.getById(1).addCustomProperty(prop3, "1");
     hrManager.getById(2).addCustomProperty(prop2, "2");
     hrManager.getById(3).addCustomProperty(prop1, "3");
@@ -69,7 +69,7 @@ public class GPCsvExportTest extends TaskTestCase {
   }
 
   public void testTaskCustomFields() throws Exception {
-    HumanResourceManager hrManager = new HumanResourceManager(null, new CustomColumnsManager());
+    HumanResourceManager hrManager = new HumanResourceManager(null, null, new CustomColumnsManager());
     TaskManager taskManager = getTaskManager();
     RoleManager roleManager = new RoleManagerImpl();
     CSVOptions csvOptions = enableOnly(TaskDefaultColumn.ID.getStub().getID());
@@ -102,7 +102,7 @@ public class GPCsvExportTest extends TaskTestCase {
   }
 
   public void testResourceAssignments() throws Exception {
-    HumanResourceManager hrManager = new HumanResourceManager(null, new CustomColumnsManager());
+    HumanResourceManager hrManager = new HumanResourceManager(null, null, new CustomColumnsManager());
     TaskManager taskManager = getTaskManager();
     CSVOptions csvOptions = enableOnly(TaskDefaultColumn.ID.getStub().getID(), TaskDefaultColumn.RESOURCES.getStub().getID());
 
@@ -145,7 +145,7 @@ public class GPCsvExportTest extends TaskTestCase {
     CSVOptions csvOptions = enableOnly(TaskDefaultColumn.ID.getStub().getID(), TaskDefaultColumn.COLOR.getStub().getID());
     GanttCSVExport exporter = new GanttCSVExport(
         taskManager,
-        new HumanResourceManager(null, new CustomColumnsManager()),
+        new HumanResourceManager(null, null, new CustomColumnsManager()),
         new RoleManagerImpl(),
         csvOptions
     );
@@ -171,7 +171,7 @@ public class GPCsvExportTest extends TaskTestCase {
     {
       GanttCSVExport exporter = new GanttCSVExport(
           taskManager,
-          new HumanResourceManager(null, new CustomColumnsManager()),
+          new HumanResourceManager(null, null, new CustomColumnsManager()),
           new RoleManagerImpl(),
           csvOptions
       );
@@ -190,7 +190,7 @@ public class GPCsvExportTest extends TaskTestCase {
     {
       GanttCSVExport exporter = new GanttCSVExport(
           taskManager,
-          new HumanResourceManager(null, new CustomColumnsManager()),
+          new HumanResourceManager(null, null, new CustomColumnsManager()),
           new RoleManagerImpl(),
           csvOptions
       );

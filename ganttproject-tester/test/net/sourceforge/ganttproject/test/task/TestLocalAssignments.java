@@ -33,10 +33,9 @@ public class TestLocalAssignments extends AssignmentTestCase {
         HumanResource res1 = myHumanResourceManager.getById(1);
         HumanResource res2 = myHumanResourceManager.getById(2);
         task.getAssignmentCollection().addAssignment(res1);
-        LocalAssignment asgn2 = task.getAssignmentCollection()
-                .addAssignment(res2);
+        task.getAssignmentCollection().addAssignment(res2);
 
-        asgn2.delete();
+        myAssignmentManager.removeAssignment(task, res2);
 
         Set<HumanResource> actualResources = extractResources(task);
         Set<HumanResource> expectedResources = new HashSet<HumanResource>(
@@ -64,7 +63,8 @@ public class TestLocalAssignments extends AssignmentTestCase {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
-        task.delete();
+        myTaskManager.deleteTask(task);
+//        task.delete();
         LocalAssignment[] assignments = res1.getAssignments();
         assertTrue(
                 "Resource is expected to have no assignments after task deletion",
@@ -83,8 +83,8 @@ public class TestLocalAssignments extends AssignmentTestCase {
         myTaskManager.deleteTask(summaryTask);
         LocalAssignment[] assignments = res1.getAssignments();
         assertTrue(
-            "Resource is expected to have no assignments after summary task deletion",
-            assignments.length == 0);
+                "Resource is expected to have no assignments after summary task deletion",
+                assignments.length == 0);
     }
 
     @Test
@@ -92,27 +92,29 @@ public class TestLocalAssignments extends AssignmentTestCase {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
-        res1.delete();
+        myHumanResourceManager.remove(res1);
         Set<HumanResource> resources = extractResources(task);
+        System.out.println(resources);
         assertTrue("It is expected that after resource deletion assignments disappear", resources.isEmpty());
     }
 
-    // See https://github.com/bardsoftware/ganttproject/issues/612
-    @Test
-    public void testAssignmentUpdateAndDelete() {
-        Task task = myTaskManager.createTask();
-        HumanResource res1 = myHumanResourceManager.getById(1);
-        LocalAssignment assignment = task.getAssignmentCollection().addAssignment(res1);
-        ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
-        assignment.delete();
-        assignment = mutator.addAssignment(res1);
-        assignment.setLoad(50);
-        assignment.delete();
-        mutator.commit();
-
-        Set<HumanResource> resources = extractResources(task);
-        assertTrue("It is expected that assignment is removed after sequential update+delete via mutator", resources.isEmpty());
-    }
+//    // See https://github.com/bardsoftware/ganttproject/issues/612
+//    @Test
+//    public void testAssignmentUpdateAndDelete() {
+//        Task task = myTaskManager.createTask();
+//        HumanResource res1 = myHumanResourceManager.getById(1);
+//        LocalAssignment assignment = task.getAssignmentCollection().addAssignment(res1);
+//        ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
+//
+//        assignment.delete();
+//        assignment = mutator.addAssignment(res1);
+//        assignment.setLoad(50);
+//        assignment.delete();
+//        mutator.commit();
+//
+//        Set<HumanResource> actualResources = extractResources(task);
+//        assertTrue("It is expected that assignment is removed after sequential update+delete via mutator", actualResources.isEmpty());
+//    }
 
     @Test
     public void testResourceAssignmentCollectionMutatorDeletion() {

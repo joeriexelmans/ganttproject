@@ -10,13 +10,13 @@ public class TestImportResources extends TestCase {
         MergeResourcesOption mergeOption = new MergeResourcesOption();
         mergeOption.setValue(MergeResourcesOption.BY_NAME);
 
-        HumanResourceManager mergeTo = new HumanResourceManager(null, new CustomColumnsManager());
-        mergeTo.add(new HumanResource("joe", 1, mergeTo));
-        mergeTo.add(new HumanResource("john", 2, mergeTo));
+        HumanResourceManager mergeTo = new HumanResourceManager(null, null, new CustomColumnsManager());
+        mergeTo.add(new HumanResource("joe", 1, mergeTo, null));
+        mergeTo.add(new HumanResource("john", 2, mergeTo, null));
 
-        HumanResourceManager mergeFrom = new HumanResourceManager(null, new CustomColumnsManager());
-        mergeFrom.add(new HumanResource("jack", 1, mergeFrom));
-        mergeFrom.add(new HumanResource("joe", 2, mergeFrom));
+        HumanResourceManager mergeFrom = new HumanResourceManager(null, null, new CustomColumnsManager());
+        mergeFrom.add(new HumanResource("jack", 1, mergeFrom, null));
+        mergeFrom.add(new HumanResource("joe", 2, mergeFrom, null));
 
         mergeTo.importData(mergeFrom, new OverwritingMerger(mergeOption));
 
@@ -30,13 +30,13 @@ public class TestImportResources extends TestCase {
         MergeResourcesOption mergeOption = new MergeResourcesOption();
         mergeOption.setValue(MergeResourcesOption.BY_ID);
 
-        HumanResourceManager mergeTo = new HumanResourceManager(null, new CustomColumnsManager());
-        mergeTo.add(new HumanResource("joe", 1, mergeTo));
-        mergeTo.add(new HumanResource("john", 2, mergeTo));
+        HumanResourceManager mergeTo = new HumanResourceManager(null, null, new CustomColumnsManager());
+        mergeTo.add(new HumanResource("joe", 1, mergeTo, null));
+        mergeTo.add(new HumanResource("john", 2, mergeTo, null));
 
-        HumanResourceManager mergeFrom = new HumanResourceManager(null, new CustomColumnsManager());
-        mergeFrom.add(new HumanResource("jack", 1, mergeFrom));
-        mergeFrom.add(new HumanResource("joe", 3, mergeFrom));
+        HumanResourceManager mergeFrom = new HumanResourceManager(null, null, new CustomColumnsManager());
+        mergeFrom.add(new HumanResource("jack", 1, mergeFrom, null));
+        mergeFrom.add(new HumanResource("joe", 3, mergeFrom, null));
 
         mergeTo.importData(mergeFrom, new OverwritingMerger(mergeOption));
 

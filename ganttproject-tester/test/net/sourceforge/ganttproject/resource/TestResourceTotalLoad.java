@@ -20,6 +20,7 @@ package net.sourceforge.ganttproject.resource;
 
 import net.sourceforge.ganttproject.TestSetupHelper;
 import net.sourceforge.ganttproject.TestSetupHelper.TaskManagerBuilder;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.test.task.TaskTestCase;
 
@@ -28,7 +29,8 @@ public class TestResourceTotalLoad extends TaskTestCase {
   public void testResourceTotalLoad() {
     TaskManagerBuilder builder = TestSetupHelper.newTaskManagerBuilder();
     setTaskManager(builder.build());
-    HumanResource joe = new HumanResource("Joe", 1, builder.getResourceManager());
+    AssignmentManager assignmentManager = new AssignmentManager();
+    HumanResource joe = new HumanResource("Joe", 1, builder.getResourceManager(), assignmentManager);
 
     assertEquals(0.0, joe.getTotalLoad());
 

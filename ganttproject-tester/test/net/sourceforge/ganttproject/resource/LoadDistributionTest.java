@@ -19,6 +19,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 package net.sourceforge.ganttproject.resource;
 
 import net.sourceforge.ganttproject.TestSetupHelper;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.task.CustomColumnsManager;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
@@ -33,8 +34,9 @@ import java.util.Map;
  */
 public class LoadDistributionTest extends TaskTestCase {
   public void testEmptyLoadDistribution() {
-    HumanResourceManager resourceManager = new HumanResourceManager(null, new CustomColumnsManager());
-    HumanResource humanResource = new HumanResource("Foo", 1, resourceManager);
+    AssignmentManager assignmentManager = new AssignmentManager();
+    HumanResourceManager resourceManager = new HumanResourceManager(assignmentManager, null, new CustomColumnsManager());
+    HumanResource humanResource = new HumanResource("Foo", 1, resourceManager, assignmentManager);
     resourceManager.add(humanResource);
 
     LoadDistribution ld = new LoadDistribution(humanResource);
@@ -46,15 +48,16 @@ public class LoadDistributionTest extends TaskTestCase {
   }
 
   public void testSingleTaskNoWeekendDistribution() {
-    HumanResourceManager resourceManager = new HumanResourceManager(null, new CustomColumnsManager());
-    HumanResource humanResource = new HumanResource("Foo", 1, resourceManager);
+    AssignmentManager assignmentManager = new AssignmentManager();
+    HumanResourceManager resourceManager = new HumanResourceManager(assignmentManager, null, new CustomColumnsManager());
+    HumanResource humanResource = new HumanResource("Foo", 1, resourceManager, assignmentManager);
     resourceManager.add(humanResource);
 
     Task task = createTask(TestSetupHelper.newMonday(), 1);
-    ResourceAssignmentMutator mutableAssignments = task.getAssignmentCollection().createMutator();
-    LocalAssignment assignment = mutableAssignments.addAssignment(humanResource);
+    ResourceAssignmentMutator mutator = task.getAssignmentCollection().createMutator();
+    LocalAssignment assignment = mutator.addAssignment(humanResource);
     assignment.setLoad(100.0f);
-    mutableAssignments.commit();
+    mutator.commit();
 
     LoadDistribution ld = new LoadDistribution(humanResource);
     List<LoadDistribution.Load> loads = ld.getLoads();

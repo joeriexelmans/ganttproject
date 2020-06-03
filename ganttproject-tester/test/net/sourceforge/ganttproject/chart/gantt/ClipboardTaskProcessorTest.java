@@ -123,7 +123,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
     TaskManager taskManager = builder.build();
     Task task1 = taskManager.newTaskBuilder().build();
 
-    HumanResource res1 = new HumanResource("Joe", 1, hrMgr);
+    HumanResource res1 = new HumanResource("Joe", 1, hrMgr, builder.getAssignmentManager());
     hrMgr.add(res1);
     LocalAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
     assgn1.setLoad(100f);
@@ -146,7 +146,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
     TaskManager taskManager = builder.build();
     Task task1 = taskManager.newTaskBuilder().build();
 
-    HumanResource res1 = new HumanResource("Joe", 1, hrMgr);
+    HumanResource res1 = new HumanResource("Joe", 1, hrMgr, builder.getAssignmentManager());
     hrMgr.add(res1);
     LocalAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
     assgn1.setLoad(100f);
@@ -172,7 +172,7 @@ public class ClipboardTaskProcessorTest extends TestCase {
     TaskManager taskManager = builder.build();
     Task task1 = taskManager.newTaskBuilder().build();
 
-    HumanResource res1 = new HumanResource("Joe", 1, hrMgr);
+    HumanResource res1 = new HumanResource("Joe", 1, hrMgr, builder.getAssignmentManager());
     hrMgr.add(res1);
     LocalAssignment assgn1 = task1.getAssignmentCollection().addAssignment(res1);
     assgn1.setLoad(100f);

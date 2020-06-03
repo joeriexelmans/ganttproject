@@ -12,7 +12,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
     @Test
     public void emptyModel() {
         Task task = myTaskManager.createTask();
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         assertEquals(1, model.getRowCount()); // there's always an empty row for adding new assignments
         assertEquals(5, model.getColumnCount());
@@ -23,7 +23,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         task.getAssignmentCollection().addAssignment(res1);
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         assertEquals(2, model.getRowCount());
         assertEquals(5, model.getColumnCount());
@@ -38,7 +38,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         Assignment a = task.getAssignmentCollection().addAssignment(res1);
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         // update load:
         model.setValueAt(0.5f, 0, 2);
@@ -53,7 +53,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         HumanResource res1 = myHumanResourceManager.getById(1);
         HumanResource res2 = myHumanResourceManager.getById(2);
         Assignment a = task.getAssignmentCollection().addAssignment(res1);
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         // re-assign to another resource:
         model.setValueAt(res2, 0, 1);
@@ -68,7 +68,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         Assignment a = task.getAssignmentCollection().addAssignment(res1);
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         // remove assignment
         model.setValueAt(null, 0, 1);
@@ -83,7 +83,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         HumanResource res1 = myHumanResourceManager.getById(1);
         HumanResource res2 = myHumanResourceManager.getById(2);
         Assignment a = task.getAssignmentCollection().addAssignment(res1);
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         // add assignment
         model.setValueAt(res2, 1, 1);
@@ -97,7 +97,7 @@ public class ResourcesTableModelTest extends AssignmentTestCase {
         Task task = myTaskManager.createTask();
         HumanResource res1 = myHumanResourceManager.getById(1);
         Assignment a = task.getAssignmentCollection().addAssignment(res1);
-        ResourcesTableModel model = new ResourcesTableModel(task.getAssignmentCollection());
+        ResourcesTableModel model = new ResourcesTableModel(myAssignmentManager, task);
 
         // delete first row
         model.delete(new int[]{0});

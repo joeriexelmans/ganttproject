@@ -48,9 +48,10 @@ public class LoadDistributionTest extends TaskTestCase {
   }
 
   public void testSingleTaskNoWeekendDistribution() {
-    AssignmentManager assignmentManager = new AssignmentManager();
-    HumanResourceManager resourceManager = new HumanResourceManager(assignmentManager, null, new CustomColumnsManager());
-    HumanResource humanResource = new HumanResource("Foo", 1, resourceManager, assignmentManager);
+    TestSetupHelper.TaskManagerBuilder builder = TestSetupHelper.newTaskManagerBuilder();
+    setTaskManager(builder.build());
+    HumanResourceManager resourceManager = builder.getResourceManager();
+    HumanResource humanResource = new HumanResource("Foo", 1, resourceManager, builder.getAssignmentManager());
     resourceManager.add(humanResource);
 
     Task task = createTask(TestSetupHelper.newMonday(), 1);

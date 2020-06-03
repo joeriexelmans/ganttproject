@@ -13,15 +13,24 @@ import java.util.Map;
 import net.sourceforge.ganttproject.CustomPropertyClass;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
+import net.sourceforge.ganttproject.project.Project;
+import net.sourceforge.ganttproject.project.ProjectStub;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
+import net.sourceforge.ganttproject.test.ProjectTestBase;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author bard
  */
-public class ImportTasksTestCase extends TaskTestCase {
+public class ImportTasksTestCase {
+    @Test
     public void testImportingPreservesIDs() {
-        TaskManager taskManager = getTaskManager();
+        Project proj = new ProjectStub();
+        TaskManager taskManager = proj.taskManager;
         {
             Task root = taskManager.getTaskHierarchy().getRootTask();
             Task[] nestedTasks = taskManager.getTaskHierarchy().getNestedTasks(root);
@@ -29,7 +38,8 @@ public class ImportTasksTestCase extends TaskTestCase {
                     "Unexpected count of the root's children BEFORE importing",
                     0, nestedTasks.length);
         }
-        TaskManager importFrom = newTaskManager();
+        Project importFromProject = new ProjectStub();
+        TaskManager importFrom = importFromProject.taskManager;
         {
             Task importRoot = importFrom.getTaskHierarchy().getRootTask();
             importFrom.createTask(2).move(importRoot);
@@ -62,8 +72,11 @@ public class ImportTasksTestCase extends TaskTestCase {
         }
         return null;
     }
+
+    @Test
     public void testImportCustomColumns() {
-        TaskManager importTo = getTaskManager();
+        Project toProj = new ProjectStub();
+        TaskManager importTo = toProj.taskManager;
         {
             CustomPropertyDefinition def = importTo.getCustomPropertyManager().createDefinition(
                     "col1", CustomPropertyClass.TEXT.getID(), "foo", "foo");
@@ -71,7 +84,8 @@ public class ImportTasksTestCase extends TaskTestCase {
             importTo.createTask(1).move(root);
             assertEquals("foo", importTo.getTask(1).getCustomValues().getValue(def));
         }
-        TaskManager importFrom = newTaskManager();
+        Project fromProj = new ProjectStub();
+        TaskManager importFrom = fromProj.taskManager;
         {
             CustomPropertyDefinition def = importFrom.getCustomPropertyManager().createDefinition(
                     "col1", CustomPropertyClass.TEXT.getID(), "bar", "bar");

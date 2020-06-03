@@ -10,17 +10,21 @@ import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.impl.GregorianTimeUnitStack;
 import com.google.common.collect.ImmutableList;
 import net.sourceforge.ganttproject.TestSetupHelper;
+import net.sourceforge.ganttproject.project.ProjectStub;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.test.task.TaskTestCase;
+import org.junit.Test;
 
 import java.text.DateFormat;
 import java.util.Locale;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author bard
  */
-public class TestWeekendCalendar extends TaskTestCase {
+public class TestWeekendCalendar {
   static {
     new CalendarFactory() {
       {
@@ -39,8 +43,9 @@ public class TestWeekendCalendar extends TaskTestCase {
     };
   }
 
+  @Test
   public void testTaskOverlappingWeekendIsTwoDaysShorter() {
-    Task t = getTaskManager().createTask();
+    Task t = new ProjectStub().taskManager.createTask();
     t.setStart(TestSetupHelper.newFriday());// Friday
     t.setEnd(TestSetupHelper.newTuesday()); // Tuesday
     assertEquals("Unexpected length of task=" + t
@@ -50,23 +55,19 @@ public class TestWeekendCalendar extends TaskTestCase {
 
   private WeekendCalendarImpl myWeekendCalendar = new WeekendCalendarImpl();
 
-  @Override
-  protected TaskManager newTaskManager() {
-    return TestSetupHelper.newTaskManagerBuilder().withCalendar(myWeekendCalendar).build();
-  }
-
-    public void testNoWeekendsButHasHolidays() {
-        WeekendCalendarImpl noWeekendsOneHolidayCalendar = new WeekendCalendarImpl();
-        for (int i=1; i<=7; i++) {
-            noWeekendsOneHolidayCalendar.setWeekDayType(i, GPCalendar.DayType.WORKING);
-        }
-        noWeekendsOneHolidayCalendar.setPublicHolidays(ImmutableList.of(
-            CalendarEvent.newEvent(TestSetupHelper.newMonday().getTime(), false, CalendarEvent.Type.HOLIDAY, null, null)));
-        TaskManager mgr = TestSetupHelper.newTaskManagerBuilder().withCalendar(noWeekendsOneHolidayCalendar).build();
-        Task t = mgr.newTaskBuilder()
-            .withStartDate(TestSetupHelper.newFriday().getTime())
-            .build();
-        t.setEnd(TestSetupHelper.newWendesday());
-        assertEquals(4.0f, t.getDuration().getLength(GregorianTimeUnitStack.DAY));
+  @Test
+  public void testNoWeekendsButHasHolidays() {
+    WeekendCalendarImpl noWeekendsOneHolidayCalendar = new WeekendCalendarImpl();
+    for (int i=1; i<=7; i++) {
+        noWeekendsOneHolidayCalendar.setWeekDayType(i, GPCalendar.DayType.WORKING);
+    }
+    noWeekendsOneHolidayCalendar.setPublicHolidays(ImmutableList.of(
+        CalendarEvent.newEvent(TestSetupHelper.newMonday().getTime(), false, CalendarEvent.Type.HOLIDAY, null, null)));
+    TaskManager mgr = TestSetupHelper.newTaskManagerBuilder().withCalendar(noWeekendsOneHolidayCalendar).build();
+    Task t = mgr.newTaskBuilder()
+        .withStartDate(TestSetupHelper.newFriday().getTime())
+        .build();
+    t.setEnd(TestSetupHelper.newWendesday());
+    assertEquals(4.0f, t.getDuration().getLength(GregorianTimeUnitStack.DAY), 0.00001f);
   }
 }

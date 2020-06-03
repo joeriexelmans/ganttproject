@@ -22,6 +22,9 @@ import biz.ganttproject.core.time.CalendarFactory;
 import biz.ganttproject.core.time.GanttCalendar;
 import junit.framework.TestCase;
 import net.sourceforge.ganttproject.TestSetupHelper;
+import net.sourceforge.ganttproject.assignment.Assignment;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
+import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
 import net.sourceforge.ganttproject.task.dependency.TaskDependency;
@@ -49,9 +52,18 @@ public abstract class TaskTestCase extends TestCase {
     };
   }
     private TaskManager myTaskManager;
+    private TestSetupHelper.TaskManagerBuilder myBuilder;
 
     protected TaskManager getTaskManager() {
         return myTaskManager;
+    }
+
+    protected HumanResourceManager getHumanResourceManager() {
+        return myBuilder.getResourceManager();
+    }
+
+    protected AssignmentManager getAssignmentManager() {
+        return myBuilder.getAssignmentManager();
     }
 
     protected void setTaskManager(TaskManager taskManager) {
@@ -61,17 +73,15 @@ public abstract class TaskTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        myTaskManager = newTaskManager();
+        myBuilder = TestSetupHelper.newTaskManagerBuilder();
+        myTaskManager = myBuilder.build();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
         myTaskManager = null;
-    }
-
-    protected TaskManager newTaskManager() {
-        return TestSetupHelper.newTaskManagerBuilder().build();
+        myBuilder = null;
     }
 
     protected Task createTask() {

@@ -20,6 +20,7 @@ package net.sourceforge.ganttproject.resource;
 
 import biz.ganttproject.core.calendar.GanttDaysOff;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyHolder;
@@ -225,7 +226,6 @@ public class HumanResource implements CustomPropertyHolder {
   @Deprecated
   public LocalAssignment[] getAssignments() {
     return myAssignmentManager.getResourceAssignments(this).toArray(new LocalAssignment[0]);
-//    return myAssignments.toArray(new LocalAssignment[0]);
   }
 
   public HumanResource unpluggedClone() {

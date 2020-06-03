@@ -23,6 +23,7 @@ import biz.ganttproject.core.option.*;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.action.CancelAction;
 import net.sourceforge.ganttproject.action.OkAction;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.gui.DateIntervalListEditor.DateInterval;
 import net.sourceforge.ganttproject.gui.DateIntervalListEditor.DefaultDateIntervalModel;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
@@ -41,6 +42,7 @@ import java.awt.event.FocusEvent;
 
 public class GanttDialogPerson {
   private final TaskManager myTaskManager;
+  private final AssignmentManager myAssignmentManager;
   private boolean change;
 
   private HumanResource person;
@@ -63,9 +65,10 @@ public class GanttDialogPerson {
   private ResourceAssignmentsPanel myAssignmentsPanel;
 
 
-  public GanttDialogPerson(CustomPropertyManager customPropertyManager, TaskManager taskManager, UIFacade uiFacade, HumanResource person) {
+  public GanttDialogPerson(CustomPropertyManager customPropertyManager, TaskManager taskManager, AssignmentManager assignmentManager, UIFacade uiFacade, HumanResource person) {
     myCustomPropertyManager = customPropertyManager;
     myTaskManager = taskManager;
+    myAssignmentManager = assignmentManager;
     myUIFacade = uiFacade;
     this.person = person;
     Role[] enabledRoles = RoleManager.Access.getInstance().getEnabledRoles();
@@ -189,7 +192,7 @@ public class GanttDialogPerson {
   }
 
   private void constructAssignmentsPanel() {
-    myAssignmentsPanel = new ResourceAssignmentsPanel(person, myTaskManager);
+    myAssignmentsPanel = new ResourceAssignmentsPanel(person, myAssignmentManager, myTaskManager);
   }
 
   private void okButtonActionPerformed() {

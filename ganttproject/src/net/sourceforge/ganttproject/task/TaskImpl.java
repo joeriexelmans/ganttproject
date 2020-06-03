@@ -29,13 +29,16 @@ import biz.ganttproject.core.time.GanttCalendar;
 import biz.ganttproject.core.time.TimeDuration;
 import biz.ganttproject.core.time.TimeDurationImpl;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
+import net.sourceforge.ganttproject.assignment.LocalAssignmentImpl;
 import net.sourceforge.ganttproject.chart.MilestoneTaskFakeActivity;
 import net.sourceforge.ganttproject.document.AbstractURLDocument;
 import net.sourceforge.ganttproject.document.Document;
+import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmCollection;
 import net.sourceforge.ganttproject.task.algorithm.AlgorithmException;
 import net.sourceforge.ganttproject.task.algorithm.CostAlgorithmImpl;
@@ -62,10 +65,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -74,7 +74,7 @@ import java.util.List;
 public class TaskImpl implements Task {
   private final int myID;
 
-//  private final AssignmentManager myAssignmentManager;
+  private final AssignmentManager myAssignmentManager;
 
   private final TaskManagerImpl myManager;
 
@@ -144,9 +144,9 @@ public class TaskImpl implements Task {
 
   private static final TimeDuration EMPTY_DURATION = new TimeDurationImpl(GPTimeUnitStack.DAY, 0);
 
-  protected TaskImpl(TaskManagerImpl taskManager, int taskID) {
-//    myAssignmentManager = assManager;
+  protected TaskImpl(TaskManagerImpl taskManager, AssignmentManager assignmentManager, int taskID) {
     myManager = taskManager;
+    myAssignmentManager = assignmentManager;
     myID = taskID;
 
 //    myAssignments = new ResourceAssignmentCollectionImpl(myAssignmentManager, this, myManager.getHumanResourceManager());
@@ -164,7 +164,7 @@ public class TaskImpl implements Task {
 
   protected TaskImpl(TaskImpl copy, boolean isUnplugged) {
     this.isUnplugged = isUnplugged;
-//    myAssignmentManager = copy.myAssignmentManager;
+    myAssignmentManager = copy.myAssignmentManager;
     myManager = copy.myManager;
     // Use a new (unique) ID for the cloned task
     myID = myManager.getAndIncrementId();
@@ -176,6 +176,32 @@ public class TaskImpl implements Task {
     }
 //    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
 //    myAssignments.importData(copy.getAssignmentCollection());
+
+    // Original method: ResourceAssignmentCollectionImpl.import
+    /*
+    if (myTask.isUnplugged()) {
+      LocalAssignment[] assignments = assignmentCollection.getAssignments();
+      for (int i = 0; i < assignments.length; i++) {
+        LocalAssignment next = assignments[i];
+        addAssignment(next);
+      }
+    } else {
+      LocalAssignment[] assignments = assignmentCollection.getAssignments();
+      for (int i = 0; i < assignments.length; i++) {
+        LocalAssignment ass = assignments[i];
+        HumanResource res = ass.getResource();
+        HumanResource importedRes = myResourceManager.getById(res.getId());
+        if (importedRes != null) {
+          LocalAssignment copy = new LocalAssignmentImpl(importedRes);
+          copy.setLoad(ass.getLoad());
+          copy.setCoordinator(ass.isCoordinator());
+          copy.setRoleForAssignment(ass.getRoleForAssignment());
+          addAssignment(copy);
+        }
+      }
+    }
+    */
+
     myName = copy.myName;
     myWebLink = copy.myWebLink;
     isMilestone = copy.isMilestone;
@@ -473,15 +499,146 @@ public class TaskImpl implements Task {
     return myNotes;
   }
 
-//  @Override
-//  public LocalAssignment[] getAssignments() {
+  @Deprecated
+  @Override
+  public LocalAssignment[] getAssignments() {
+    return myAssignmentManager.getTaskAssignments(this).toArray(new LocalAssignment[0]);
 //    return myAssignments.getAssignments();
-//  }
-//
-//  @Override
-//  public ResourceAssignmentCollection getAssignmentCollection() {
-//    return myAssignments;
-//  }
+  }
+
+  private static class MutationInfo implements Comparable<MutationInfo> {
+    static final int ADD = 0;
+    static final int DELETE = 1;
+
+    private final LocalAssignment myAssignment;
+    private final int myOrder;
+    private static int ourOrder;
+    private int myOperation;
+    private final HumanResource myResource;
+
+    public MutationInfo(LocalAssignment assignment, int operation) {
+      myAssignment = assignment;
+      myOrder = ourOrder++;
+      myOperation = operation;
+      myResource = assignment.getResource();
+    }
+
+    public MutationInfo(HumanResource resource, int operation) {
+      this.myAssignment = null;
+      this.myOrder = ourOrder++;
+      this.myOperation = operation;
+      this.myResource = resource;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      boolean result = o instanceof MutationInfo;
+      if (result) {
+        result = myAssignment.getResource().equals(((MutationInfo) o).myAssignment.getResource());
+      }
+      return result;
+    }
+
+    @Override
+    public int compareTo(MutationInfo o) {
+      if (!(o instanceof MutationInfo)) {
+        throw new IllegalArgumentException();
+      }
+      return myOrder - o.myOrder;
+    }
+  }
+
+  @Deprecated
+  @Override
+  public ResourceAssignmentCollection getAssignmentCollection() {
+    // This whole structure of anonymous classes is here just for compatibility
+    // with the old design. Should be completely removed in the future.
+    return new ResourceAssignmentCollection() {
+      @Override
+      public LocalAssignment[] getAssignments() {
+        return myAssignmentManager.getTaskAssignments(TaskImpl.this).toArray(new LocalAssignment[0]);
+      }
+
+      @Override
+      public LocalAssignment getAssignment(HumanResource resource) {
+        return myAssignmentManager.getAssignment(TaskImpl.this, resource);
+      }
+
+      @Override
+      public HumanResource getCoordinator() {
+        return myAssignmentManager.getCoordinator(TaskImpl.this);
+      }
+
+      @Override
+      public void clear() {
+        myAssignmentManager.clearTaskAssignments(TaskImpl.this);
+      }
+
+      @Override
+      public LocalAssignment addAssignment(HumanResource resource) {
+        return myAssignmentManager.createAssignment(TaskImpl.this, resource);
+      }
+
+      @Override
+      public void deleteAssignment(HumanResource resource) {
+        myAssignmentManager.removeAssignment(TaskImpl.this, resource);
+      }
+
+      @Override
+      public ResourceAssignmentMutator createMutator() {
+        return new ResourceAssignmentMutator() {
+
+          private Map<HumanResource, MutationInfo> myQueue = new HashMap<HumanResource, MutationInfo>();
+          private boolean invalidated = false;
+
+          @Override
+          public LocalAssignment addAssignment(final HumanResource resource) {
+            Preconditions.checkState(!invalidated);
+            LocalAssignment result = new LocalAssignmentImpl(TaskImpl.this, resource);
+            myQueue.put(resource, new MutationInfo(result, MutationInfo.ADD));
+            return result;
+          }
+
+          @Override
+          public void deleteAssignment(HumanResource resource) {
+            Preconditions.checkState(!invalidated);
+            MutationInfo info = myQueue.get(resource);
+            if (info == null) {
+              myQueue.put(resource, new MutationInfo(resource, MutationInfo.DELETE));
+            } else if (info.myOperation == MutationInfo.ADD) {
+              myQueue.remove(resource);
+            }
+          }
+
+          @Override
+          public void commit() {
+            Preconditions.checkState(!invalidated);
+            List<MutationInfo> mutations = new ArrayList<MutationInfo>(myQueue.values());
+            Collections.sort(mutations);
+            for (int i = 0; i < mutations.size(); i++) {
+              MutationInfo next = mutations.get(i);
+              switch (next.myOperation) {
+                case MutationInfo.DELETE: {
+                  myAssignmentManager.removeAssignment(TaskImpl.this, next.myResource);
+//                  myAssignments.remove(next.myResource);
+                  break;
+                }
+                case MutationInfo.ADD: {
+                  LocalAssignment result = myAssignmentManager.createAssignment(TaskImpl.this, next.myResource);
+                  result.setLoad(next.myAssignment.getLoad());
+                  result.setCoordinator(next.myAssignment.isCoordinator());
+                  result.setRoleForAssignment(next.myAssignment.getRoleForAssignment());
+                }
+                default:
+                  break;
+              }
+            }
+            invalidated = true;
+          }
+        };
+      }
+    };
+  }
 
   @Override
   public Task getSupertask() {
@@ -511,12 +668,6 @@ public class TaskImpl implements Task {
     myTaskHierarchyItem.delete();
     targetItem.addNestedItem(myTaskHierarchyItem, position);
     myManager.onTaskMoved(this);
-  }
-
-  @Override
-  public void delete() {
-    getDependencies().clear();
-    getAssignmentCollection().clear();
   }
 
   @Override

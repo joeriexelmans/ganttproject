@@ -19,12 +19,12 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 package net.sourceforge.ganttproject.resource;
 
 import biz.ganttproject.core.calendar.GanttDaysOff;
-import biz.ganttproject.core.time.GanttCalendar;
 import com.google.common.base.Strings;
 import net.sourceforge.ganttproject.CustomProperty;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyHolder;
 import net.sourceforge.ganttproject.CustomPropertyManager;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.roles.Role;
@@ -32,8 +32,6 @@ import net.sourceforge.ganttproject.task.*;
 
 import javax.swing.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,25 +62,29 @@ public class HumanResource implements CustomPropertyHolder {
 
   private final DefaultListModel<GanttDaysOff> myDaysOffList = new DefaultListModel<>();
 
-  private final List<LocalAssignment> myAssignments = new ArrayList<>();
+//  private final List<LocalAssignment> myAssignments = new ArrayList<>();
 
   private final CustomColumnsValues myCustomProperties;
 
   private final HumanResourceManager myManager;
 
-  HumanResource(HumanResourceManager manager) {
-    this("", -1, manager);
+  private final AssignmentManager myAssignmentManager;
+
+  HumanResource(HumanResourceManager manager, AssignmentManager assignmentManager) {
+    this("", -1, manager, assignmentManager);
   }
 
   /** Creates a new instance of HumanResource */
-  public HumanResource(String name, int id, HumanResourceManager manager) {
+  public HumanResource(String name, int id, HumanResourceManager manager, AssignmentManager assignmentManager) {
     this.id = id;
     this.name = name;
     myManager = manager;
+    myAssignmentManager = assignmentManager;
     myCustomProperties = new CustomColumnsValues(myManager.getCustomPropertyManager());
   }
 
   private HumanResource(HumanResource copy) {
+    myAssignmentManager = copy.myAssignmentManager;
     areEventsEnabled = false;
     setId(-1);
     String newName = GanttLanguage.getInstance().formatText("resource.copy.prefix",
@@ -102,23 +104,23 @@ public class HumanResource implements CustomPropertyHolder {
     myCustomProperties = (CustomColumnsValues) copy.myCustomProperties.clone();
   }
 
-  /**
-   * Removes the assignment objects associated to this ProjectResource and those
-   * associated to it's Tasks
-   */
-  private void removeAllAssignments() {
-    List<LocalAssignment> copy = new ArrayList<>(myAssignments);
-    for (LocalAssignment aCopy : copy) {
-      LocalAssignmentImpl next = (LocalAssignmentImpl) aCopy;
-      next.myAssignmentToTask.delete();
-    }
-    resetLoads();
-  }
+//  /**
+//   * Removes the assignment objects associated to this ProjectResource and those
+//   * associated to it's Tasks
+//   */
+//  private void removeAllAssignments() {
+//    List<LocalAssignment> copy = new ArrayList<>(myAssignments);
+//    for (LocalAssignment aCopy : copy) {
+//      LocalAssignmentImpl next = (LocalAssignmentImpl) aCopy;
+//      next.myAssignmentToTask.delete();
+//    }
+//    resetLoads();
+//  }
 
-  public void delete() {
-    removeAllAssignments();
-    myManager.remove(this);
-  }
+//  public void delete() {
+//    removeAllAssignments();
+//    myManager.remove(this);
+//  }
 
   public void setId(int id) {
     if (this.id == -1) {
@@ -208,20 +210,22 @@ public class HumanResource implements CustomPropertyHolder {
     }
   }
 
-  public LocalAssignment createAssignment(LocalAssignment assignmentToTask) {
-    LocalAssignment result = new LocalAssignmentImpl(assignmentToTask);
-    myAssignments.add(result);
-    resetLoads();
-    fireAssignmentsChanged();
-    return result;
-  }
+//  public LocalAssignment createAssignment(LocalAssignment assignmentToTask) {
+//    LocalAssignment result = new LocalAssignmentImpl(assignmentToTask);
+//    myAssignments.add(result);
+//    resetLoads();
+//    fireAssignmentsChanged();
+//    return result;
+//  }
 
   /**
    * Caller will get a copy of the list of assignments.
    * Mutating the returned list therefore has no effect on the assignments of the resource.
    */
+  @Deprecated
   public LocalAssignment[] getAssignments() {
-    return myAssignments.toArray(new LocalAssignment[0]);
+    return myAssignmentManager.getResourceAssignments(this).toArray(new LocalAssignment[0]);
+//    return myAssignments.toArray(new LocalAssignment[0]);
   }
 
   public HumanResource unpluggedClone() {
@@ -294,8 +298,10 @@ public class HumanResource implements CustomPropertyHolder {
     fireAssignmentsChanged();
   }
 
+  @Deprecated
   public void swapAssignments(LocalAssignment a1, LocalAssignment a2) {
-    Collections.swap(myAssignments, myAssignments.indexOf(a1), myAssignments.indexOf(a2));
+    myAssignmentManager.swapAssignments(this, a1, a2);
+//    Collections.swap(myAssignments, myAssignments.indexOf(a1), myAssignments.indexOf(a2));
     resetLoads();
     fireAssignmentsChanged();
   }
@@ -310,7 +316,7 @@ public class HumanResource implements CustomPropertyHolder {
 
   public double getTotalLoad() {
     double totalLoad = 0.0;
-    for (LocalAssignment assignment : myAssignments) {
+    for (LocalAssignment assignment : myAssignmentManager.getResourceAssignments(this)) {
       totalLoad = totalLoad + assignment.getLoad() * assignment.getTask().getDuration().getLength() / 100.0;
     }
     return totalLoad;
@@ -340,79 +346,79 @@ public class HumanResource implements CustomPropertyHolder {
     return name;
   }
 
-  private class LocalAssignmentImpl implements LocalAssignment {
-    // Delegate
-    private final LocalAssignment myAssignmentToTask;
-
-    private float myLoad;
-    private boolean myCoordinator;
-    private Role myRoleForAssignment;
-
-    private LocalAssignmentImpl(LocalAssignment assignmentToTask) {
-      myAssignmentToTask = assignmentToTask;
-    }
-
-    @Override
-    public Task getTask() {
-      return myAssignmentToTask.getTask();
-    }
-
-    @Override
-    public GanttCalendar getStart() {
-      return myAssignmentToTask.getStart();
-    }
-
-    @Override
-    public GanttCalendar getEnd() {
-      return myAssignmentToTask.getEnd();
-    }
-
-    @Override
-    public HumanResource getResource() {
-      return HumanResource.this;
-    }
-
-    @Override
-    public float getLoad() {
-      return myLoad;
-    }
-
-    @Override
-    public void setLoad(float load) {
-      myLoad = load;
-      HumanResource.this.fireAssignmentChanged();
-    }
-
-    /** Removes all related assignments */
-    @Override
-    public void delete() {
-      HumanResource.this.myAssignments.remove(this);
-      HumanResource.this.fireAssignmentChanged();
-    }
-
-    @Override
-    public void setCoordinator(boolean responsible) {
-      myCoordinator = responsible;
-    }
-
-    @Override
-    public boolean isCoordinator() {
-      return myCoordinator;
-    }
-
-    @Override
-    public Role getRoleForAssignment() {
-      return myRoleForAssignment;
-    }
-
-    @Override
-    public void setRoleForAssignment(Role role) {
-      myRoleForAssignment = role;
-    }
-
-    @Override
-    public String toString() {
-      return this.getResource().getName() + " -> " + this.getTask().getName();
-    }
-  }
+//  private class LocalAssignmentImpl implements LocalAssignment {
+//    // Delegate
+//    private final LocalAssignment myAssignmentToTask;
+//
+//    private float myLoad;
+//    private boolean myCoordinator;
+//    private Role myRoleForAssignment;
+//
+//    private LocalAssignmentImpl(LocalAssignment assignmentToTask) {
+//      myAssignmentToTask = assignmentToTask;
+//    }
+//
+//    @Override
+//    public Task getTask() {
+//      return myAssignmentToTask.getTask();
+//    }
+//
+//    @Override
+//    public GanttCalendar getStart() {
+//      return myAssignmentToTask.getStart();
+//    }
+//
+//    @Override
+//    public GanttCalendar getEnd() {
+//      return myAssignmentToTask.getEnd();
+//    }
+//
+//    @Override
+//    public HumanResource getResource() {
+//      return HumanResource.this;
+//    }
+//
+//    @Override
+//    public float getLoad() {
+//      return myLoad;
+//    }
+//
+//    @Override
+//    public void setLoad(float load) {
+//      myLoad = load;
+//      HumanResource.this.fireAssignmentChanged();
+//    }
+//
+//    /** Removes all related assignments */
+//    @Override
+//    public void delete() {
+//      HumanResource.this.myAssignments.remove(this);
+//      HumanResource.this.fireAssignmentChanged();
+//    }
+//
+//    @Override
+//    public void setCoordinator(boolean responsible) {
+//      myCoordinator = responsible;
+//    }
+//
+//    @Override
+//    public boolean isCoordinator() {
+//      return myCoordinator;
+//    }
+//
+//    @Override
+//    public Role getRoleForAssignment() {
+//      return myRoleForAssignment;
+//    }
+//
+//    @Override
+//    public void setRoleForAssignment(Role role) {
+//      myRoleForAssignment = role;
+//    }
+//
+//    @Override
+//    public String toString() {
+//      return this.getResource().getName() + " -> " + this.getTask().getName();
+//    }
+//  }
 }

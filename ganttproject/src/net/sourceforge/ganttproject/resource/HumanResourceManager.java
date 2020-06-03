@@ -21,6 +21,7 @@ package net.sourceforge.ganttproject.resource;
 import biz.ganttproject.core.time.GanttCalendar;
 import com.google.common.collect.Lists;
 import net.sourceforge.ganttproject.CustomPropertyManager;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.undo.GPUndoManager;
@@ -91,24 +92,27 @@ public class HumanResourceManager {
 
   private int nextFreeId = 0;
 
+  private final AssignmentManager myAssignmentManager;
+
   private final Role myDefaultRole;
 
   private final CustomPropertyManager myCustomPropertyManager;
 
   private final RoleManager myRoleManager;
 
-  public HumanResourceManager(Role defaultRole, CustomPropertyManager customPropertyManager) {
-    this(defaultRole, customPropertyManager, null);
+  public HumanResourceManager(AssignmentManager assignmentManager, Role defaultRole, CustomPropertyManager customPropertyManager) {
+    this(assignmentManager, defaultRole, customPropertyManager, null);
   }
 
-  public HumanResourceManager(Role defaultRole, CustomPropertyManager customPropertyManager, RoleManager roleManager) {
+  public HumanResourceManager(AssignmentManager assignmentManager, Role defaultRole, CustomPropertyManager customPropertyManager, RoleManager roleManager) {
+    myAssignmentManager = assignmentManager;
     myDefaultRole = defaultRole;
     myCustomPropertyManager = customPropertyManager;
     myRoleManager = roleManager;
   }
 
   public HumanResource newHumanResource() {
-    HumanResource result = new HumanResource(this);
+    HumanResource result = new HumanResource(this, myAssignmentManager);
     result.setRole(myDefaultRole);
     return result;
   }
@@ -121,7 +125,7 @@ public class HumanResourceManager {
         if (myName == null || myID == null) {
           return null;
         }
-        HumanResource result = new HumanResource(myName, myID, HumanResourceManager.this);
+        HumanResource result = new HumanResource(myName, myID, HumanResourceManager.this, myAssignmentManager);
         Role role = null;
         if (myRole != null && myRoleManager != null) {
           role = myRoleManager.getRole(myRole);
@@ -140,7 +144,7 @@ public class HumanResourceManager {
     };
   }
   public HumanResource create(String name, int i) {
-    HumanResource hr = new HumanResource(name, i, this);
+    HumanResource hr = new HumanResource(name, i, this, myAssignmentManager);
     hr.setRole(myDefaultRole);
     add(hr);
     return hr;
@@ -180,6 +184,7 @@ public class HumanResourceManager {
   public void remove(HumanResource resource) {
     fireResourcesRemoved(new HumanResource[] { resource });
     resources.remove(resource);
+    myAssignmentManager.clearResourceAssignment(resource);
   }
 
   public void remove(HumanResource resource, GPUndoManager myUndoManager) {
@@ -189,6 +194,7 @@ public class HumanResourceManager {
       public void run() {
         fireResourcesRemoved(new HumanResource[] { res });
         resources.remove(res);
+        myAssignmentManager.clearResourceAssignment(res);
       }
     });
   }
@@ -268,7 +274,7 @@ public class HumanResourceManager {
       HumanResource foreignHR = foreignResources.get(i);
       HumanResource nativeHR = merger.findNative(foreignHR, this);
       if (nativeHR == null) {
-        nativeHR = new HumanResource(foreignHR.getName(), nextFreeId + createdResources.size(), this);
+        nativeHR = new HumanResource(foreignHR.getName(), nextFreeId + createdResources.size(), this, myAssignmentManager);
         nativeHR.setRole(myDefaultRole);
         createdResources.add(nativeHR);
       }

@@ -18,13 +18,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 package net.sourceforge.ganttproject.gui.taskproperties;
 
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.gui.TableModelExt;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
-import net.sourceforge.ganttproject.task.ResourceAssignmentCollection;
 import net.sourceforge.ganttproject.task.ResourceAssignmentMutator;
+import net.sourceforge.ganttproject.task.Task;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,13 +61,20 @@ class ResourcesTableModel extends TableModelExt<LocalAssignment>
     }
   }
 
+  private final AssignmentManager myAssignmentManager;
+  private final AssignmentManager.Mutator myMutator;
+  private final Task myTask;
   private final List<LocalAssignment> myAssignments;
-  private final ResourceAssignmentMutator myMutator;
+//  private final ResourceAssignmentMutator myMutator;
   private boolean isChanged = false;
 
-  public ResourcesTableModel(ResourceAssignmentCollection assignmentCollection) {
-    myAssignments = new ArrayList<LocalAssignment>(Arrays.asList(assignmentCollection.getAssignments()));
-    myMutator = assignmentCollection.createMutator();
+  public ResourcesTableModel(AssignmentManager assignmentManager, Task task) {
+    myAssignmentManager = assignmentManager;
+    myMutator = myAssignmentManager.createMutator();
+    myTask = task;
+
+    myAssignments = myAssignmentManager.getTaskAssignments(task);
+//    myAssignments = new ArrayList<LocalAssignment>(Arrays.asList(task.getAssignments()));
   }
 
   @Override
@@ -164,15 +172,18 @@ class ResourcesTableModel extends TableModelExt<LocalAssignment>
     }
     case 1: {
       if (value == null) {
-        updateTarget.delete();
+        myMutator.removeAssignment(myTask, updateTarget.getResource());
+//        updateTarget.delete();
         myAssignments.remove(row);
         fireTableRowsDeleted(row, row);
       } else if (value instanceof HumanResource) {
+        myMutator.removeAssignment(myTask, updateTarget.getResource());
         float load = updateTarget.getLoad();
         boolean coord = updateTarget.isCoordinator();
-        updateTarget.delete();
-        myMutator.deleteAssignment(updateTarget.getResource());
-        LocalAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
+//        updateTarget.delete();
+//        myMutator.deleteAssignment(updateTarget.getResource());
+//        LocalAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
+        LocalAssignment newAssignment = myMutator.createAssignment(myTask, (HumanResource) value);
         newAssignment.setLoad(load);
         newAssignment.setCoordinator(coord);
         myAssignments.set(row, newAssignment);
@@ -187,7 +198,8 @@ class ResourcesTableModel extends TableModelExt<LocalAssignment>
 
   private void createAssignment(Object value) {
     if (value instanceof HumanResource) {
-      LocalAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
+//      LocalAssignment newAssignment = myMutator.addAssignment((HumanResource) value);
+      LocalAssignment newAssignment = myMutator.createAssignment(myTask, (HumanResource) value);
       newAssignment.setLoad(100);
 
       boolean coord = false;
@@ -220,7 +232,8 @@ class ResourcesTableModel extends TableModelExt<LocalAssignment>
       }
     }
     for (LocalAssignment ra : selected) {
-      ra.delete();
+      myAssignmentManager.removeAssignment(myTask, ra.getResource());
+//      ra.delete();
     }
     myAssignments.removeAll(selected);
     fireTableDataChanged();

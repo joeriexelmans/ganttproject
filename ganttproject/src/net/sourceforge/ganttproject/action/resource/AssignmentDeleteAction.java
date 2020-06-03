@@ -21,6 +21,7 @@ package net.sourceforge.ganttproject.action.resource;
 import java.awt.event.ActionEvent;
 
 import net.sourceforge.ganttproject.action.GPAction;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.gui.UIFacade;
 import net.sourceforge.ganttproject.gui.UIFacade.Choice;
 import net.sourceforge.ganttproject.resource.AssignmentContext;
@@ -32,12 +33,14 @@ import net.sourceforge.ganttproject.util.StringUtils;
  */
 public class AssignmentDeleteAction extends GPAction {
   private final AssignmentContext myContext;
+  private final AssignmentManager myAssignmentManager;
 
   private final UIFacade myUIFacade;
 
-  public AssignmentDeleteAction(AssignmentContext context, UIFacade uiFadade) {
+  public AssignmentDeleteAction(AssignmentManager assignmentManager, AssignmentContext context, UIFacade uiFadade) {
     super("assignment.delete", IconSize.TOOLBAR_SMALL);
     myContext = context;
+    myAssignmentManager = assignmentManager;
     myUIFacade = uiFadade;
   }
 
@@ -61,8 +64,7 @@ public class AssignmentDeleteAction extends GPAction {
 
   private void deleteAssignments(LocalAssignment[] context) {
     for (LocalAssignment ra : context) {
-      ra.delete();
-      ra.getTask().getAssignmentCollection().deleteAssignment(ra.getResource());
+      myAssignmentManager.removeAssignment(ra.getTask(), ra.getResource());
     }
   }
 }

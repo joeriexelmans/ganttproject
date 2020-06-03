@@ -61,7 +61,7 @@ public class ResourceDeleteAction extends ResourceAction {
 
   private void deleteResources(HumanResource[] resources) {
     for (HumanResource resource : resources) {
-      resource.delete();
+      getManager().remove(resource);
     }
   }
 

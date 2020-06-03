@@ -29,6 +29,7 @@ import biz.ganttproject.core.time.TimeUnitStack;
 import net.sourceforge.ganttproject.CustomPropertyDefinition;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GanttTask;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.task.Task.Priority;
@@ -188,8 +189,8 @@ public interface TaskManager {
   void addTaskListener(TaskListener listener);
 
   public class Access {
-    public static TaskManager newInstance(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, HumanResourceManager hr, GPCalendarCalc cal, TimeUnitStack t, TaskManagerConfig config) {
-      return new TaskManagerImpl(containmentFacadeFactory, hr, cal, t, config);
+    public static TaskManager newInstance(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, HumanResourceManager hr, AssignmentManager ass, GPCalendarCalc cal, TimeUnitStack t, TaskManagerConfig config) {
+      return new TaskManagerImpl(containmentFacadeFactory, hr, ass, cal, t, config);
     }
   }
 
@@ -207,9 +208,6 @@ public interface TaskManager {
 
   public Map<Task, Task> importData(TaskManager taskManager,
       Map<CustomPropertyDefinition, CustomPropertyDefinition> customPropertyMapping);
-
-  public void importAssignments(TaskManager importedTaskManager,
-                                Map<Task, Task> original2importedTask, Map<HumanResource, HumanResource> original2importedResource);
 
   /**
    * Processes the critical path finding on <code>root</code> tasks.

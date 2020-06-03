@@ -13,7 +13,7 @@ public class LocalAssignmentImpl implements LocalAssignment {
     private boolean myIsCoordinator;
     private Role myRole;
 
-    LocalAssignmentImpl(Task task, HumanResource resource) {
+    public LocalAssignmentImpl(Task task, HumanResource resource) {
         myTask = task;
         myResource = resource;
     }

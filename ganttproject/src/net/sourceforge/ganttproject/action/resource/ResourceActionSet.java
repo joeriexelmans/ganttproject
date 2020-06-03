@@ -48,13 +48,13 @@ public class ResourceActionSet {
   public ResourceActionSet(ResourceContext resourceContext, AssignmentContext assignmentContext,
                            GanttProject app, Project project, UIFacade uiFacade, ResourceTreeTable table) {
     HumanResourceManager manager = project.getHumanResourceManager();
-    myResourceNewAction = new ResourceNewAction(manager, project.getRoleManager(), project.getTaskManager(), uiFacade);
+    myResourceNewAction = new ResourceNewAction(project, uiFacade);
     myResourceDeleteAction = new ResourceDeleteAction(manager, resourceContext, uiFacade);
     myResourcePropertiesAction = new ResourcePropertiesAction(app, project, resourceContext, uiFacade);
     myResourceMoveUpAction = new ResourceMoveUpAction(table);
     myResourceMoveDownAction = new ResourceMoveDownAction(table);
     myResourceSendMailAction = new ResourceSendMailAction(table);
-    myAssignmentDelete = new AssignmentDeleteAction(assignmentContext, uiFacade);
+    myAssignmentDelete = new AssignmentDeleteAction(project.getAssignmentManager(), assignmentContext, uiFacade);
   }
 
   public AbstractAction[] getActions() {

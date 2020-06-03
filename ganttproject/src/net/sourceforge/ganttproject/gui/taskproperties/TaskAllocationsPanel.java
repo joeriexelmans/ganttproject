@@ -23,6 +23,7 @@ import net.sourceforge.ganttproject.gui.UIUtil;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder;
 import net.sourceforge.ganttproject.gui.options.OptionsPageBuilder.BooleanOptionRadioUi;
 import net.sourceforge.ganttproject.language.GanttLanguage;
+import net.sourceforge.ganttproject.project.Project;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.roles.RoleManager;
 import net.sourceforge.ganttproject.task.Task;
@@ -41,8 +42,7 @@ import java.math.BigDecimal;
  */
 public class TaskAllocationsPanel {
   private ResourcesTableModel myModel;
-  private final HumanResourceManager myHRManager;
-  private final RoleManager myRoleManager;
+  private final Project myProject;
   private final Task myTask;
   private final DefaultBooleanOption myCostIsCalculated = new DefaultBooleanOption("taskProperties.cost.calculated");
   private final DefaultDoubleOption myCostValue = new DefaultDoubleOption("taskProperties.cost.value") {
@@ -58,10 +58,9 @@ public class TaskAllocationsPanel {
 
   private JTable myTable;
 
-  public TaskAllocationsPanel(Task task, HumanResourceManager hrManager, RoleManager roleMgr) {
-    myHRManager = hrManager;
-    myRoleManager = roleMgr;
+  public TaskAllocationsPanel(Task task, Project project) {
     myTask = task;
+    myProject = project;
   }
 
   private JTable getTable() {
@@ -69,11 +68,11 @@ public class TaskAllocationsPanel {
   }
 
   public JPanel getComponent() {
-    myModel = new ResourcesTableModel(myTask.getAssignmentCollection());
+    myModel = new ResourcesTableModel(myProject.getAssignmentManager(), myTask);
     myTable = new JTable(myModel);
     UIUtil.setupTableUI(getTable());
-    CommonPanel.setupComboBoxEditor(getTable().getColumnModel().getColumn(1), myHRManager.getResources().toArray());
-    CommonPanel.setupComboBoxEditor(getTable().getColumnModel().getColumn(4), myRoleManager.getEnabledRoles());
+    CommonPanel.setupComboBoxEditor(getTable().getColumnModel().getColumn(1), myProject.getHumanResourceManager().getResources().toArray());
+    CommonPanel.setupComboBoxEditor(getTable().getColumnModel().getColumn(4), myProject.getRoleManager().getEnabledRoles());
 
     JPanel tablePanel = CommonPanel.createTableAndActions(myTable, myModel);
     String layoutDef = "(ROW weight=1.0 (LEAF name=resources weight=0.5) (LEAF name=cost weight=0.5))";

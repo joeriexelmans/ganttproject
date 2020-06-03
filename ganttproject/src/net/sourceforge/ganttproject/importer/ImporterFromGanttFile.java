@@ -154,7 +154,8 @@ public class ImporterFromGanttFile extends ImporterBase {
         result = targetTaskManager.importData(sourceProject.getTaskManager(), that2thisCustomDefs);
 
         // Import assignments
-        targetTaskManager.importAssignments(sourceProject.getTaskManager(), result, original2ImportedResource);
+
+//        targetTaskManager.importAssignments(sourceProject.getTaskManager(), result, original2ImportedResource);
       } finally {
         targetTaskManager.setEventsEnabled(true);
       }

@@ -304,7 +304,7 @@ public class TaskManagerImpl implements TaskManager {
   private Task createRootTask() {
     Calendar c = CalendarFactory.newCalendar();
     Date today = c.getTime();
-    Task root = new GanttTask(null, CalendarFactory.createGanttCalendar(today), 1, this, -1);
+    Task root = new GanttTask(null, CalendarFactory.createGanttCalendar(today), 1, this, myAssignmentManager, -1);
     root.setStart(CalendarFactory.createGanttCalendar(today));
     root.setDuration(createLength(myTimeUnitStack.getDefaultTimeUnit(), 1));
     root.setExpand(true);
@@ -330,12 +330,10 @@ public class TaskManagerImpl implements TaskManager {
   public void deleteTask(Task tasktoRemove) {
     Task[] nestedTasks = getTaskHierarchy().getDeepNestedTasks(tasktoRemove);
     for (Task t : nestedTasks) {
-//      t.delete();
       deleteTaskInternal(t);
     }
     Task container = getTaskHierarchy().getContainer(tasktoRemove);
     myTaskMap.removeTask(tasktoRemove);
-//    tasktoRemove.delete();
     deleteTaskInternal(tasktoRemove);
     fireTaskRemoved(container, tasktoRemove);
   }
@@ -366,7 +364,7 @@ public class TaskManagerImpl implements TaskManager {
         }
 
         TaskImpl task = myPrototype == null
-            ? new GanttTask("", CalendarFactory.createGanttCalendar(), 1, TaskManagerImpl.this, myId)
+            ? new GanttTask("", CalendarFactory.createGanttCalendar(), 1, TaskManagerImpl.this, myAssignmentManager, myId)
             : new GanttTask((TaskImpl)myPrototype);
 
         if (myPrototype == null) {
@@ -1145,22 +1143,6 @@ public class TaskManagerImpl implements TaskManager {
     Task[] allTasks = getTasks();
     for (int i = 0; i < allTasks.length; i++) {
       allTasks[i].setCritical(false);
-    }
-  }
-
-  @Override
-  public void importAssignments(TaskManager sourceTaskManager,
-                                Map<Task, Task> original2importedTask, Map<HumanResource, HumanResource> original2importedResource) {
-    Task[] tasks = sourceTaskManager.getTasks();
-    for (int i = 0; i < tasks.length; i++) {
-      LocalAssignment[] assignments = tasks[i].getAssignments();
-      for (int j = 0; j < assignments.length; j++) {
-        Task task = getTask(original2importedTask.get(tasks[i]).getTaskID());
-        LocalAssignment assignment = task.getAssignmentCollection().addAssignment(
-            original2importedResource.get(assignments[j].getResource()));
-        assignment.setLoad(assignments[j].getLoad());
-        assignment.setCoordinator(assignments[j].isCoordinator());
-      }
     }
   }
 

@@ -18,6 +18,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 */
 package net.sourceforge.ganttproject.gui;
 
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -32,13 +33,15 @@ import javax.swing.table.TableColumn;
  * @author Oleg Kushnikov
  */
 public class ResourceAssignmentsPanel {
+  private final AssignmentManager myAssignmentManager;
   private final TaskManager myTaskManager;
   private ResourceAssignmentsTableModel myModel;
   private final HumanResource myPerson;
   private JTable myTable;
 
-  ResourceAssignmentsPanel(HumanResource person, TaskManager taskManager) {
+  ResourceAssignmentsPanel(HumanResource person, AssignmentManager assignmentManager, TaskManager taskManager) {
     myPerson = person;
+    myAssignmentManager = assignmentManager;
     myTaskManager = taskManager;
   }
 
@@ -47,7 +50,7 @@ public class ResourceAssignmentsPanel {
   }
 
   public JPanel getComponent() {
-    myModel = new ResourceAssignmentsTableModel(myPerson);
+    myModel = new ResourceAssignmentsTableModel(myAssignmentManager, myPerson);
     myTable = new JTable(myModel);
     UIUtil.setupTableUI(getTable());
     setUpTasksComboColumn(getTable().getColumnModel().getColumn(ResourceAssignmentsTableModel.Column.NAME.ordinal()), getTable());

@@ -7,6 +7,7 @@ import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import net.sourceforge.ganttproject.*;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
 import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.resource.ResourceListener;
@@ -25,6 +26,7 @@ public class Project {
     public final WeekendCalendarImpl calendar;
     public final RoleManager roleManager;
     public final CustomColumnsManager hrCustomPropertyManager;
+    public final AssignmentManager assignmentManager;
     public final HumanResourceManager hrManager;
     public final TaskManagerImpl taskManager;
     public final PrjInfos prjinfos;
@@ -43,8 +45,9 @@ public class Project {
         calendar = new WeekendCalendarImpl();
         roleManager = RoleManager.Access.getInstance();
         hrCustomPropertyManager = new CustomColumnsManager();
-        hrManager = new HumanResourceManager(roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
-        taskManager = (TaskManagerImpl) TaskManager.Access.newInstance(facadeFactory, hrManager, calendar, GPTimeUnitStack.getInstance(), tmConfig);
+        assignmentManager = new AssignmentManager();
+        hrManager = new HumanResourceManager(assignmentManager, roleManager.getDefaultRole(), hrCustomPropertyManager, roleManager);
+        taskManager = (TaskManagerImpl) TaskManager.Access.newInstance(facadeFactory, hrManager, assignmentManager, calendar, GPTimeUnitStack.getInstance(), tmConfig);
         prjinfos = new PrjInfos();
         baseLines = new ArrayList<GanttPreviousState>();
 
@@ -165,6 +168,9 @@ public class Project {
     }
     public CustomColumnsManager getResourceCustomPropertyManager() {
         return hrCustomPropertyManager;
+    }
+    public AssignmentManager getAssignmentManager() {
+        return assignmentManager;
     }
     public HumanResourceManager getHumanResourceManager() {
         return hrManager;

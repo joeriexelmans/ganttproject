@@ -143,7 +143,9 @@ public interface Task extends MutableTask {
   boolean getExpand();
 
   // HumanResource[] getAssignedHumanResources();
-//  LocalAssignment[] getAssignments();
+
+  @Deprecated
+  LocalAssignment[] getAssignments();
 
   TaskDependencySlice getDependencies();
 
@@ -151,7 +153,8 @@ public interface Task extends MutableTask {
 
   TaskDependencySlice getDependenciesAsDependee();
 
-//  ResourceAssignmentCollection getAssignmentCollection();
+  @Deprecated
+  ResourceAssignmentCollection getAssignmentCollection();
 
   //
   Task getSupertask();

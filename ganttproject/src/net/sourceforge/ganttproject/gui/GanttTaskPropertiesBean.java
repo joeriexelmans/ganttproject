@@ -148,8 +148,6 @@ public class GanttTaskPropertiesBean extends JPanel {
 
   private final HumanResourceManager myHumanResourceManager;
 
-  private final RoleManager myRoleManager;
-
   private Task myUnpluggedClone;
   private final TaskManager myTaskManager;
   private final Project myProject;
@@ -163,7 +161,6 @@ public class GanttTaskPropertiesBean extends JPanel {
     this.selectedTasks = selectedTasks;
     storeOriginalValues(selectedTasks[0]);
     myHumanResourceManager = project.getHumanResourceManager();
-    myRoleManager = project.getRoleManager();
     myTaskManager = project.getTaskManager();
     myProject = project;
     myUIfacade = uifacade;
@@ -315,7 +312,7 @@ public class GanttTaskPropertiesBean extends JPanel {
 
   /** Construct the resources panel */
   private void constructResourcesPanel() {
-    myAllocationsPanel = new TaskAllocationsPanel(selectedTasks[0], myHumanResourceManager, myRoleManager);
+    myAllocationsPanel = new TaskAllocationsPanel(selectedTasks[0], myProject);
     resourcesPanel = myAllocationsPanel.getComponent();
   }
 

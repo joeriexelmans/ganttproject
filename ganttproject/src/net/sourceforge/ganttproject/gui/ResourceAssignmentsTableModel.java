@@ -18,6 +18,7 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 */
 package net.sourceforge.ganttproject.gui;
 
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.language.GanttLanguage;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
@@ -53,15 +54,24 @@ public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment
     }
   }
 
+  /** Assignments currently displayed in the table */
   private final List<LocalAssignment> myAssignments;
-  private final List<LocalAssignment> myAssignmentsToDelete = new ArrayList<>();
+
+  private final AssignmentManager myAssignmentManager;
+
+//  private final List<LocalAssignment> myAssignmentsToDelete = new ArrayList<>();
   private final HumanResource myResource;
-  private final Map<Task, ResourceAssignmentMutator> myTask2MutatorMap = new HashMap<>();
+//  private final Map<Task, ResourceAssignmentMutator> myTask2MutatorMap = new HashMap<>();
+
+  private final AssignmentManager.Mutator myMutator;
 
 
-  ResourceAssignmentsTableModel(HumanResource person) {
+  ResourceAssignmentsTableModel(AssignmentManager assignmentManager, HumanResource person) {
+    myAssignmentManager = assignmentManager;
+    myMutator = myAssignmentManager.createMutator();
     myResource = person;
-    myAssignments = new ArrayList<>(Arrays.asList(person.getAssignments()));
+
+    myAssignments = assignmentManager.getResourceAssignments(person);
   }
 
   @Override
@@ -148,21 +158,22 @@ public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment
 
   private void createAssignment(Object value) {
     Task task = ((Task) value);
-    ResourceAssignmentMutator mutator = getMutator(task);
-    LocalAssignment ra = mutator.addAssignment(myResource);
-    ra.setLoad(100);
-    myAssignments.add(ra);
+//    ResourceAssignmentMutator mutator = getMutator(task);
+    LocalAssignment a = myMutator.createAssignment(task, myResource);
+//    LocalAssignment ra = mutator.addAssignment(myResource);
+    a.setLoad(100);
+    myAssignments.add(a);
     fireTableRowsInserted(myAssignments.size(), myAssignments.size());
   }
 
-  private ResourceAssignmentMutator getMutator(Task task) {
-    ResourceAssignmentMutator mutator = myTask2MutatorMap.get(task);
-    if (mutator == null) {
-      mutator = task.getAssignmentCollection().createMutator();
-      myTask2MutatorMap.put(task, mutator);
-    }
-    return mutator;
-  }
+//  private ResourceAssignmentMutator getMutator(Task task) {
+//    ResourceAssignmentMutator mutator = myTask2MutatorMap.get(task);
+//    if (mutator == null) {
+//      mutator = task.getAssignmentCollection().createMutator();
+//      myTask2MutatorMap.put(task, mutator);
+//    }
+//    return mutator;
+//  }
 
   List<LocalAssignment> getResourcesAssignments() {
     return Collections.unmodifiableList(myAssignments);
@@ -174,9 +185,10 @@ public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment
     for (int row : selectedRows) {
       if (row < myAssignments.size()) {
         LocalAssignment ra = myAssignments.get(row);
-        ResourceAssignmentMutator mutator = getMutator(ra.getTask());
-        mutator.deleteAssignment(myResource);
-        myAssignmentsToDelete.add(ra);
+//        ResourceAssignmentMutator mutator = getMutator(ra.getTask());
+        myMutator.removeAssignment(ra.getTask(), myResource);
+//        mutator.deleteAssignment(myResource);
+//        myAssignmentsToDelete.add(ra);
         selected.add(ra);
       }
     }
@@ -190,13 +202,14 @@ public class ResourceAssignmentsTableModel extends TableModelExt<LocalAssignment
   }
 
   public void commit() {
-    for (ResourceAssignmentMutator m : myTask2MutatorMap.values()) {
-      m.commit();
-    }
-    for (LocalAssignment ra : myAssignmentsToDelete) {
-      if (!myAssignments.contains(ra)) {
-        ra.delete();
-      }
-    }
+    myMutator.commit();
+//    for (ResourceAssignmentMutator m : myTask2MutatorMap.values()) {
+//      m.commit();
+//    }
+//    for (LocalAssignment ra : myAssignmentsToDelete) {
+//      if (!myAssignments.contains(ra)) {
+//        ra.delete();
+//      }
+//    }
   }
 }

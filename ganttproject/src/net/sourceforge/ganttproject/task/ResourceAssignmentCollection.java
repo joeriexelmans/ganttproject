@@ -29,7 +29,7 @@ public interface ResourceAssignmentCollection extends MutableResourceAssignmentC
 
   LocalAssignment getAssignment(HumanResource resource);
 
-//  ResourceAssignmentMutator createMutator();
+  ResourceAssignmentMutator createMutator();
 
   HumanResource getCoordinator();
 

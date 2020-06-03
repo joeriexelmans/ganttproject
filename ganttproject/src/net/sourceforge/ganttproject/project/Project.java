@@ -59,6 +59,7 @@ public class Project {
         prjinfos.onModified(() -> { onModifiedCallbacks.runAll(); });
         calendar.addListener(() -> onModifiedCallbacks.runAll());
         roleManager.addRoleListener(e -> onModifiedCallbacks.runAll());
+        assignmentManager.addListener((resource) -> { onModifiedCallbacks.runAll(); });
         hrManager.addListener(new ResourceListener() {
             @Override
             public void resourceAdded(ResourceEvent event) {
@@ -72,11 +73,6 @@ public class Project {
 
             @Override
             public void resourceChanged(ResourceEvent e) {
-                onModifiedCallbacks.runAll();
-            }
-
-            @Override
-            public void resourceAssignmentsChanged(ResourceEvent e) {
                 onModifiedCallbacks.runAll();
             }
         });

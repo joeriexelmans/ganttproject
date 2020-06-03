@@ -263,9 +263,6 @@ public class GanttProject extends JFrame implements IGanttProject, GanttLanguage
 
       @Override
       public void resourceChanged(ResourceEvent e) {}
-
-      @Override
-      public void resourceAssignmentsChanged(ResourceEvent e) {}
     });
 
     ImageIcon icon = new ImageIcon(getClass().getResource("/icons/ganttproject-logo-512.png"));
@@ -275,6 +272,7 @@ public class GanttProject extends JFrame implements IGanttProject, GanttLanguage
     resp.init();
     myRowHeightAligners.add(resp.getRowHeightAligner());
     myProject.hrManager.addListener(resp);
+    myProject.assignmentManager.addListener(resp);
 
     tree = new TaskTreePanel(this, myProject, myProject.taskManager, myUIFacade.getTaskSelectionManager(), myUIFacade);
     myFacadeInvalidator = new FacadeInvalidator(tree.getModel(), myRowHeightAligners);

@@ -23,6 +23,7 @@ import net.sourceforge.ganttproject.action.ActiveActionProvider;
 import net.sourceforge.ganttproject.action.ArtefactDeleteAction;
 import net.sourceforge.ganttproject.action.GPAction;
 import net.sourceforge.ganttproject.action.resource.ResourceActionSet;
+import net.sourceforge.ganttproject.assignment.AssignmentListener;
 import net.sourceforge.ganttproject.chart.Chart;
 import net.sourceforge.ganttproject.chart.gantt.ClipboardContents;
 import net.sourceforge.ganttproject.chart.overview.ToolbarBuilder;
@@ -48,10 +49,11 @@ import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ResourceTreePanel extends TreeTableContainer<HumanResource, ResourceTreeTable, ResourceTreeTableModel>
-    implements ResourceListener, ResourceContext, AssignmentContext, ResourceTreeUIFacade {
+    implements ResourceListener, AssignmentListener, ResourceContext, AssignmentContext, ResourceTreeUIFacade {
 
   public final GanttProject myApp;
 
@@ -242,8 +244,8 @@ public class ResourceTreePanel extends TreeTableContainer<HumanResource, Resourc
   }
 
   @Override
-  public void resourceAssignmentsChanged(ResourceEvent e) {
-    getTreeModel().resourceAssignmentsChanged(Arrays.asList(e.getResources()));
+  public void resourceAssignmentsChanged(HumanResource r) {
+    getTreeModel().resourceAssignmentsChanged(Collections.singleton(r));
     repaint();
   }
 

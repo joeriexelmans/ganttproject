@@ -10,9 +10,7 @@ import java.util.EventObject;
  * @author bard
  */
 public class ResourceEvent extends EventObject {
-  /**
-   * @param source
-   */
+
   public ResourceEvent(HumanResourceManager mgr, HumanResource resource) {
     super(mgr);
     myManager = mgr;

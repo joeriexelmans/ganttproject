@@ -4,8 +4,10 @@ import biz.ganttproject.storage.local.LocalStorage;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.*;
 import kotlin.Pair;
+import net.sourceforge.ganttproject.CallbackList;
 import net.sourceforge.ganttproject.resource.HumanResource;
 import net.sourceforge.ganttproject.resource.HumanResourceManager;
+import net.sourceforge.ganttproject.resource.ResourceEvent;
 import net.sourceforge.ganttproject.task.Task;
 import net.sourceforge.ganttproject.task.TaskImpl;
 import net.sourceforge.ganttproject.task.TaskManager;
@@ -21,6 +23,19 @@ public class AssignmentManager {
     private final ArrayListMultimap<Task, LocalAssignmentImpl> taskToAssignments = ArrayListMultimap.create();
     private final ArrayListMultimap<HumanResource, LocalAssignmentImpl> resourceToAssignments = ArrayListMultimap.create();
 
+
+    private final ArrayList<AssignmentListener> myListeners = new ArrayList<>();
+
+    public void addListener(AssignmentListener l) {
+        myListeners.add(l);
+    }
+
+    private void fireAssignmentsChanged(HumanResource resource) {
+        for (AssignmentListener l: myListeners) {
+            l.resourceAssignmentsChanged(resource);
+        }
+    }
+
     /**
      * Creates a new assignment between task and resource. If an assignment between task and resource already exists, it is "overwritten" by the newly created asssignment, making this operation idempotent.
      */
@@ -35,6 +50,8 @@ public class AssignmentManager {
         assignments.put(task, resource, assignment);
         taskToAssignments.put(task, assignment);
         resourceToAssignments.put(resource, assignment);
+
+        fireAssignmentsChanged(resource);
     }
 
     /**
@@ -45,6 +62,8 @@ public class AssignmentManager {
         if (assignment != null) {
             taskToAssignments.remove(task, assignment);
             resourceToAssignments.remove(resource, assignment);
+
+            fireAssignmentsChanged(resource);
         }
     }
 
@@ -56,6 +75,8 @@ public class AssignmentManager {
         for (LocalAssignmentImpl assignment: removed) {
             resourceToAssignments.remove(assignment.getResource(), assignment);
             assignments.remove(task, assignment.getResource());
+
+            fireAssignmentsChanged(assignment.getResource());
         }
     }
 
@@ -68,6 +89,8 @@ public class AssignmentManager {
             taskToAssignments.remove(assignment.getTask(), assignment);
             assignments.remove(assignment.getTask(), resource);
         }
+
+        fireAssignmentsChanged(resource);
     }
 
     /**
@@ -90,6 +113,8 @@ public class AssignmentManager {
     public void swapAssignments(HumanResource resource, LocalAssignment a1, LocalAssignment a2) {
         List<LocalAssignmentImpl> ordered = resourceToAssignments.get(resource);
         Collections.swap(ordered, ordered.indexOf(a1), ordered.indexOf(a2));
+
+        fireAssignmentsChanged(resource);
     }
 
         /**
@@ -164,30 +189,6 @@ public class AssignmentManager {
         }
     }
 
-//    /**
-//     * @param from AssignmentManager of the project we are importing from.
-//     * @param resourceManager HumanResourceManager of the project we are importing TO, NOT importing FROM, so the resourceManager should belong to the same project this AssignmentManager belongs to.
-//     */
-//    public void importData(AssignmentManager from, HumanResourceManager resourceManager) {
-//        for (LocalAssignmentImpl assignment: from.assignments.values()) {
-//            TaskImpl task = (TaskImpl) assignment.getTask();
-//            HumanResource resource = assignment.getResource();
-//
-//            if (task.isUnplugged()) {
-//                putAssignment(task, resource, assignment);
-//            } else {
-//                HumanResource ourResource = resourceManager.getById(resource.getId());
-//                if (ourResource != null) {
-//                    LocalAssignmentImpl copy = new LocalAssignmentImpl(task, ourResource);
-//                    copy.setLoad(assignment.getLoad());
-//                    copy.setCoordinator(assignment.isCoordinator());
-//                    copy.setRoleForAssignment(assignment.getRoleForAssignment());
-//                    putAssignment(task, ourResource, copy);
-//                }
-//            }
-//        }
-//    }
-
     public void importAssignments(AssignmentManager fromAssManager, TaskManager fromTaskManager, Map<Task, Task> original2importedTask, Map<HumanResource, HumanResource> original2importedResource) {
 
         for (LocalAssignment fromAssignment: fromAssManager.assignments.values()) {
@@ -196,7 +197,7 @@ public class AssignmentManager {
             LocalAssignment newAssignment = createAssignment(importedTask, importedResource);
             newAssignment.setLoad(fromAssignment.getLoad());
             newAssignment.setCoordinator(fromAssignment.isCoordinator());
-            // The following statement did not exist in original code, is it necessary?
+            // The following statement did not exist in original code, is it not necessary?
 //            newAssignment.setRoleForAssignment(fromAssignment.getRoleForAssignment());
         }
 

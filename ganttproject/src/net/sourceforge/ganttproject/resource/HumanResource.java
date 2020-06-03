@@ -238,11 +238,11 @@ public class HumanResource implements CustomPropertyHolder {
     }
   }
 
-  private void fireAssignmentsChanged() {
-    if (areEventsEnabled) {
-      myManager.fireAssignmentsChanged(this);
-    }
-  }
+//  private void fireAssignmentsChanged() {
+//    if (areEventsEnabled) {
+//      myManager.fireAssignmentsChanged(this);
+//    }
+//  }
 
   @Override
   public List<CustomProperty> getCustomProperties() {
@@ -293,17 +293,17 @@ public class HumanResource implements CustomPropertyHolder {
     return myLoadDistribution;
   }
 
-  private void fireAssignmentChanged() {
-    resetLoads();
-    fireAssignmentsChanged();
-  }
+//  private void fireAssignmentChanged() {
+//    resetLoads();
+//    fireAssignmentsChanged();
+//  }
 
   @Deprecated
   public void swapAssignments(LocalAssignment a1, LocalAssignment a2) {
     myAssignmentManager.swapAssignments(this, a1, a2);
 //    Collections.swap(myAssignments, myAssignments.indexOf(a1), myAssignments.indexOf(a2));
     resetLoads();
-    fireAssignmentsChanged();
+//    fireAssignmentsChanged();
   }
 
   public void setStandardPayRate(BigDecimal rate) {

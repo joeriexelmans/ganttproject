@@ -33,6 +33,4 @@ public interface ResourceListener {
   public void resourcesRemoved(ResourceEvent event);
 
   public void resourceChanged(ResourceEvent e);
-
-  public void resourceAssignmentsChanged(ResourceEvent e);
 }

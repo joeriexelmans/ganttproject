@@ -21,6 +21,7 @@ package net.sourceforge.ganttproject.resource;
 import biz.ganttproject.core.time.GanttCalendar;
 import com.google.common.collect.Lists;
 import net.sourceforge.ganttproject.CustomPropertyManager;
+import net.sourceforge.ganttproject.assignment.AssignmentListener;
 import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.roles.Role;
 import net.sourceforge.ganttproject.roles.RoleManager;
@@ -109,6 +110,8 @@ public class HumanResourceManager {
     myDefaultRole = defaultRole;
     myCustomPropertyManager = customPropertyManager;
     myRoleManager = roleManager;
+
+    myAssignmentManager.addListener(resource -> resource.resetLoads());
   }
 
   public HumanResource newHumanResource() {
@@ -232,14 +235,6 @@ public class HumanResourceManager {
     for (int i = 0; i < myListener.size(); i++) {
       ResourceListener nextView = myListener.get(i);
       nextView.resourcesRemoved(e);
-    }
-  }
-
-  public void fireAssignmentsChanged(HumanResource resource) {
-    ResourceEvent e = new ResourceEvent(this, resource);
-    for (Iterator<ResourceListener> i = myListener.iterator(); i.hasNext();) {
-      ResourceListener nextView = i.next();
-      nextView.resourceAssignmentsChanged(e);
     }
   }
 

@@ -31,6 +31,7 @@ import biz.ganttproject.core.time.TimeDurationImpl;
 import biz.ganttproject.core.time.impl.GPTimeUnitStack;
 import com.google.common.collect.ImmutableList;
 import net.sourceforge.ganttproject.GPLogger;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.chart.MilestoneTaskFakeActivity;
 import net.sourceforge.ganttproject.document.AbstractURLDocument;
@@ -72,6 +73,8 @@ import java.util.List;
  */
 public class TaskImpl implements Task {
   private final int myID;
+
+  private final AssignmentManager myAssignmentManager;
 
   private final TaskManagerImpl myManager;
 
@@ -141,11 +144,12 @@ public class TaskImpl implements Task {
 
   private static final TimeDuration EMPTY_DURATION = new TimeDurationImpl(GPTimeUnitStack.DAY, 0);
 
-  protected TaskImpl(TaskManagerImpl taskManager, int taskID) {
+  protected TaskImpl(AssignmentManager assManager, TaskManagerImpl taskManager, int taskID) {
+    myAssignmentManager = assManager;
     myManager = taskManager;
     myID = taskID;
 
-    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
+    myAssignments = new ResourceAssignmentCollectionImpl(myAssignmentManager, this, myManager.getHumanResourceManager());
     myDependencySlice = new TaskDependencySliceImpl(this, myManager.getDependencyCollection(), TaskDependencySlice.COMPLETE_SLICE_FXN);
     myDependencySliceAsDependant = new TaskDependencySliceAsDependant(this, myManager.getDependencyCollection());
     myDependencySliceAsDependee = new TaskDependencySliceAsDependee(this, myManager.getDependencyCollection());
@@ -160,6 +164,7 @@ public class TaskImpl implements Task {
 
   protected TaskImpl(TaskImpl copy, boolean isUnplugged) {
     this.isUnplugged = isUnplugged;
+    myAssignmentManager = copy.myAssignmentManager;
     myManager = copy.myManager;
     // Use a new (unique) ID for the cloned task
     myID = myManager.getAndIncrementId();
@@ -169,7 +174,7 @@ public class TaskImpl implements Task {
     } else {
       myTaskHierarchyItem = copy.myTaskHierarchyItem;
     }
-    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
+    myAssignments = new ResourceAssignmentCollectionImpl(myAssignmentManager, this, myManager.getHumanResourceManager());
     myAssignments.importData(copy.getAssignmentCollection());
     myName = copy.myName;
     myWebLink = copy.myWebLink;

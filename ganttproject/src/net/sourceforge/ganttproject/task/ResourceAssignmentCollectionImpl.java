@@ -30,57 +30,58 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
-  private final Map<HumanResource, LocalAssignment> myAssignments = new LinkedHashMap<HumanResource, LocalAssignment>();
+  private final AssignmentManager myAssignmentManager;
+//  private final Map<HumanResource, LocalAssignment> myAssignments = new LinkedHashMap<HumanResource, LocalAssignment>();
 
   private final TaskImpl myTask;
 
   private HumanResourceManager myResourceManager;
 
-  public ResourceAssignmentCollectionImpl(TaskImpl task, HumanResourceManager resourceManager) {
+  public ResourceAssignmentCollectionImpl(AssignmentManager assignmentManager, TaskImpl task, HumanResourceManager resourceManager) {
+    myAssignmentManager = assignmentManager;
     myTask = task;
     myResourceManager = resourceManager;
   }
 
-  private ResourceAssignmentCollectionImpl(ResourceAssignmentCollectionImpl collection) {
-    myTask = collection.myTask;
-    LocalAssignment[] assignments = collection.getAssignments();
-    for (int i = 0; i < assignments.length; i++) {
-      LocalAssignment next = assignments[i];
-      LocalAssignment copy = new LocalAssignmentImpl(next.getResource());
-      copy.setLoad(next.getLoad());
-      copy.setCoordinator(next.isCoordinator());
-      copy.setRoleForAssignment(next.getRoleForAssignment());
-      addAssignment(copy);
-    }
+  private ResourceAssignmentCollectionImpl(ResourceAssignmentCollectionImpl other) {
+    myAssignmentManager = other.myAssignmentManager;
+    myTask = other.myTask;
+    myResourceManager = other.myResourceManager;
+//    LocalAssignment[] assignments = other.getAssignments();
+//    for (int i = 0; i < assignments.length; i++) {
+//      LocalAssignment next = assignments[i];
+//      LocalAssignment copy = new LocalAssignmentImpl(next.getResource());
+//      copy.setLoad(next.getLoad());
+//      copy.setCoordinator(next.isCoordinator());
+//      copy.setRoleForAssignment(next.getRoleForAssignment());
+//      addAssignment(copy);
+//    }
   }
 
   @Override
   public void clear() {
-    LocalAssignment[] assignments = getAssignments();
-    for (int i = 0; i < assignments.length; i++) {
-      assignments[i].delete();
-    }
+    myAssignmentManager.clearTaskAssignments(myTask);
   }
 
   @Override
   public LocalAssignment[] getAssignments() {
-    return myAssignments.values().toArray(new LocalAssignment[myAssignments.size()]);
+    return myAssignmentManager.getTaskAssignments(myTask).toArray(LocalAssignment[]::new);
   }
 
   @Override
   public LocalAssignment getAssignment(HumanResource resource) {
-    return myAssignments.get(resource);
+    return myAssignmentManager.getAssignment(myTask, resource);
   }
 
-  @Override
-  public ResourceAssignmentMutator createMutator() {
-    return new ResourceAssignmentMutatorImpl();
-  }
+//  @Override
+//  public AssignmentManager.Mutator createMutator() {
+//    return myAssignmentManager.createMutator();
+////    return new ResourceAssignmentMutatorImpl();
+//  }
 
   ResourceAssignmentCollectionImpl copy() {
     return new ResourceAssignmentCollectionImpl(this);
@@ -88,310 +89,289 @@ class ResourceAssignmentCollectionImpl implements ResourceAssignmentCollection {
 
   @Override
   public LocalAssignment addAssignment(HumanResource resource) {
-    return auxAddAssignment(resource);
+    return myAssignmentManager.createAssignment(myTask, resource);
+//    return auxAddAssignment(resource);
   }
-
+//
   @Override
   public void deleteAssignment(HumanResource resource) {
-    myAssignments.remove(resource);
+    myAssignmentManager.removeAssignment(myTask, resource);
+//    myAssignments.remove(resource);
   }
+//
+//  private LocalAssignment auxAddAssignment(HumanResource resource) {
+//    final LocalAssignment result = new LocalAssignmentImpl(resource);
+//    addAssignment(result);
+//    return result;
+//  }
+//
+//  private void addAssignment(LocalAssignment assignment) {
+//    myAssignments.put(assignment.getResource(), assignment);
+//  }
 
-  private LocalAssignment auxAddAssignment(HumanResource resource) {
-    final LocalAssignment result = new LocalAssignmentImpl(resource);
-    addAssignment(result);
-    return result;
-  }
+//  private class LocalAssignmentImpl implements LocalAssignment {
+//    private LocalAssignment myAssignmentToResource;
+//
+//    public LocalAssignmentImpl(HumanResource resource) {
+//      myAssignmentToResource = resource.createAssignment(this);
+//      // resource.setAssignmentCollection(ResourceAssignmentCollectionImpl.this);
+//    }
+//
+//    @Override
+//    public Task getTask() {
+//      return myTask;
+//    }
+//
+//    @Override
+//    public GanttCalendar getStart() {
+//      return myTask.getStart();
+//    }
+//
+//    @Override
+//    public GanttCalendar getEnd() {
+//      return myTask.getEnd();
+//    }
+//
+//    @Override
+//    public HumanResource getResource() {
+//      return myAssignmentToResource.getResource();
+//    }
+//
+//    @Override
+//    public float getLoad() {
+//      return myAssignmentToResource.getLoad();
+//    }
+//
+//    @Override
+//    public void setLoad(float load) {
+//      myAssignmentToResource.setLoad(load);
+//    }
+//
+//    /**
+//     * Deletes all the assignments and all the related assignments
+//     */
+//    @Override
+//    public void delete() {
+//      ResourceAssignmentCollectionImpl.this.deleteAssignment(getResource());
+//      myAssignmentToResource.delete();
+//    }
+//
+//    @Override
+//    public void setCoordinator(boolean responsible) {
+//      myAssignmentToResource.setCoordinator(responsible);
+//    }
+//
+//    @Override
+//    public boolean isCoordinator() {
+//      return myAssignmentToResource.isCoordinator();
+//    }
+//
+//    @Override
+//    public Role getRoleForAssignment() {
+//      return myAssignmentToResource.getRoleForAssignment();
+//    }
+//
+//    @Override
+//    public void setRoleForAssignment(Role role) {
+//      myAssignmentToResource.setRoleForAssignment(role);
+//
+//    }
+//
+//    @Override
+//    public String toString() {
+//      return this.getResource().getName() + " -> " + this.getTask().getName();
+//    }
+//  }
 
-  private void addAssignment(LocalAssignment assignment) {
-    myAssignments.put(assignment.getResource(), assignment);
-  }
+//  private class LocalAssignmentStub implements LocalAssignment {
+//    private final HumanResource myResource;
+//    private final Runnable myOnDelete;
+//
+//    private float myLoad;
+//    private boolean myCoordinator;
+//    private Role myRoleForAssignment;
+//
+//    public LocalAssignmentStub(HumanResource resource, Runnable onDelete) {
+//      myResource = resource;
+//      myOnDelete = onDelete;
+//    }
+//
+//    @Override
+//    public Task getTask() {
+//      return myTask;
+//    }
+//
+//    @Override
+//    public GanttCalendar getStart() {
+//      return myTask.getStart();
+//    }
+//
+//    @Override
+//    public GanttCalendar getEnd() {
+//      return myTask.getEnd();
+//    }
+//
+//    @Override
+//    public HumanResource getResource() {
+//      return myResource;
+//    }
+//
+//    @Override
+//    public float getLoad() {
+//      return myLoad;
+//    }
+//
+//    @Override
+//    public void setLoad(float load) {
+//      myLoad = load;
+//    }
+//
+////    @Override
+////    public void delete() {
+////      myOnDelete.run();
+////    }
+//
+//    @Override
+//    public void setCoordinator(boolean responsible) {
+//      myCoordinator = responsible;
+//    }
+//
+//    @Override
+//    public boolean isCoordinator() {
+//      return myCoordinator;
+//    }
+//
+//    @Override
+//    public Role getRoleForAssignment() {
+//
+//      return myRoleForAssignment;
+//    }
+//
+//    @Override
+//    public void setRoleForAssignment(Role role) {
+//      myRoleForAssignment = role;
+//
+//    }
+//
+//    @Override
+//    public String toString() {
+//      return this.getResource().getName() + " -> " + this.getTask().getName();
+//    }
+//  }
 
-  private class LocalAssignmentImpl implements LocalAssignment {
-    private LocalAssignment myAssignmentToResource;
+//  private class ResourceAssignmentMutatorImpl implements ResourceAssignmentMutator {
+//    private Map<HumanResource, MutationInfo> myQueue = new HashMap<HumanResource, MutationInfo>();
+//    private boolean invalidated = false;
+//
+//    @Override
+//    public LocalAssignment addAssignment(final HumanResource resource) {
+//      Preconditions.checkState( ! invalidated );
+//
+//      LocalAssignment result = new LocalAssignmentStub(resource, () -> myQueue.remove(resource));
+//      myQueue.put(resource, new MutationInfo(result, MutationInfo.ADD));
+//      return result;
+//    }
+//
+//    @Override
+//    public void deleteAssignment(HumanResource resource) {
+//      Preconditions.checkState( ! invalidated );
+//
+//      MutationInfo info = myQueue.get(resource);
+//      if (info == null) {
+//        myQueue.put(resource, new MutationInfo(resource, MutationInfo.DELETE));
+//      } else if (info.myOperation == MutationInfo.ADD) {
+//        myQueue.remove(resource);
+//      }
+//    }
+//
+//    @Override
+//    public void commit() {
+//      Preconditions.checkState( ! invalidated );
+//
+//      List<MutationInfo> mutations = new ArrayList<MutationInfo>(myQueue.values());
+//      Collections.sort(mutations);
+//      for (int i = 0; i < mutations.size(); i++) {
+//        MutationInfo next = mutations.get(i);
+//        switch (next.myOperation) {
+//        case MutationInfo.DELETE: {
+//          myAssignments.remove(next.myResource);
+//          break;
+//        }
+//        case MutationInfo.ADD: {
+//          LocalAssignment result = auxAddAssignment(next.myResource);
+//          result.setLoad(next.myAssignment.getLoad());
+//          result.setCoordinator(next.myAssignment.isCoordinator());
+//          result.setRoleForAssignment(next.myAssignment.getRoleForAssignment());
+//        }
+//        default:
+//          break;
+//        }
+//      }
+//      invalidated = true;
+//    }
+//
+//  }
 
-    public LocalAssignmentImpl(HumanResource resource) {
-      myAssignmentToResource = resource.createAssignment(this);
-      // resource.setAssignmentCollection(ResourceAssignmentCollectionImpl.this);
-    }
-
-    @Override
-    public Task getTask() {
-      return myTask;
-    }
-
-    @Override
-    public GanttCalendar getStart() {
-      return myTask.getStart();
-    }
-
-    @Override
-    public GanttCalendar getEnd() {
-      return myTask.getEnd();
-    }
-
-    @Override
-    public HumanResource getResource() {
-      return myAssignmentToResource.getResource();
-    }
-
-    @Override
-    public float getLoad() {
-      return myAssignmentToResource.getLoad();
-    }
-
-    @Override
-    public void setLoad(float load) {
-      myAssignmentToResource.setLoad(load);
-    }
-
-    /**
-     * Deletes all the assignments and all the related assignments
-     */
-    @Override
-    public void delete() {
-      ResourceAssignmentCollectionImpl.this.deleteAssignment(getResource());
-      myAssignmentToResource.delete();
-    }
-
-    @Override
-    public void setCoordinator(boolean responsible) {
-      myAssignmentToResource.setCoordinator(responsible);
-    }
-
-    @Override
-    public boolean isCoordinator() {
-      return myAssignmentToResource.isCoordinator();
-    }
-
-    @Override
-    public Role getRoleForAssignment() {
-      return myAssignmentToResource.getRoleForAssignment();
-    }
-
-    @Override
-    public void setRoleForAssignment(Role role) {
-      myAssignmentToResource.setRoleForAssignment(role);
-
-    }
-
-    @Override
-    public String toString() {
-      return this.getResource().getName() + " -> " + this.getTask().getName();
-    }
-  }
-
-  private class LocalAssignmentStub implements LocalAssignment {
-    private final HumanResource myResource;
-    private final Runnable myOnDelete;
-
-    private float myLoad;
-
-    private boolean myCoordinator;
-
-    private Role myRoleForAssignment;
-
-    public LocalAssignmentStub(HumanResource resource, Runnable onDelete) {
-      myResource = resource;
-      myOnDelete = onDelete;
-    }
-
-    @Override
-    public Task getTask() {
-      return myTask;
-    }
-
-    @Override
-    public GanttCalendar getStart() {
-      return myTask.getStart();
-    }
-
-    @Override
-    public GanttCalendar getEnd() {
-      return myTask.getEnd();
-    }
-
-    @Override
-    public HumanResource getResource() {
-      return myResource;
-    }
-
-    @Override
-    public float getLoad() {
-      return myLoad;
-    }
-
-    @Override
-    public void setLoad(float load) {
-      myLoad = load;
-    }
-
-    @Override
-    public void delete() {
-      myOnDelete.run();
-    }
-
-    @Override
-    public void setCoordinator(boolean responsible) {
-      myCoordinator = responsible;
-    }
-
-    @Override
-    public boolean isCoordinator() {
-      return myCoordinator;
-    }
-
-    @Override
-    public Role getRoleForAssignment() {
-
-      return myRoleForAssignment;
-    }
-
-    @Override
-    public void setRoleForAssignment(Role role) {
-      myRoleForAssignment = role;
-
-    }
-
-    @Override
-    public String toString() {
-      return this.getResource().getName() + " -> " + this.getTask().getName();
-    }
-  }
-
-  private class ResourceAssignmentMutatorImpl implements ResourceAssignmentMutator {
-    private Map<HumanResource, MutationInfo> myQueue = new HashMap<HumanResource, MutationInfo>();
-    private boolean invalidated = false;
-
-    @Override
-    public LocalAssignment addAssignment(final HumanResource resource) {
-      Preconditions.checkState( ! invalidated );
-      LocalAssignment result = new LocalAssignmentStub(resource, new Runnable() {
-        @Override
-        public void run() {
-          myQueue.remove(resource);
-        }
-      });
-      myQueue.put(resource, new MutationInfo(result, MutationInfo.ADD));
-      return result;
-    }
-
-    @Override
-    public void deleteAssignment(HumanResource resource) {
-      Preconditions.checkState( ! invalidated );
-      MutationInfo info = myQueue.get(resource);
-      if (info == null) {
-        myQueue.put(resource, new MutationInfo(resource, MutationInfo.DELETE));
-      } else if (info.myOperation == MutationInfo.ADD) {
-        myQueue.remove(resource);
-      }
-    }
-
-    @Override
-    public void commit() {
-      Preconditions.checkState( ! invalidated );
-      List<MutationInfo> mutations = new ArrayList<MutationInfo>(myQueue.values());
-      Collections.sort(mutations);
-      for (int i = 0; i < mutations.size(); i++) {
-        MutationInfo next = mutations.get(i);
-        switch (next.myOperation) {
-        case MutationInfo.DELETE: {
-          myAssignments.remove(next.myResource);
-          break;
-        }
-        case MutationInfo.ADD: {
-          LocalAssignment result = auxAddAssignment(next.myResource);
-          result.setLoad(next.myAssignment.getLoad());
-          result.setCoordinator(next.myAssignment.isCoordinator());
-          result.setRoleForAssignment(next.myAssignment.getRoleForAssignment());
-        }
-        default:
-          break;
-        }
-      }
-      invalidated = true;
-    }
-
-  }
-
-  private static class MutationInfo implements Comparable<MutationInfo> {
-    static final int ADD = 0;
-
-    static final int DELETE = 1;
-
-    private final LocalAssignment myAssignment;
-
-    private final int myOrder;
-
-    private static int ourOrder;
-
-    private int myOperation;
-
-    private final HumanResource myResource;
-
-    public MutationInfo(LocalAssignment assignment, int operation) {
-      myAssignment = assignment;
-      myOrder = ourOrder++;
-      myOperation = operation;
-      myResource = assignment.getResource();
-    }
-
-    public MutationInfo(HumanResource resource, int operation) {
-      this.myAssignment = null;
-      this.myOrder = ourOrder++;
-      this.myOperation = operation;
-      this.myResource = resource;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      boolean result = o instanceof MutationInfo;
-      if (result) {
-        result = myAssignment.getResource().equals(((MutationInfo) o).myAssignment.getResource());
-      }
-      return result;
-    }
-
-    @Override
-    public int compareTo(MutationInfo o) {
-      if (!(o instanceof MutationInfo)) {
-        throw new IllegalArgumentException();
-      }
-      return myOrder - o.myOrder;
-    }
-  }
-
-  public void importData(ResourceAssignmentCollection assignmentCollection) {
-    if (myTask.isUnplugged()) {
-      LocalAssignment[] assignments = assignmentCollection.getAssignments();
-      for (int i = 0; i < assignments.length; i++) {
-        LocalAssignment next = assignments[i];
-        addAssignment(next);
-      }
-    } else {
-      LocalAssignment[] assignments = assignmentCollection.getAssignments();
-      for (int i = 0; i < assignments.length; i++) {
-        LocalAssignment next = assignments[i];
-        HumanResource nextResource = next.getResource();
-        HumanResource nextImportedResource = myResourceManager.getById(nextResource.getId());
-        if (nextImportedResource != null) {
-          LocalAssignment copy = new LocalAssignmentImpl(nextImportedResource);
-          copy.setLoad(next.getLoad());
-          copy.setCoordinator(next.isCoordinator());
-          copy.setRoleForAssignment(next.getRoleForAssignment());
-          addAssignment(copy);
-        }
-      }
-    }
-  }
+//  private static class MutationInfo implements Comparable<MutationInfo> {
+//    static final int ADD = 0;
+//
+//    static final int DELETE = 1;
+//
+//    private final LocalAssignment myAssignment;
+//
+//    private final int myOrder;
+//
+//    private static int ourOrder;
+//
+//    private int myOperation;
+//
+//    private final HumanResource myResource;
+//
+//    public MutationInfo(LocalAssignment assignment, int operation) {
+//      myAssignment = assignment;
+//      myOrder = ourOrder++;
+//      myOperation = operation;
+//      myResource = assignment.getResource();
+//    }
+//
+//    public MutationInfo(HumanResource resource, int operation) {
+//      this.myAssignment = null;
+//      this.myOrder = ourOrder++;
+//      this.myOperation = operation;
+//      this.myResource = resource;
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//      boolean result = o instanceof MutationInfo;
+//      if (result) {
+//        result = myAssignment.getResource().equals(((MutationInfo) o).myAssignment.getResource());
+//      }
+//      return result;
+//    }
+//
+//    @Override
+//    public int compareTo(MutationInfo o) {
+//      if (!(o instanceof MutationInfo)) {
+//        throw new IllegalArgumentException();
+//      }
+//      return myOrder - o.myOrder;
+//    }
+//  }
 
   @Override
   public HumanResource getCoordinator() {
-    for (Iterator<LocalAssignment> assignments = myAssignments.values().iterator(); assignments.hasNext();) {
-      LocalAssignment next = assignments.next();
-      if (next.isCoordinator()) {
-        return next.getResource();
+    for (LocalAssignment assignment: myAssignmentManager.getTaskAssignments(myTask)) {
+      if (assignment.isCoordinator()) {
+        return assignment.getResource();
       }
     }
+//    for (Iterator<LocalAssignment> assignments = myAssignments.values().iterator(); assignments.hasNext();) {
+//      LocalAssignment next = assignments.next();
+//      if (next.isCoordinator()) {
+//        return next.getResource();
+//      }
+//    }
     return null;
   }
 }

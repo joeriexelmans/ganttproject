@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package net.sourceforge.ganttproject;
 
 import biz.ganttproject.core.time.GanttCalendar;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.task.TaskImpl;
 import net.sourceforge.ganttproject.task.TaskManagerImpl;
 import net.sourceforge.ganttproject.task.TaskMutator;
@@ -43,8 +44,8 @@ public class GanttTask extends TaskImpl implements Serializable {
    *          contains the id to be used for the new task, or -1 to generate a
    *          unique one.
    */
-  public GanttTask(String name, GanttCalendar start, long length, TaskManagerImpl taskManager, int taskID) {
-    super(taskManager, taskID);
+  public GanttTask(String name, GanttCalendar start, long length, AssignmentManager assManager, TaskManagerImpl taskManager, int taskID) {
+    super(assManager, taskManager, taskID);
     TaskMutator mutator = createMutator();
     mutator.setName(name);
     mutator.setStart(start);
@@ -59,7 +60,7 @@ public class GanttTask extends TaskImpl implements Serializable {
    * @param copy
    *          task to copy
    */
-  public GanttTask(TaskManagerImpl manager, TaskImpl copy) {
+  public GanttTask(TaskImpl copy) {
     super(copy, false);
     enableEvents(true);
   }

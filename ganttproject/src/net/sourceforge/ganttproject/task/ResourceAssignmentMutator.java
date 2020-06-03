@@ -19,5 +19,9 @@ along with GanttProject.  If not, see <http://www.gnu.org/licenses/>.
 package net.sourceforge.ganttproject.task;
 
 public interface ResourceAssignmentMutator extends MutableResourceAssignmentCollection {
+  /**
+   * After commit, the mutator is invalidated.
+   * A new mutator should be created if more changes must be made.
+   */
   void commit();
 }

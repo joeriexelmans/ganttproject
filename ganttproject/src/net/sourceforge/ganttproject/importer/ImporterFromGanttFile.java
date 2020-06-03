@@ -148,14 +148,15 @@ public class ImporterFromGanttFile extends ImporterBase {
       Map<CustomPropertyDefinition, CustomPropertyDefinition> that2thisCustomDefs = targetCustomColumnStorage.importData(sourceProject.getTaskCustomPropertyManager());
 
       // Import tasks
-      TaskManagerImpl origTaskManager = (TaskManagerImpl) targetProject.getTaskManager();
+      TaskManagerImpl targetTaskManager = (TaskManagerImpl) targetProject.getTaskManager();
       try {
-        origTaskManager.setEventsEnabled(false);
-        result = origTaskManager.importData(sourceProject.getTaskManager(), that2thisCustomDefs);
-        origTaskManager.importAssignments(sourceProject.getTaskManager(), targetProject.getHumanResourceManager(),
-                result, original2ImportedResource);
+        targetTaskManager.setEventsEnabled(false);
+        result = targetTaskManager.importData(sourceProject.getTaskManager(), that2thisCustomDefs);
+
+        // Import assignments
+        targetTaskManager.importAssignments(sourceProject.getTaskManager(), result, original2ImportedResource);
       } finally {
-        origTaskManager.setEventsEnabled(true);
+        targetTaskManager.setEventsEnabled(true);
       }
     }
     return result;

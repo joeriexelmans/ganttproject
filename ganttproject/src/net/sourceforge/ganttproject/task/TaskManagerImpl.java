@@ -1149,9 +1149,9 @@ public class TaskManagerImpl implements TaskManager {
   }
 
   @Override
-  public void importAssignments(TaskManager importedTaskManager, HumanResourceManager hrManager,
-      Map<Task, Task> original2importedTask, Map<HumanResource, HumanResource> original2importedResource) {
-    Task[] tasks = importedTaskManager.getTasks();
+  public void importAssignments(TaskManager sourceTaskManager,
+                                Map<Task, Task> original2importedTask, Map<HumanResource, HumanResource> original2importedResource) {
+    Task[] tasks = sourceTaskManager.getTasks();
     for (int i = 0; i < tasks.length; i++) {
       LocalAssignment[] assignments = tasks[i].getAssignments();
       for (int j = 0; j < assignments.length; j++) {

@@ -34,6 +34,7 @@ import net.sourceforge.ganttproject.CustomPropertyListener;
 import net.sourceforge.ganttproject.CustomPropertyManager;
 import net.sourceforge.ganttproject.GPLogger;
 import net.sourceforge.ganttproject.GanttTask;
+import net.sourceforge.ganttproject.assignment.AssignmentManager;
 import net.sourceforge.ganttproject.assignment.LocalAssignment;
 import net.sourceforge.ganttproject.gui.NotificationChannel;
 import net.sourceforge.ganttproject.gui.NotificationItem;
@@ -93,6 +94,8 @@ public class TaskManagerImpl implements TaskManager {
   private static final GPCalendarCalc RESTLESS_CALENDAR = new AlwaysWorkingTimeCalendarImpl();
 
   private final TaskHierarchyManagerImpl myHierarchyManager;
+
+  private final AssignmentManager myAssignmentManager;
 
   private final TaskDependencyCollectionImpl myDependencyCollection;
 
@@ -206,13 +209,14 @@ public class TaskManagerImpl implements TaskManager {
   private final CustomColumnsManager myCustomColumnsManager;
   private Boolean isZeroMilestones = true;
 
-  TaskManagerImpl(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, HumanResourceManager hr, GPCalendarCalc cal, TimeUnitStack t, TaskManagerConfig config) {
+  TaskManagerImpl(TaskContainmentHierarchyFacade.Factory containmentFacadeFactory, HumanResourceManager hr, AssignmentManager ass, GPCalendarCalc cal, TimeUnitStack t, TaskManagerConfig config) {
     myCustomPropertyListener = new CustomPropertyListenerImpl(this);
     myCustomColumnsManager = new CustomColumnsManager();
     myCustomColumnsManager.addListener(getCustomPropertyListener());
 
     myConfig = config;
     myHumanResourceManager = hr;
+    myAssignmentManager = ass;
     myCalendar = cal;
     myTimeUnitStack = t;
     myHierarchyManager = new TaskHierarchyManagerImpl();
@@ -326,12 +330,19 @@ public class TaskManagerImpl implements TaskManager {
   public void deleteTask(Task tasktoRemove) {
     Task[] nestedTasks = getTaskHierarchy().getDeepNestedTasks(tasktoRemove);
     for (Task t : nestedTasks) {
-      t.delete();
+//      t.delete();
+      deleteTaskInternal(t);
     }
     Task container = getTaskHierarchy().getContainer(tasktoRemove);
     myTaskMap.removeTask(tasktoRemove);
-    tasktoRemove.delete();
+//    tasktoRemove.delete();
+    deleteTaskInternal(tasktoRemove);
     fireTaskRemoved(container, tasktoRemove);
+  }
+
+  private void deleteTaskInternal(Task t) {
+    t.getDependencies().clear();
+    myAssignmentManager.clearTaskAssignments(t);
   }
 
   @Override
@@ -356,7 +367,7 @@ public class TaskManagerImpl implements TaskManager {
 
         TaskImpl task = myPrototype == null
             ? new GanttTask("", CalendarFactory.createGanttCalendar(), 1, TaskManagerImpl.this, myId)
-            : new GanttTask(TaskManagerImpl.this, (TaskImpl)myPrototype);
+            : new GanttTask((TaskImpl)myPrototype);
 
         if (myPrototype == null) {
           String name = myName == null
@@ -1029,7 +1040,7 @@ public class TaskManagerImpl implements TaskManager {
 
   @Override
   public TaskManager emptyClone() {
-    TaskManagerImpl result = new TaskManagerImpl(null, myHumanResourceManager, myCalendar, myTimeUnitStack, myConfig);
+    TaskManagerImpl result = new TaskManagerImpl(null, myHumanResourceManager, myAssignmentManager, myCalendar, myTimeUnitStack, myConfig);
     result.myDependencyHardnessOption.setValue(this.myDependencyHardnessOption.getValue());
     return result;
   }

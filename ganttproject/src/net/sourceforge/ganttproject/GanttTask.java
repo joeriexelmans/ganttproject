@@ -44,8 +44,8 @@ public class GanttTask extends TaskImpl implements Serializable {
    *          contains the id to be used for the new task, or -1 to generate a
    *          unique one.
    */
-  public GanttTask(String name, GanttCalendar start, long length, AssignmentManager assManager, TaskManagerImpl taskManager, int taskID) {
-    super(assManager, taskManager, taskID);
+  public GanttTask(String name, GanttCalendar start, long length, TaskManagerImpl taskManager, int taskID) {
+    super(taskManager, taskID);
     TaskMutator mutator = createMutator();
     mutator.setName(name);
     mutator.setStart(start);

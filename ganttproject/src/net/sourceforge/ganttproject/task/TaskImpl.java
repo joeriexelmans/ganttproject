@@ -74,7 +74,7 @@ import java.util.List;
 public class TaskImpl implements Task {
   private final int myID;
 
-  private final AssignmentManager myAssignmentManager;
+//  private final AssignmentManager myAssignmentManager;
 
   private final TaskManagerImpl myManager;
 
@@ -106,7 +106,7 @@ public class TaskImpl implements Task {
 
   // private final TaskDependencyCollection myDependencies = new
   // TaskDependencyCollectionImpl();
-  private final ResourceAssignmentCollectionImpl myAssignments;
+//  private final ResourceAssignmentCollectionImpl myAssignments;
 
   private final TaskDependencySlice myDependencySlice;
 
@@ -144,12 +144,12 @@ public class TaskImpl implements Task {
 
   private static final TimeDuration EMPTY_DURATION = new TimeDurationImpl(GPTimeUnitStack.DAY, 0);
 
-  protected TaskImpl(AssignmentManager assManager, TaskManagerImpl taskManager, int taskID) {
-    myAssignmentManager = assManager;
+  protected TaskImpl(TaskManagerImpl taskManager, int taskID) {
+//    myAssignmentManager = assManager;
     myManager = taskManager;
     myID = taskID;
 
-    myAssignments = new ResourceAssignmentCollectionImpl(myAssignmentManager, this, myManager.getHumanResourceManager());
+//    myAssignments = new ResourceAssignmentCollectionImpl(myAssignmentManager, this, myManager.getHumanResourceManager());
     myDependencySlice = new TaskDependencySliceImpl(this, myManager.getDependencyCollection(), TaskDependencySlice.COMPLETE_SLICE_FXN);
     myDependencySliceAsDependant = new TaskDependencySliceAsDependant(this, myManager.getDependencyCollection());
     myDependencySliceAsDependee = new TaskDependencySliceAsDependee(this, myManager.getDependencyCollection());
@@ -164,7 +164,7 @@ public class TaskImpl implements Task {
 
   protected TaskImpl(TaskImpl copy, boolean isUnplugged) {
     this.isUnplugged = isUnplugged;
-    myAssignmentManager = copy.myAssignmentManager;
+//    myAssignmentManager = copy.myAssignmentManager;
     myManager = copy.myManager;
     // Use a new (unique) ID for the cloned task
     myID = myManager.getAndIncrementId();
@@ -174,8 +174,8 @@ public class TaskImpl implements Task {
     } else {
       myTaskHierarchyItem = copy.myTaskHierarchyItem;
     }
-    myAssignments = new ResourceAssignmentCollectionImpl(myAssignmentManager, this, myManager.getHumanResourceManager());
-    myAssignments.importData(copy.getAssignmentCollection());
+//    myAssignments = new ResourceAssignmentCollectionImpl(this, myManager.getHumanResourceManager());
+//    myAssignments.importData(copy.getAssignmentCollection());
     myName = copy.myName;
     myWebLink = copy.myWebLink;
     isMilestone = copy.isMilestone;
@@ -473,15 +473,15 @@ public class TaskImpl implements Task {
     return myNotes;
   }
 
-  @Override
-  public LocalAssignment[] getAssignments() {
-    return myAssignments.getAssignments();
-  }
-
-  @Override
-  public ResourceAssignmentCollection getAssignmentCollection() {
-    return myAssignments;
-  }
+//  @Override
+//  public LocalAssignment[] getAssignments() {
+//    return myAssignments.getAssignments();
+//  }
+//
+//  @Override
+//  public ResourceAssignmentCollection getAssignmentCollection() {
+//    return myAssignments;
+//  }
 
   @Override
   public Task getSupertask() {

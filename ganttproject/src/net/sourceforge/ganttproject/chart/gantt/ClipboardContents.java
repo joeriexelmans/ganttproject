@@ -167,7 +167,6 @@ public class ClipboardContents {
     for (Task t : getTasks()) {
       myAssignments.addAll(Arrays.asList(t.getAssignments()));
       myTaskManager.deleteTask(t);
-      t.delete();
     }
     for (LocalAssignment ra : myAssignments) {
       myResources.add(ra.getResource());

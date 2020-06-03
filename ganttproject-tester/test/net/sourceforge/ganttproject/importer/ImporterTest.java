@@ -18,6 +18,12 @@ import static org.junit.Assert.assertEquals;
 // Individual test methods pass if ran independently, however, some tests fail if the tests are ran in sequence
 // Probably earlier tests leave the "state" dirty, don't understand how...
 public class ImporterTest extends ProjectTestBase {
+    @Test
+    public void importAssignment() throws IOException {
+        Project target = loadTestProject("/testproject.xml");
+        Project source = loadTestProject("/importable_assignment.xml");
+        assertEquals(3, target.getHumanResourceManager().getResources().size());
+    }
 
     private void testVariant(ImportCalendarOption calendarOption, HumanResourceMerger.MergeResourcesOption mergeOption, int expectedNumResources) throws IOException {
         // Project with 2 human resources: Jimmy and Bobby

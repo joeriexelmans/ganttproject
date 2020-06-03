@@ -29,8 +29,7 @@ public class TestResourceTotalLoad extends TaskTestCase {
   public void testResourceTotalLoad() {
     TaskManagerBuilder builder = TestSetupHelper.newTaskManagerBuilder();
     setTaskManager(builder.build());
-    AssignmentManager assignmentManager = new AssignmentManager();
-    HumanResource joe = new HumanResource("Joe", 1, builder.getResourceManager(), assignmentManager);
+    HumanResource joe = new HumanResource("Joe", 1, builder.getResourceManager(), builder.getAssignmentManager());
 
     assertEquals(0.0, joe.getTotalLoad());
 
